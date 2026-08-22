@@ -270,22 +270,22 @@ export function SummaryPage() {
           </Card>
         )}
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button id="new-session-btn" onClick={handleNewSession} className="flex-1 gap-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Button id="new-session-btn" onClick={handleNewSession} className="gap-2">
             <RotateCcw className="h-4 w-4" />
             New Session
           </Button>
           {report.struggledWords.length > 0 && (
-            <Button id="practice-weak-btn" onClick={handlePracticeWeakWords} className="flex-1 gap-2">
+            <Button id="practice-weak-btn" onClick={handlePracticeWeakWords} className="gap-2">
               <Target className="h-4 w-4" />
               Practice weak words ({report.struggledWords.length})
             </Button>
           )}
-          <Button id="download-report-btn" variant="secondary" onClick={handleDownload} className="flex-1 gap-2">
+          <Button id="download-report-btn" variant="secondary" onClick={handleDownload} className="gap-2">
             <Download className="h-4 w-4" />
             Download Report
           </Button>
-          <Button id="view-history-btn" variant="secondary" onClick={() => navigate('/history')} className="flex-1">
+          <Button id="view-history-btn" variant="secondary" onClick={() => navigate('/history')} className="gap-2">
             History
           </Button>
         </div>

@@ -160,7 +160,7 @@ export function QuizPage() {
   return (
     <div className="page-container">
       {/* Header stats bar */}
-      <div className="flex items-center justify-between mb-4 gap-3">
+      <div className="flex flex-wrap items-center justify-between mb-4 gap-2 sm:gap-3">
         <XPCounter xp={xp} />
         <StreakBadge streak={streak} />
         <QuizTimer startedAt={sessionStartTime ? sessionStartTime.getTime() : Date.now()} />

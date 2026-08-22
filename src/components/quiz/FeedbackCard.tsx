@@ -36,7 +36,7 @@ function pickRandom(messages: string[]) {
 }
 
 const ACTION_TILE =
-  'group flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border px-2 py-3.5 text-center transition-all duration-200 hover:-translate-y-0.5 active:scale-95';
+  'group flex cursor-pointer flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-xl border px-1.5 py-2.5 sm:px-2 sm:py-3.5 text-center transition-all duration-200 hover:-translate-y-0.5 active:scale-95';
 
 interface FeedbackCardProps {
   question: QuizQuestion;
