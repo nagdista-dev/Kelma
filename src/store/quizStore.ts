@@ -33,7 +33,7 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
   switch (currentRound) {
     case 1: {
       // Recognition: Arabic meaning → pick English word
-      const options = shuffle([quizData.word, ...quizData.distractors, I_DONT_KNOW]);
+      const options = [...shuffle([quizData.word, ...quizData.distractors]), I_DONT_KNOW];
       return {
         wordProgress: wp,
         round: 1,
@@ -45,7 +45,7 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
     }
     case 2: {
       // Comprehension: English definition → pick English word
-      const options = shuffle([quizData.word, ...quizData.distractors, I_DONT_KNOW]);
+      const options = [...shuffle([quizData.word, ...quizData.distractors]), I_DONT_KNOW];
       return {
         wordProgress: wp,
         round: 2,
@@ -57,7 +57,7 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
     }
     case 3: {
       // Translation: English word → pick Arabic meaning
-      const options = shuffle([quizData.arabicMeaning, ...quizData.arabicDistractors, I_DONT_KNOW]);
+      const options = [...shuffle([quizData.arabicMeaning, ...quizData.arabicDistractors]), I_DONT_KNOW];
       return {
         wordProgress: wp,
         round: 3,
@@ -69,7 +69,7 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
     }
     case 4: {
       // Fill-in-blank: Sentence with blank → tap correct word
-      const options = shuffle([quizData.word, ...quizData.sentenceDistractors, I_DONT_KNOW]);
+      const options = [...shuffle([quizData.word, ...quizData.sentenceDistractors]), I_DONT_KNOW];
       return {
         wordProgress: wp,
         round: 4,
