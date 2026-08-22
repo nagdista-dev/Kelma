@@ -10,6 +10,7 @@ import { ProviderPage } from '@/pages/ProviderPage';
 import { PricingPage } from '@/pages/PricingPage';
 import { HowToPage } from '@/pages/HowToPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { AboutPage } from '@/pages/AboutPage';
 import { HelpPage } from '@/pages/HelpPage';
 import { SessionSetupPage } from '@/pages/SessionSetupPage';
 import { QuizPage } from '@/pages/QuizPage';
@@ -41,6 +42,7 @@ function App() {
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/how-to" element={<HowToPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/history" element={<HistoryPage />} />
 
