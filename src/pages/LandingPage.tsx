@@ -34,8 +34,8 @@ export function LandingPage() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <div className="mb-6 flex justify-center">
-          <div className="w-20 h-20 rounded-2xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center glow-violet animate-float">
-            <BookOpen className="w-10 h-10 text-violet-400" />
+          <div className="w-20 h-20 rounded-2xl bg-teal-500/20 border border-teal-500/30 flex items-center justify-center glow-teal animate-float">
+            <BookOpen className="w-10 h-10 text-teal-400" />
           </div>
         </div>
 
@@ -84,7 +84,7 @@ export function LandingPage() {
             transition={{ delay: 0.2 + i * 0.1, duration: 0.4 }}
             className="glass rounded-2xl p-5 text-left"
           >
-            <f.icon className="w-6 h-6 text-violet-400 mb-3" />
+            <f.icon className="w-6 h-6 text-teal-400 mb-3" />
             <h2 className="text-sm font-semibold text-white mb-1.5">{f.title}</h2>
             <p className="text-xs text-gray-400 leading-relaxed">{f.desc}</p>
           </motion.div>
@@ -110,7 +110,7 @@ export function LandingPage() {
           ].map((r, i) => (
             <div key={r.n} className="flex items-center gap-2">
               <div className="text-center">
-                <div className="w-10 h-10 rounded-full bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-300 font-bold text-sm mb-1 mx-auto">
+                <div className="w-10 h-10 rounded-full bg-teal-500/20 border border-teal-500/30 flex items-center justify-center text-teal-300 font-bold text-sm mb-1 mx-auto">
                   {r.n}
                 </div>
                 <p className="text-xs font-medium text-gray-300">{r.label}</p>

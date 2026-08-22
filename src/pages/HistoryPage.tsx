@@ -49,7 +49,7 @@ export function HistoryPage() {
       >
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <History className="w-6 h-6 text-violet-400" />
+            <History className="w-6 h-6 text-teal-400" />
             <div>
               <h1 className="text-2xl font-bold text-slate-950 dark:text-white">Session History</h1>
               <p className="text-sm text-slate-500 dark:text-gray-400">{sessions.length} session{sessions.length !== 1 ? 's' : ''} saved</p>
@@ -93,7 +93,7 @@ export function HistoryPage() {
                     {/* Date + level */}
                     <div className="shrink-0">
                       <p className="text-xs text-slate-500 dark:text-gray-500">{dateStr}</p>
-                      <span className="badge-violet mt-1">{s.level}</span>
+                      <span className="badge-teal mt-1">{s.level}</span>
                     </div>
 
                     {/* Words */}

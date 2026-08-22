@@ -28,7 +28,7 @@ export function getAIModel(provider: AIProvider, apiKey: string, model: string) 
         name: 'openrouter',
         headers: {
           'HTTP-Referer': typeof window === 'undefined' ? 'http://localhost' : window.location.origin,
-          'X-OpenRouter-Title': 'Play With Words',
+          'X-OpenRouter-Title': 'Kelma',
         },
       }).chat(model);
     case 'opencode':

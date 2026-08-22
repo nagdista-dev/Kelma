@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, BrainCircuit, Gauge, History, Layers3, RotateCcw, Wand2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, RotateCcw, Settings as SettingsIcon, Wand2 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
 import { WordInput } from '@/components/session/WordInput';
-import { LevelSelector } from '@/components/session/LevelSelector';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import type { LanguageLevel } from '@/types/index';
+import { LEVEL_DESCRIPTIONS } from '@/types/index';
 import { MIN_WORDS } from '@/constants/index';
 
 export function SessionSetupPage() {
@@ -18,7 +17,6 @@ export function SessionSetupPage() {
   const { startSession, setPhase } = useQuizStore();
 
   const [words, setWords] = useState<string[]>([]);
-  const [level, setLevel] = useState<LanguageLevel>(defaultLevel);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
@@ -46,11 +44,11 @@ export function SessionSetupPage() {
     if (!canStart) return;
     setLoading(true);
     setError(null);
-    setPhase('loading');
+    setPhase('idle');
 
     try {
-      const quizData = await generateSessionData(words, level, provider, apiKey, model);
-      startSession(words, level, quizData);
+      const quizData = await generateSessionData(words, defaultLevel, provider, apiKey, model);
+      startSession(words, defaultLevel, quizData);
       navigate('/quiz');
     } catch (err) {
       setError(getFriendlyAIErrorMessage(err));
@@ -68,7 +66,7 @@ export function SessionSetupPage() {
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-center gap-3 mb-8">
-          <Wand2 className="w-6 h-6 text-violet-400" />
+          <Wand2 className="w-6 h-6 text-teal-400" />
           <div>
             <h1 className="text-2xl font-bold text-white">New Session</h1>
             <p className="text-sm text-gray-400">
@@ -93,34 +91,28 @@ export function SessionSetupPage() {
             <WordInput words={words} onChange={setWords} />
           </Card>
 
-          {/* Level */}
-          <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">
-              Your Level
-            </h2>
-            <LevelSelector value={level} onChange={setLevel} />
+          {/* Level — read-only, managed in Settings */}
+          <Card className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="badge-teal text-sm">{defaultLevel}</span>
+              <div>
+                <p className="text-sm font-semibold text-gray-200">
+                  {LEVEL_DESCRIPTIONS[defaultLevel]}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Your session level — change it anytime from Settings
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/settings"
+              id="change-level-link"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors hover:border-teal-500/50 hover:text-teal-300"
+            >
+              <SettingsIcon className="w-3.5 h-3.5" />
+              Change
+            </Link>
           </Card>
-
-          {/* What to expect */}
-          <div className="glass rounded-xl p-4 text-xs text-gray-400 space-y-1">
-            <p className="font-semibold text-gray-300 mb-2">What happens next:</p>
-            <p className="flex items-center gap-2">
-              <BrainCircuit className="w-3.5 h-3.5 text-violet-300" />
-              AI generates quiz data for all {words.length || 'N'} words (1 API call)
-            </p>
-            <p className="flex items-center gap-2">
-              <Layers3 className="w-3.5 h-3.5 text-violet-300" />
-              Each word goes through 6 rounds covering meaning, listening and spelling
-            </p>
-            <p className="flex items-center gap-2">
-              <Gauge className="w-3.5 h-3.5 text-violet-300" />
-              Earn XP for correct answers · Use hints for a small penalty
-            </p>
-            <p className="flex items-center gap-2">
-              <History className="w-3.5 h-3.5 text-violet-300" />
-              Session saved to your history when complete
-            </p>
-          </div>
 
           {/* Error */}
           {error && (
@@ -133,9 +125,9 @@ export function SessionSetupPage() {
           {/* Loading state */}
           {loading && (
             <div className="text-center py-4">
-              <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto mb-3" />
+              <div className="w-8 h-8 border-2 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mx-auto mb-3" />
               <p className="text-sm text-gray-400">
-                Generating quiz for <span className="text-violet-300 font-medium">{words.join(', ')}</span>…
+                Generating quiz for <span className="text-teal-300 font-medium">{words.join(', ')}</span>…
               </p>
               <p className="text-xs text-gray-500 mt-1">This takes 10–30 seconds</p>
             </div>

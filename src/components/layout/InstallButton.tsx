@@ -53,7 +53,7 @@ export function InstallButton() {
       toast.custom(
         () => (
           <div className="flex items-start gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm text-white shadow-xl border border-white/10 max-w-xs">
-            <Share2 className="mt-0.5 h-4 w-4 shrink-0 text-violet-300" />
+            <Share2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
             <span>
               On iPhone: tap <b>Share</b>, then choose <b>Add to Home Screen</b> to install the app.
             </span>
@@ -72,7 +72,7 @@ export function InstallButton() {
       type="button"
       id="install-app-btn"
       onClick={() => void handleInstall()}
-      aria-label="Install Play With Words app"
+      aria-label="Install Kelma app"
       className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-bold text-white shadow-md shadow-emerald-600/25 transition-all hover:bg-emerald-500 active:scale-95"
     >
       <Download className="h-4 w-4" />

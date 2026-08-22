@@ -134,7 +134,7 @@ export function HelpPage() {
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-center gap-3 mb-8">
-          <HelpCircle className="w-6 h-6 text-violet-400" />
+          <HelpCircle className="w-6 h-6 text-teal-400" />
           <div>
             <h1 className="text-2xl font-bold text-white">API Key Help</h1>
             <p className="text-sm text-gray-400">Where to create keys and what to check when they fail</p>
@@ -159,8 +159,8 @@ export function HelpPage() {
             {PROVIDER_HELP.map(({ name, keyFormat, link, linkLabel, Icon, steps, notes }) => (
               <Card key={name} className="p-5">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center shrink-0">
-                    <Icon className="w-5 h-5 text-violet-300" />
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/25 flex items-center justify-center shrink-0">
+                    <Icon className="w-5 h-5 text-teal-300" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
@@ -175,7 +175,7 @@ export function HelpPage() {
                         href={link}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm text-violet-300 hover:text-violet-200 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm text-teal-300 hover:text-teal-200 transition-colors"
                       >
                         {linkLabel}
                         <ExternalLink className="w-3.5 h-3.5" />

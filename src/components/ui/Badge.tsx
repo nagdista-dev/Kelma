@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-type BadgeVariant = 'violet' | 'emerald' | 'amber' | 'red';
+type BadgeVariant = 'teal' | 'emerald' | 'amber' | 'red';
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -8,7 +8,7 @@ interface BadgeProps {
   className?: string;
 }
 
-export function Badge({ variant = 'violet', children, className = '' }: BadgeProps) {
+export function Badge({ variant = 'teal', children, className = '' }: BadgeProps) {
   return (
     <span className={`badge-${variant} ${className}`}>
       {children}

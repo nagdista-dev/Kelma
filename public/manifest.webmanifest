@@ -1,13 +1,13 @@
 {
-  "name": "Play With Words — AI Vocabulary Trainer",
-  "short_name": "Play With Words",
+  "name": "Kelma by Nagdista — AI Vocabulary Trainer",
+  "short_name": "Kelma",
   "description": "AI-powered English vocabulary trainer for Arabic speakers. Master words through 6-round active recall with pronunciation and personalized feedback.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0B0F1A",
-  "theme_color": "#0B0F1A",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "lang": "en",
   "categories": ["education", "productivity"],
   "icons": [

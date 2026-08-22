@@ -24,7 +24,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
       >
         {/* Round badge + context */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <span className="badge-violet bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30">
+          <span className="badge-teal bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-500/30">
             Round {question.round} · {ROUND_LABELS[question.round]}
           </span>
           {question.contextLine && (
@@ -36,7 +36,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
 
         {/* Question text */}
         <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 dark:border-white/10 dark:bg-black/10">
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-violet-700 dark:text-violet-300">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">
             Question
           </p>
           {question.round === 1 && (
@@ -73,7 +73,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => speak(quizData.word)}
                   aria-label={`Pronounce ${quizData.word}`}
-                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-600/30 transition-colors hover:bg-violet-500"
+                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-teal-600 text-white shadow-lg shadow-teal-600/30 transition-colors hover:bg-teal-500"
                 >
                   <Volume2 className="h-8 w-8" />
                 </motion.button>

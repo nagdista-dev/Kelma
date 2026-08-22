@@ -13,7 +13,7 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </main>
       <footer className="py-4 text-center text-xs text-slate-400 border-t border-slate-200 dark:text-gray-600 dark:border-white/5">
-        Play With Words · AI-powered vocabulary trainer
+        Kelma · AI-powered vocabulary trainer
       </footer>
     </div>
   );

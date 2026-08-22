@@ -105,9 +105,9 @@ export function FeedbackCard({
             type="button"
             onClick={() => speak(word.word)}
             aria-label={`Pronounce ${word.word}`}
-            className={`${ACTION_TILE} border-violet-200 bg-violet-50/60 hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:hover:bg-violet-500/20`}
+            className={`${ACTION_TILE} border-teal-200 bg-teal-50/60 hover:border-teal-400 hover:bg-teal-50 dark:border-teal-500/30 dark:bg-teal-500/10 dark:hover:bg-teal-500/20`}
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white dark:bg-violet-500/20 dark:text-violet-300">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-teal-100 text-teal-600 transition-colors group-hover:bg-teal-600 group-hover:text-white dark:bg-teal-500/20 dark:text-teal-300">
               <Volume2 className="h-4 w-4" />
             </span>
             <span className="w-full truncate text-xs font-bold text-slate-800 dark:text-gray-100">

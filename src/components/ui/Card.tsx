@@ -8,7 +8,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 
 export function Card({ children, glow, strong, className = '', ...props }: CardProps) {
   const base = strong ? 'glass-strong' : 'glass';
-  const glowCls = glow ? 'glow-violet' : '';
+  const glowCls = glow ? 'glow-teal' : '';
   return (
     <div className={`${base} rounded-2xl p-6 ${glowCls} ${className}`} {...props}>
       {children}

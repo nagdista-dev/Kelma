@@ -3,8 +3,11 @@ import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
+import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { LandingPage } from '@/pages/LandingPage';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { ProviderPage } from '@/pages/ProviderPage';
+import { PricingPage } from '@/pages/PricingPage';
 import { HelpPage } from '@/pages/HelpPage';
 import { SessionSetupPage } from '@/pages/SessionSetupPage';
 import { QuizPage } from '@/pages/QuizPage';
@@ -26,11 +29,14 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Layout>
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/provider" element={<ProviderPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/history" element={<HistoryPage />} />
 
@@ -38,7 +44,7 @@ function App() {
           <Route
             path="/session"
             element={
-              <ProtectedRoute require="apiKey" redirectTo="/settings">
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
                 <SessionSetupPage />
               </ProtectedRoute>
             }

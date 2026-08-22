@@ -75,14 +75,14 @@ export function WordInput({ words, onChange }: WordInputProps) {
         {words.map(w => (
           <span
             key={w}
-            className="inline-flex items-center gap-1.5 bg-violet-500/20 border border-violet-500/30 text-violet-200 px-3 py-1 rounded-lg text-sm font-medium"
+            className="inline-flex items-center gap-1.5 bg-teal-500/20 border border-teal-500/30 text-teal-200 px-3 py-1 rounded-lg text-sm font-medium"
           >
             {w}
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); removeWord(w); }}
               aria-label={`Remove ${w}`}
-              className="text-violet-400 hover:text-white transition-colors"
+              className="text-teal-400 hover:text-white transition-colors"
             >
               <X className="w-3 h-3" />
             </button>
@@ -112,7 +112,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
           <button
             type="button"
             onClick={addWord}
-            className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-violet-600/25 transition-all hover:bg-violet-500 active:scale-95"
+            className="inline-flex items-center gap-1 rounded-lg bg-teal-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95"
           >
             <Plus className="w-3.5 h-3.5" />
             Add words

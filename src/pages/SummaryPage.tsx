@@ -28,9 +28,9 @@ const statColorClasses = {
     icon: 'text-emerald-500 dark:text-emerald-300',
     value: 'text-emerald-700 dark:text-emerald-300',
   },
-  violet: {
-    icon: 'text-violet-500 dark:text-violet-300',
-    value: 'text-violet-700 dark:text-violet-300',
+  teal: {
+    icon: 'text-teal-500 dark:text-teal-300',
+    value: 'text-teal-700 dark:text-teal-300',
   },
   orange: {
     icon: 'text-orange-500 dark:text-orange-300',
@@ -93,7 +93,7 @@ export function SummaryPage() {
 
   const handleDownload = () => {
     const lines = [
-      'Play With Words - Session Report',
+      'Kelma - Session Report',
       '='.repeat(40),
       `Date: ${new Date().toLocaleDateString('en-US')}`,
       `Level: ${level}`,
@@ -139,7 +139,7 @@ export function SummaryPage() {
             <h1 className="text-3xl font-extrabold text-slate-950 dark:text-white">Session Report</h1>
             <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
               {report.totalWords} word{report.totalWords !== 1 ? 's' : ''} completed at{' '}
-              <span className="font-semibold text-violet-700 dark:text-violet-300">{level}</span> level
+              <span className="font-semibold text-teal-700 dark:text-teal-300">{level}</span> level
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export function SummaryPage() {
           {([
             { icon: Zap, label: 'XP Earned', value: `${xp}`, color: 'amber' },
             { icon: CheckCircle2, label: 'Mastered', value: `${report.masteredWords.length}/${report.totalWords}`, color: 'emerald' },
-            { icon: Target, label: 'Accuracy', value: `${report.accuracy}%`, color: 'violet' },
+            { icon: Target, label: 'Accuracy', value: `${report.accuracy}%`, color: 'teal' },
             { icon: Flame, label: 'Best Streak', value: `${maxStreak}`, color: 'orange' },
           ] as const).map((stat, i) => (
             <motion.div
@@ -196,7 +196,7 @@ export function SummaryPage() {
 
           <Card>
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-slate-600 dark:text-gray-300">
-              <BookOpen className="h-4 w-4 text-violet-500" />
+              <BookOpen className="h-4 w-4 text-teal-500" />
               Review First
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -243,7 +243,7 @@ export function SummaryPage() {
                         type="button"
                         onClick={() => speak(w.word)}
                         aria-label={`Pronounce ${w.word}`}
-                        className="truncate cursor-pointer text-sm font-medium text-slate-950 hover:text-violet-600 dark:text-white dark:hover:text-violet-300"
+                        className="truncate cursor-pointer text-sm font-medium text-slate-950 hover:text-teal-600 dark:text-white dark:hover:text-teal-300"
                       >
                         {w.word}
                       </button>

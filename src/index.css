@@ -5,13 +5,13 @@
 
 /* ─── CSS Custom Properties ──────────────────────────────────────────────────── */
 :root {
-  --bg-primary:   #0B0F1A;
+  --bg-primary:   #0f172a;
   --bg-secondary: #111827;
   --bg-tertiary:  #1F2937;
 
-  --accent-primary:   #7C3AED;
-  --accent-secondary: #8B5CF6;
-  --accent-light:     #A78BFA;
+  --accent-primary:   #0d9488;
+  --accent-secondary: #14b8a6;
+  --accent-light:     #2dd4bf;
 
   --success:       #10B981;
   --success-light: #34D399;
@@ -108,10 +108,10 @@ body {
   .answer-btn {
     @apply w-full text-left px-5 py-4 rounded-2xl border font-medium transition-all duration-200 cursor-pointer text-sm;
     @apply bg-white border-slate-200 text-slate-900 shadow-sm;
-    @apply hover:border-violet-500 hover:bg-violet-50 hover:text-slate-950;
+    @apply hover:border-teal-500 hover:bg-teal-50 hover:text-slate-950;
     @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-100 dark:shadow-none;
-    @apply dark:hover:border-violet-500 dark:hover:bg-violet-500/10 dark:hover:text-white;
-    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50;
+    @apply dark:hover:border-teal-500 dark:hover:bg-teal-500/10 dark:hover:text-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500/50;
   }
 
   .answer-btn-correct {
@@ -139,8 +139,8 @@ body {
   /* ─── Primary Button ─────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
-    @apply bg-violet-600 hover:bg-violet-500 active:scale-95;
-    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50;
+    @apply bg-teal-600 hover:bg-teal-500 active:scale-95;
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500/50;
     @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
   }
 
@@ -150,7 +150,7 @@ body {
     @apply hover:bg-slate-50 hover:border-slate-300 active:scale-95;
     @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-200 dark:shadow-none;
     @apply dark:hover:bg-white/10 dark:hover:border-white/20;
-    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/20;
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500/20;
     @apply disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
@@ -165,7 +165,7 @@ body {
   .input-base {
     @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-950 placeholder-slate-400;
     @apply dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder-gray-500;
-    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50;
+    @apply focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500/50;
     @apply transition-all duration-200;
   }
 
@@ -179,9 +179,9 @@ body {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
   }
 
-  .badge-violet {
-    @apply badge bg-violet-50 text-violet-700 border border-violet-200;
-    @apply dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30;
+  .badge-teal {
+    @apply badge bg-teal-50 text-teal-700 border border-teal-200;
+    @apply dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-500/30;
   }
 
   .badge-emerald {
@@ -207,7 +207,7 @@ body {
 
 /* ─── Gradient Text ──────────────────────────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #A78BFA, #7C3AED);
+  background: linear-gradient(135deg, #2dd4bf, #0d9488);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -221,7 +221,7 @@ body {
 }
 
 /* ─── Glow Effects ───────────────────────────────────────────────────────────── */
-.glow-violet {
+.glow-teal {
   box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 60px rgba(124, 58, 237, 0.1);
 }
 
@@ -273,8 +273,8 @@ body {
 }
 
 .pipeline-word-active {
-  @apply bg-violet-50 border-violet-300 text-violet-700;
-  @apply dark:bg-violet-500/20 dark:border-violet-500/50 dark:text-violet-300;
+  @apply bg-teal-50 border-teal-300 text-teal-700;
+  @apply dark:bg-teal-500/20 dark:border-teal-500/50 dark:text-teal-300;
 }
 
 .pipeline-word-mastered {

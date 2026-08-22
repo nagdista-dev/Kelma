@@ -19,8 +19,8 @@ export function LevelSelector({ value, onChange }: LevelSelectorProps) {
           onClick={() => onChange(lvl)}
           className={`px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-200 ${
             value === lvl
-              ? 'bg-violet-500/30 border-violet-500 text-violet-200 glow-violet'
-              : 'bg-white/5 border-white/10 text-gray-400 hover:border-violet-500/50 hover:text-gray-200'
+              ? 'bg-teal-500/30 border-teal-500 text-teal-200 glow-teal'
+              : 'bg-white/5 border-white/10 text-gray-400 hover:border-teal-500/50 hover:text-gray-200'
           }`}
         >
           {lvl}

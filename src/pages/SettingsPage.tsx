@@ -1,54 +1,28 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  Bot,
   CheckCircle,
-  CloudCog,
-  Command,
-  Cpu,
-  Gem,
   KeyRound,
-  Loader2,
   Moon,
-  Network,
+  Plug,
   Settings,
   Sun,
-  Terminal,
   Volume2,
   XCircle,
-  type LucideIcon,
 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { ApiKeyInput } from '@/components/ui/ApiKeyInput';
 import { LevelSelector } from '@/components/session/LevelSelector';
-import { PROVIDER_MODELS } from '@/types/index';
-import { validateApiKey } from '@/lib/quizDataGenerator';
 import { getSpeechDiagnostics, useSpeech } from '@/hooks/useSpeech';
-import type { AIProvider } from '@/types/index';
-
-type ValidationState = 'idle' | 'loading' | 'valid' | 'invalid';
-
-const PROVIDERS: { id: AIProvider; label: string; Icon: LucideIcon }[] = [
-  { id: 'openai', label: 'OpenAI', Icon: Bot },
-  { id: 'commandcode', label: 'CommandCode', Icon: Command },
-  { id: 'openrouter', label: 'OpenRouter', Icon: Network },
-  { id: 'opencode', label: 'OpenCode', Icon: Terminal },
-  { id: 'google', label: 'Google Gemini', Icon: Gem },
-  { id: 'anthropic', label: 'Anthropic Claude', Icon: CloudCog },
-  { id: 'cohere', label: 'Cohere', Icon: Cpu },
-];
 
 export function SettingsPage() {
   const {
-    provider, apiKey, model, theme, defaultLevel, voiceURI,
-    setProvider, setApiKey, setModel, setTheme, setDefaultLevel, setVoiceURI, clearApiKey,
+    provider, apiKey, theme, defaultLevel, voiceURI, model,
+    setTheme, setDefaultLevel, setVoiceURI,
   } = useSettingsStore();
 
-  const [validation, setValidation] = useState<ValidationState>('idle');
-  const [validationMsg, setValidationMsg] = useState('');
   const { speak } = useSpeech();
   const [voiceTestState, setVoiceTestState] = useState<'idle' | 'testing' | 'ok' | 'fallback'>('idle');
   const [voiceTestReport, setVoiceTestReport] = useState<string[]>([]);
@@ -137,20 +111,6 @@ export function SettingsPage() {
     }, 2500);
   };
 
-  const handleValidate = async () => {
-    if (!apiKey) return;
-    setValidation('loading');
-    setValidationMsg('');
-    const result = await validateApiKey(provider, apiKey, model);
-    if (result.valid) {
-      setValidation('valid');
-      setValidationMsg('API key is working.');
-    } else {
-      setValidation('invalid');
-      setValidationMsg(result.error ?? 'Invalid key.');
-    }
-  };
-
   return (
     <div className="page-container">
       <motion.div
@@ -159,118 +119,36 @@ export function SettingsPage() {
         transition={{ duration: 0.4 }}
       >
         <div className="flex items-center gap-3 mb-8">
-          <Settings className="w-6 h-6 text-violet-400" />
+          <Settings className="w-6 h-6 text-teal-400" />
           <div>
             <h1 className="text-2xl font-bold text-white">Settings</h1>
-            <p className="text-sm text-gray-400">Configure your AI provider and preferences</p>
+            <p className="text-sm text-gray-400">Configure your learning preferences</p>
           </div>
         </div>
 
         <div className="space-y-6">
-          {/* Provider Selection */}
+          {/* AI Provider summary → dedicated page */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">AI Provider</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-4">
-              {PROVIDERS.map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  id={`provider-${id}`}
-                  onClick={() => { setProvider(id); setValidation('idle'); }}
-                  className={`py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200 text-center ${
-                    provider === id
-                      ? 'bg-violet-500/20 border-violet-500 text-violet-200'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:border-violet-500/50 hover:text-gray-200'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mx-auto mb-1.5" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            {/* Model selector */}
-            <div>
-              <label htmlFor="model-select" className="block text-xs text-gray-400 mb-1.5">Model</label>
-              <select
-                id="model-select"
-                value={model}
-                onChange={e => setModel(e.target.value)}
-                className="input-base text-sm"
-              >
-                {PROVIDER_MODELS[provider].map(m => (
-                  <option key={m.id} value={m.id} className="bg-gray-900">
-                    {m.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </Card>
-
-          {/* API Key */}
-          <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">API Key</h2>
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-              <p className="text-xs text-gray-500">
-                Your key is stored only in your browser's LocalStorage. It is never sent to any server except directly to the AI provider.
-              </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <Plug className="h-5 w-5 text-teal-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-200 capitalize">{provider}</p>
+                  <p className="text-xs text-gray-500">
+                    {apiKey ? `Key configured · ${model}` : 'No API key yet'}
+                  </p>
+                </div>
+              </div>
               <Link
-                to="/help"
-                id="get-keys-link"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-violet-600/25 transition-all hover:bg-violet-500 active:scale-95 shrink-0"
+                to="/provider"
+                id="provider-page-link"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95"
               >
                 <KeyRound className="w-3.5 h-3.5" />
-                Get keys
+                Manage AI Provider
               </Link>
-            </div>
-            <ApiKeyInput
-              value={apiKey}
-              onChange={(v) => { setApiKey(v); setValidation('idle'); }}
-              placeholder={
-                provider === 'openai' ? 'sk-…' :
-                provider === 'commandcode' ? 'CommandCode API key' :
-                provider === 'openrouter' ? 'sk-or-v1-…' :
-                provider === 'opencode' ? 'OpenCode API key' :
-                provider === 'google' ? 'AQ… or AIza…' :
-                provider === 'anthropic' ? 'sk-ant-…' :
-                'co-…'
-              }
-              id="settings-api-key"
-            />
-
-            {/* Validation feedback */}
-            {validation !== 'idle' && (
-              <div className={`flex items-start gap-2 mt-3 text-sm min-w-0 ${
-                validation === 'valid' ? 'text-emerald-400' :
-                validation === 'invalid' ? 'text-red-400' :
-                'text-gray-400'
-              }`}>
-                {validation === 'loading' && <Loader2 className="w-4 h-4 shrink-0 mt-0.5 animate-spin" />}
-                {validation === 'valid' && <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />}
-                {validation === 'invalid' && <XCircle className="w-4 h-4 shrink-0 mt-0.5" />}
-                <span className="min-w-0 break-words">{validationMsg || 'Validating…'}</span>
-              </div>
-            )}
-
-            <div className="flex gap-2 mt-4">
-              <Button
-                id="validate-key-btn"
-                onClick={() => void handleValidate()}
-                disabled={!apiKey || validation === 'loading'}
-                loading={validation === 'loading'}
-                size="sm"
-              >
-                Test Key
-              </Button>
-              {apiKey && (
-                <Button
-                  id="clear-key-btn"
-                  variant="danger"
-                  size="sm"
-                  onClick={() => { clearApiKey(); setValidation('idle'); setValidationMsg(''); }}
-                >
-                  Clear Key
-                </Button>
-              )}
             </div>
           </Card>
 
@@ -388,11 +266,12 @@ export function SettingsPage() {
               {(['dark', 'light'] as const).map(t => (
                 <button
                   key={t}
+                  type="button"
                   id={`theme-${t}`}
                   onClick={() => setTheme(t)}
                   className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl border text-sm font-medium transition-all ${
                     theme === t
-                      ? 'bg-violet-500/20 border-violet-500 text-violet-200'
+                      ? 'bg-teal-500/20 border-teal-500 text-teal-200'
                       : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
                   }`}
                 >

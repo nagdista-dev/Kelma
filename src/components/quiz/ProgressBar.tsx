@@ -5,16 +5,16 @@ interface ProgressBarProps {
   value: number;
   /** e.g. "3 / 10 words mastered" */
   label?: string;
-  color?: 'violet' | 'emerald' | 'amber';
+  color?: 'teal' | 'emerald' | 'amber';
 }
 
 const colorMap = {
-  violet: 'from-violet-600 to-violet-400',
+  teal: 'from-teal-600 to-teal-400',
   emerald: 'from-emerald-600 to-emerald-400',
   amber: 'from-amber-600 to-amber-400',
 };
 
-export function ProgressBar({ value, label, color = 'violet' }: ProgressBarProps) {
+export function ProgressBar({ value, label, color = 'teal' }: ProgressBarProps) {
   const clamped = Math.max(0, Math.min(100, value));
   return (
     <div className="w-full">

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pww-v1';
+const CACHE_NAME = 'kelma-v1';
 const CORE_ASSETS = ['/', '/index.html', '/manifest.webmanifest'];
 
 self.addEventListener('install', event => {

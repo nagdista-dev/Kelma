@@ -126,7 +126,7 @@ export function QuizPage() {
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-10 h-10 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-10 h-10 border-2 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-400">Loading quiz…</p>
         </div>
       </div>
@@ -170,7 +170,7 @@ export function QuizPage() {
       </div>
 
       {/* Overall progress */}
-      <ProgressBar value={progress} label={`Session progress`} color="violet" />
+      <ProgressBar value={progress} label={`Session progress`} color="teal" />
       <div className="mt-4 mb-4">
         <WordPipelineTracker words={words} />
       </div>
