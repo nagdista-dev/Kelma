@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { BookOpen, CircleHelp, Settings, History, Zap } from 'lucide-react';
 import { useQuizStore } from '@/store/quizStore';
+import { InstallButton } from '@/components/layout/InstallButton';
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export function Navbar() {
 
         {/* Nav Links */}
         <nav className="flex items-center gap-1" aria-label="Main navigation">
+          <InstallButton />
           {phase === 'active' || phase === 'feedback' ? (
             <span className="badge-violet animate-pulse">
               <Zap className="w-3 h-3" />
