@@ -18,7 +18,7 @@ import { I_DONT_KNOW, STREAK_MILESTONES } from '@/constants/index';
 export function QuizPage() {
   const navigate = useNavigate();
   const { play } = useSoundEffects();
-  const { speak } = useSpeech();
+  const { speak, speakSequence } = useSpeech();
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
   const {
@@ -44,7 +44,7 @@ export function QuizPage() {
     }
   }, [phase, currentQuestion?.wordProgress.word, currentQuestion?.round, speak]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Feedback sounds + spoken reinforcement of the target word
+  // Feedback sounds + spoken reinforcement of the target word after EVERY answer
   useEffect(() => {
     if (phase !== 'feedback' || !lastAnswer) return;
     play(lastAnswer.correct ? 'correct' : 'wrong');
@@ -57,14 +57,16 @@ export function QuizPage() {
     }
     prevStreakRef.current = streak;
 
-    // Reinforce learning: hear the English word after each answer
+    // Reinforce learning: hear the word, then its example sentence
     if (currentQuestion) {
+      const quizData = currentQuestion.wordProgress.quizData;
+      const fullSentence = quizData.exampleSentence.replace(/_{2,}/g, quizData.word);
       const timer = window.setTimeout(() => {
-        speak(currentQuestion.wordProgress.quizData.word);
-      }, 600);
+        speakSequence([quizData.word, fullSentence], 0.9);
+      }, 450);
       return () => window.clearTimeout(timer);
     }
-  }, [phase, lastAnswer, play, speak, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, lastAnswer, play, speakSequence, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Celebrate when a word reaches mastered status
   useEffect(() => {
