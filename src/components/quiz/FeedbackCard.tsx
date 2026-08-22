@@ -8,7 +8,7 @@ import {
   Quote,
   Volume2,
   XCircle,
-  Youtube,
+  Play,
 } from 'lucide-react';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
@@ -137,7 +137,7 @@ export function FeedbackCard({
             className={`${ACTION_TILE} border-red-600 bg-gradient-to-b from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30 hover:from-red-400 hover:to-red-500`}
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
-              <Youtube className="h-4 w-4" />
+              <Play className="h-4 w-4" />
             </span>
             <span className="text-xs font-bold">YouGlish</span>
             <span className="text-[10px] font-medium text-red-100">Real videos</span>

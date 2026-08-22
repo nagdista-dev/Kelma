@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 /**
  * Text-to-speech with automatic fallback:
@@ -138,7 +138,6 @@ function speakWatched(text: string, rate: number) {
       '[TTS] ERROR:',
       JSON.stringify({
         error: event.error,
-        message: (event as SpeechSynthesisErrorEvent).message ?? '',
         elapsedTime: event.elapsedTime,
         hadStarted: started,
       })
@@ -151,9 +150,6 @@ function speakWatched(text: string, rate: number) {
 }
 
 export function useSpeech() {
-  // Keep references so Chrome doesn't garbage-collect utterances mid-speech
-  const utterancesRef = useRef<SpeechSynthesisUtterance[]>([]);
-
   const speak = useCallback((text: string, rate = 0.9) => {
     speakWatched(text, rate);
   }, []);
