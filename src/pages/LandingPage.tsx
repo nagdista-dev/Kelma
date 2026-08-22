@@ -7,7 +7,6 @@ import {
   Brain,
   Ear,
   Keyboard,
-  PenLine,
   Quote,
   Sparkles,
   Trophy,
