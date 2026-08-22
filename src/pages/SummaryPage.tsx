@@ -5,6 +5,7 @@ import {
   BookOpen,
   CheckCircle2,
   Download,
+  ExternalLink,
   Flame,
   RotateCcw,
   Target,
@@ -236,6 +237,15 @@ export function SummaryPage() {
                       >
                         {w.word}
                       </button>
+                      <a
+                        href={`https://youglish.com/pronounce/${encodeURIComponent(w.word)}/english/us`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${w.word} on YouGlish`}
+                        className="shrink-0 text-slate-400 transition-colors hover:text-red-500 dark:text-gray-500"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <span className="text-xs text-slate-500 dark:text-gray-400">

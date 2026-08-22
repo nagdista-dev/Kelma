@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Lightbulb, Link2, Volume2, XCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ExternalLink, Lightbulb, Link2, Volume2, XCircle } from 'lucide-react';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { useSpeech } from '@/hooks/useSpeech';
@@ -100,6 +100,16 @@ export function FeedbackCard({
           <Volume2 className="h-3.5 w-3.5" />
           Example sentence
         </button>
+        <a
+          href={`https://youglish.com/pronounce/${encodeURIComponent(word.word)}/english/us`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Watch videos using ${word.word} on YouGlish`}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:border-red-400 hover:bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
+        >
+          <ExternalLink className="h-3.5 w-3.5" />
+          See it in real videos
+        </a>
       </div>
 
       {/* Collocations (always show on correct) */}
