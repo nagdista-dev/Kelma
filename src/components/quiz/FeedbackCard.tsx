@@ -1,5 +1,15 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, ExternalLink, Lightbulb, Link2, Volume2, XCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  Compass,
+  Lightbulb,
+  Link2,
+  Quote,
+  Volume2,
+  XCircle,
+  Youtube,
+} from 'lucide-react';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { useSpeech } from '@/hooks/useSpeech';
@@ -24,6 +34,9 @@ const RETRY_MESSAGES = [
 function pickRandom(messages: string[]) {
   return messages[Math.floor(Math.random() * messages.length)];
 }
+
+const ACTION_TILE =
+  'group flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border px-2 py-3.5 text-center transition-all duration-200 hover:-translate-y-0.5 active:scale-95';
 
 interface FeedbackCardProps {
   question: QuizQuestion;
@@ -74,42 +87,62 @@ export function FeedbackCard({
           </p>
           {!correct && (
             <p className="text-xs text-slate-500 dark:text-gray-400">
-              Correct answer: <span className="font-semibold text-slate-950 dark:text-white">{question.correctAnswer}</span>
+              Correct answer:{' '}
+              <span className="font-semibold text-slate-950 dark:text-white">{question.correctAnswer}</span>
             </p>
           )}
         </div>
       </div>
 
-      {/* Pronunciation practice */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => speak(word.word)}
-          aria-label={`Pronounce ${word.word}`}
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 transition-all hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
-        >
-          <Volume2 className="h-3.5 w-3.5" />
-          <bdi className="font-bold">{word.word}</bdi>
-        </button>
-        <button
-          type="button"
-          onClick={() => speak(fullSentence, 0.85)}
-          aria-label="Listen to example sentence"
-          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-sky-200 bg-white px-3 py-1.5 text-xs font-semibold text-sky-700 transition-all hover:border-sky-400 hover:bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20"
-        >
-          <Volume2 className="h-3.5 w-3.5" />
-          Example sentence
-        </button>
-        <a
-          href={`https://youglish.com/pronounce/${encodeURIComponent(word.word)}/english/us`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Watch videos using ${word.word} on YouGlish`}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold text-red-700 transition-all hover:border-red-400 hover:bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          See it in real videos
-        </a>
+      {/* Explore this word */}
+      <div className="mb-4 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-white/5">
+        <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400">
+          <Compass className="h-3.5 w-3.5" />
+          Explore this word
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => speak(word.word)}
+            aria-label={`Pronounce ${word.word}`}
+            className={`${ACTION_TILE} border-violet-200 bg-violet-50/60 hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:hover:bg-violet-500/20`}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white dark:bg-violet-500/20 dark:text-violet-300">
+              <Volume2 className="h-4 w-4" />
+            </span>
+            <span className="w-full truncate text-xs font-bold text-slate-800 dark:text-gray-100">
+              <bdi>{word.word}</bdi>
+            </span>
+            <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500">Hear it</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => speak(fullSentence, 0.85)}
+            aria-label="Listen to example sentence"
+            className={`${ACTION_TILE} border-sky-200 bg-sky-50/60 hover:border-sky-400 hover:bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10 dark:hover:bg-sky-500/20`}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-100 text-sky-600 transition-colors group-hover:bg-sky-600 group-hover:text-white dark:bg-sky-500/20 dark:text-sky-300">
+              <Quote className="h-4 w-4" />
+            </span>
+            <span className="text-xs font-bold text-slate-800 dark:text-gray-100">Sentence</span>
+            <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500">Hear context</span>
+          </button>
+
+          <a
+            href={`https://youglish.com/pronounce/${encodeURIComponent(word.word)}/english/us`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Watch real videos using ${word.word} on YouGlish`}
+            className={`${ACTION_TILE} border-red-600 bg-gradient-to-b from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30 hover:from-red-400 hover:to-red-500`}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+              <Youtube className="h-4 w-4" />
+            </span>
+            <span className="text-xs font-bold">YouGlish</span>
+            <span className="text-[10px] font-medium text-red-100">Real videos</span>
+          </a>
+        </div>
       </div>
 
       {/* Collocations (always show on correct) */}
@@ -163,7 +196,6 @@ export function FeedbackCard({
         id="feedback-next-btn"
         onClick={onNext}
         variant="primary"
-        size="sm"
         className="mt-4 w-full"
       >
         Continue
