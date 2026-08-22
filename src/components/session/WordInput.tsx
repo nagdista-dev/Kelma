@@ -1,5 +1,5 @@
 import { useState, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
-import { X, Plus } from 'lucide-react';
+import { ClipboardPaste, X, Plus } from 'lucide-react';
 import { MAX_WORDS } from '@/constants/index';
 
 interface WordInputProps {
@@ -43,6 +43,15 @@ export function WordInput({ words, onChange }: WordInputProps) {
 
   const removeWord = (w: string) => onChange(words.filter(x => x !== w));
 
+  const pasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      addWords(parseWords(text));
+    } catch {
+      inputRef.current?.focus();
+    }
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
@@ -69,22 +78,22 @@ export function WordInput({ words, onChange }: WordInputProps) {
     <div>
       {/* Word chips */}
       <div
-        className="flex flex-wrap gap-2 mb-3 min-h-[44px] bg-white/5 border border-white/10 rounded-xl p-3 cursor-text"
+        className="flex flex-wrap items-center gap-2 mb-3 min-h-[56px] bg-white/5 border border-white/10 rounded-xl p-2.5 cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
         {words.map(w => (
           <span
             key={w}
-            className="inline-flex items-center gap-1.5 bg-teal-500/20 border border-teal-500/30 text-teal-200 px-3 py-1 rounded-lg text-sm font-medium"
+            className="inline-flex items-center gap-1 bg-teal-500/20 border border-teal-500/30 text-teal-200 pl-3 pr-1.5 py-1 rounded-lg text-sm font-medium"
           >
             {w}
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); removeWord(w); }}
               aria-label={`Remove ${w}`}
-              className="text-teal-400 hover:text-white transition-colors"
+              className="-m-0.5 flex h-7 w-7 items-center justify-center rounded-md text-teal-300 transition-colors hover:bg-red-500/20 hover:text-red-300 active:scale-90"
             >
-              <X className="w-3 h-3" />
+              <X className="w-4 h-4" />
             </button>
           </span>
         ))}
@@ -93,31 +102,48 @@ export function WordInput({ words, onChange }: WordInputProps) {
           <input
             ref={inputRef}
             type="text"
+            enterKeyHint="done"
+            autoCapitalize="off"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
-            placeholder={words.length === 0 ? 'Paste words or type one word…' : 'Add more…'}
-            className="flex-1 min-w-[140px] bg-transparent outline-none text-white placeholder-gray-500 text-sm"
+            placeholder={words.length === 0 ? 'Type a word and press Enter…' : 'Add another…'}
+            className="min-w-[120px] flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-base sm:text-sm py-1.5"
             id="word-input"
           />
         )}
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-gray-500">
-          {words.length}/{MAX_WORDS} words · Paste lines or comma-separated words
+          {words.length}/{MAX_WORDS} words
         </p>
-        {input.trim() && words.length < MAX_WORDS && (
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={addWord}
-            className="inline-flex items-center gap-1 rounded-lg bg-teal-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95"
+            onClick={() => void pasteFromClipboard()}
+            id="paste-words-btn"
+            aria-label="Paste words from clipboard"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 transition-all hover:border-teal-500/50 hover:text-teal-300 active:scale-95"
           >
-            <Plus className="w-3.5 h-3.5" />
-            Add words
+            <ClipboardPaste className="w-3.5 h-3.5" />
+            Paste
           </button>
-        )}
+          {input.trim() && words.length < MAX_WORDS && (
+            <button
+              type="button"
+              onClick={addWord}
+              className="inline-flex items-center gap-1 rounded-lg bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

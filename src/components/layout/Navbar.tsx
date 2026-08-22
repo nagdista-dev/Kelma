@@ -87,6 +87,10 @@ export function Navbar() {
                   <CircleHelp className="w-4 h-4 text-teal-400" />
                   How to Use
                 </NavLink>
+                <NavLink to="/dashboard" className={mobileLinkClass} id="m-nav-dashboard">
+                  <History className="w-4 h-4 text-teal-400" />
+                  Dashboard
+                </NavLink>
                 <NavLink to="/history" className={mobileLinkClass} id="m-nav-history">
                   <History className="w-4 h-4 text-teal-400" />
                   History
