@@ -6,6 +6,7 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
 import { WordInput } from '@/components/session/WordInput';
+import { QuizGeneratingOverlay } from '@/components/session/QuizGeneratingOverlay';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LEVEL_DESCRIPTIONS } from '@/types/index';
@@ -122,16 +123,8 @@ export function SessionSetupPage() {
             </div>
           )}
 
-          {/* Loading state */}
-          {loading && (
-            <div className="text-center py-4">
-              <div className="w-8 h-8 border-2 border-teal-500/30 border-t-teal-500 rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm text-gray-400">
-                Generating quiz for <span className="text-teal-300 font-medium">{words.join(', ')}</span>…
-              </p>
-              <p className="text-xs text-gray-500 mt-1">This takes 10–30 seconds</p>
-            </div>
-          )}
+          {/* Loading state — non-dismissible full-screen overlay */}
+          {loading && <QuizGeneratingOverlay words={words} />}
 
           {/* Start button */}
           {!loading && (

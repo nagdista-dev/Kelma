@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -7,8 +8,9 @@ interface MobileMenuProps {
 }
 
 /**
- * Hamburger menu for small screens. Renders a trigger button and a
- * dropdown panel below the navbar containing `children` (nav links).
+ * Hamburger menu for small screens — a full-screen blurred layer
+ * below the navbar containing `children` (nav links).
+ * Portaled to <body> so navbar effects never affect positioning.
  */
 export function MobileMenu({ children }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
@@ -33,31 +35,26 @@ export function MobileMenu({ children }: MobileMenuProps) {
         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <>
-            {/* Click-away overlay */}
+      {/* Full-screen menu — portaled to body */}
+      {createPortal(
+        <AnimatePresence>
+          {open && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 top-14 z-40 bg-black/40"
-              onClick={() => setOpen(false)}
-            />
-            <motion.nav
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
+              transition={{ duration: 0.18 }}
               aria-label="Mobile navigation"
               onClick={() => setOpen(false)}
-              className="absolute left-0 right-0 top-full z-50 border-b border-slate-200 bg-white p-4 shadow-xl dark:border-white/10 dark:bg-[#0f172a]"
+              className="fixed inset-0 z-40 flex flex-col gap-1 bg-slate-950/50 p-4 backdrop-blur-md"
+              style={{ top: '56px' }}
             >
-              <div className="flex flex-col gap-1">{children}</div>
-            </motion.nav>
-          </>
-        )}
-      </AnimatePresence>
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

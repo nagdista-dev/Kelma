@@ -86,11 +86,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(124, 58, 237, 0.4);
+  background: rgba(13, 148, 136, 0.4);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 58, 237, 0.7);
+  background: rgba(13, 148, 136, 0.7);
 }
 
 /* ─── Glassmorphism Utility ──────────────────────────────────────────────────── */
@@ -223,7 +223,7 @@ body {
 
 /* ─── Glow Effects ───────────────────────────────────────────────────────────── */
 .glow-teal {
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 60px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 20px rgba(13, 148, 136, 0.3), 0 0 60px rgba(13, 148, 136, 0.1);
 }
 
 .glow-emerald {
