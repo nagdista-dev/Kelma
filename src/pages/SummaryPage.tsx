@@ -15,6 +15,7 @@ import { useQuizStore } from '@/store/quizStore';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/quiz/ProgressBar';
+import { useSpeech } from '@/hooks/useSpeech';
 
 const statColorClasses = {
   amber: {
@@ -37,6 +38,7 @@ const statColorClasses = {
 
 export function SummaryPage() {
   const navigate = useNavigate();
+  const { speak } = useSpeech();
   const { words, xp, maxStreak, level, sessionStartTime, resetQuiz } = useQuizStore();
 
   const report = useMemo(() => {
@@ -164,7 +166,15 @@ export function SummaryPage() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {(report.perfectWords.length ? report.perfectWords : report.masteredWords).map(w => (
-                <span key={w.word} className="badge-emerald">{w.word}</span>
+                <button
+                  key={w.word}
+                  type="button"
+                  onClick={() => speak(w.word)}
+                  aria-label={`Pronounce ${w.word}`}
+                  className="badge-emerald cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                >
+                  {w.word}
+                </button>
               ))}
               {report.masteredWords.length === 0 && (
                 <p className="text-sm text-slate-500 dark:text-gray-400">No mastered words yet.</p>
@@ -179,7 +189,15 @@ export function SummaryPage() {
             </h2>
             <div className="flex flex-wrap gap-2">
               {report.struggledWords.map(w => (
-                <span key={w.word} className="badge-amber">{w.word}</span>
+                <button
+                  key={w.word}
+                  type="button"
+                  onClick={() => speak(w.word)}
+                  aria-label={`Pronounce ${w.word}`}
+                  className="badge-amber cursor-pointer transition-transform hover:scale-105 active:scale-95"
+                >
+                  {w.word}
+                </button>
               ))}
               {report.struggledWords.length === 0 && (
                 <p className="text-sm text-slate-500 dark:text-gray-400">No weak words found in this session.</p>
@@ -209,7 +227,14 @@ export function SummaryPage() {
                       ) : (
                         <BookOpen className="h-4 w-4 shrink-0 text-amber-500" />
                       )}
-                      <span className="truncate text-sm font-medium text-slate-950 dark:text-white">{w.word}</span>
+                      <button
+                        type="button"
+                        onClick={() => speak(w.word)}
+                        aria-label={`Pronounce ${w.word}`}
+                        className="truncate cursor-pointer text-sm font-medium text-slate-950 hover:text-violet-600 dark:text-white dark:hover:text-violet-300"
+                      >
+                        {w.word}
+                      </button>
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <span className="text-xs text-slate-500 dark:text-gray-400">

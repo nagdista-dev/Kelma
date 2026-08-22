@@ -1,12 +1,15 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { Volume2 } from 'lucide-react';
 import type { QuizQuestion } from '@/types/index';
 import { ROUND_LABELS, ROUND_DESCRIPTIONS } from '@/constants/index';
+import { useSpeech } from '@/hooks/useSpeech';
 
 interface QuestionCardProps {
   question: QuizQuestion;
 }
 
 export function QuestionCard({ question }: QuestionCardProps) {
+  const { speak } = useSpeech();
   const quizData = question.wordProgress.quizData;
 
   return (
@@ -59,9 +62,34 @@ export function QuestionCard({ question }: QuestionCardProps) {
           )}
 
           {question.round === 3 && (
-            <p className="text-lg font-semibold text-slate-950 leading-relaxed dark:text-white">
-              Choose the Arabic meaning of <bdi className="font-bold text-violet-700 dark:text-violet-300">{quizData.word}</bdi>.
-            </p>
+            <div className="space-y-4">
+              <p className="text-lg font-semibold text-slate-950 leading-relaxed dark:text-white">
+                Choose the Arabic meaning of this word.
+              </p>
+              {/* Duolingo-style big speaker */}
+              <div className="flex items-center gap-4">
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => speak(quizData.word)}
+                  aria-label={`Pronounce ${quizData.word}`}
+                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-600/30 transition-colors hover:bg-violet-500"
+                >
+                  <Volume2 className="h-8 w-8" />
+                </motion.button>
+                <div className="min-w-0">
+                  <bdi className="text-2xl font-extrabold text-slate-950 dark:text-white">
+                    {quizData.word}
+                  </bdi>
+                  {quizData.emojiAnchor && (
+                    <span className="ml-2 text-2xl" aria-hidden="true">{quizData.emojiAnchor}</span>
+                  )}
+                  <p className="text-xs font-medium text-slate-400 dark:text-gray-500">
+                    Tap to hear it again
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
           {question.round === 4 && (

@@ -87,10 +87,12 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
 }
 
 function getNextPendingWord(words: WordProgress[]): WordProgress | undefined {
-  // Prioritise words that are in-progress (currentRound > 1)
-  const inProgress = words.find(w => w.status === 'in-progress');
-  if (inProgress) return inProgress;
-  return words.find(w => w.status === 'pending');
+  // Pick a RANDOM candidate so the user can never predict which word comes next
+  const candidates = words.filter(
+    w => w.status === 'in-progress' || w.status === 'pending'
+  );
+  if (candidates.length === 0) return undefined;
+  return candidates[Math.floor(Math.random() * candidates.length)];
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -107,7 +109,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   sessionStartTime: null,
 
   startSession: (_wordStrings: string[], level: LanguageLevel, quizData: WordQuizData[]) => {
-    const words: WordProgress[] = quizData.map(qd => ({
+    // Shuffle so the quiz never follows the input order
+    const shuffledQuizData = shuffle(quizData);
+    const words: WordProgress[] = shuffledQuizData.map(qd => ({
       word: qd.word,
       quizData: qd,
       currentRound: 1 as RoundNumber,

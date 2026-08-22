@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { useSpeech } from '@/hooks/useSpeech';
 import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { AnswerButton } from '@/components/quiz/AnswerButton';
 import { FeedbackCard } from '@/components/quiz/FeedbackCard';
@@ -11,11 +12,14 @@ import { XPCounter } from '@/components/quiz/XPCounter';
 import { StreakBadge } from '@/components/quiz/StreakBadge';
 import { WordPipelineTracker } from '@/components/quiz/WordPipelineTracker';
 import { HintButton } from '@/components/quiz/HintButton';
-import { I_DONT_KNOW } from '@/constants/index';
+import { I_DONT_KNOW, STREAK_MILESTONES } from '@/constants/index';
 
 export function QuizPage() {
   const navigate = useNavigate();
   const { play } = useSoundEffects();
+  const { speak } = useSpeech();
+  const prevStreakRef = useRef(0);
+  const prevMasteredCountRef = useRef(0);
   const {
     phase,
     words,
@@ -31,6 +35,45 @@ export function QuizPage() {
     handleHint,
   } = useQuizEngine();
 
+  // Auto-pronounce the word when it is revealed (round 3 shows the word)
+  useEffect(() => {
+    if (phase !== 'active' || !currentQuestion) return;
+    if (currentQuestion.round === 3) {
+      speak(currentQuestion.wordProgress.quizData.word);
+    }
+  }, [phase, currentQuestion?.wordProgress.word, currentQuestion?.round, speak]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Feedback sounds + spoken reinforcement of the target word
+  useEffect(() => {
+    if (phase !== 'feedback' || !lastAnswer) return;
+    play(lastAnswer.correct ? 'correct' : 'wrong');
+
+    if (!lastAnswer.correct && lastAnswer.selected === I_DONT_KNOW) return;
+
+    // Streak milestone celebration
+    if (streak > prevStreakRef.current && STREAK_MILESTONES.includes(streak)) {
+      window.setTimeout(() => play('streak'), 350);
+    }
+    prevStreakRef.current = streak;
+
+    // Reinforce learning: hear the English word after each answer
+    if (currentQuestion) {
+      const timer = window.setTimeout(() => {
+        speak(currentQuestion.wordProgress.quizData.word);
+      }, 600);
+      return () => window.clearTimeout(timer);
+    }
+  }, [phase, lastAnswer, play, speak, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Celebrate when a word reaches mastered status
+  useEffect(() => {
+    const masteredCount = words.filter(w => w.status === 'mastered').length;
+    if (masteredCount > prevMasteredCountRef.current && phase !== 'idle') {
+      play('mastered');
+    }
+    prevMasteredCountRef.current = masteredCount;
+  }, [words, phase, play]);
+
   // Redirect to report when complete
   useEffect(() => {
     if (phase === 'complete') {
@@ -38,11 +81,6 @@ export function QuizPage() {
       navigate('/report');
     }
   }, [phase, navigate, play]);
-
-  useEffect(() => {
-    if (phase !== 'feedback' || !lastAnswer) return;
-    play(lastAnswer.correct ? 'correct' : 'wrong');
-  }, [phase, lastAnswer, play]);
 
   // Redirect to session if no active quiz
   if (phase === 'idle') {
@@ -98,10 +136,7 @@ export function QuizPage() {
       {/* Overall progress */}
       <ProgressBar value={progress} label={`Session progress`} color="violet" />
       <div className="mt-4 mb-4">
-        <WordPipelineTracker
-          words={words}
-          currentWord={question.wordProgress.word}
-        />
+        <WordPipelineTracker words={words} />
       </div>
 
       {/* Question */}
@@ -135,7 +170,10 @@ export function QuizPage() {
               option={option}
               index={i}
               state={getButtonState(option)}
-              onClick={() => handleAnswer(option)}
+              onClick={() => {
+                play('click');
+                handleAnswer(option);
+              }}
               isArabic={isArabicRound && option !== I_DONT_KNOW}
             />
           ))}

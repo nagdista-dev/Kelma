@@ -6,7 +6,7 @@ declare global {
   }
 }
 
-type SoundName = 'correct' | 'wrong' | 'hint' | 'complete' | 'next';
+type SoundName = 'correct' | 'wrong' | 'hint' | 'complete' | 'next' | 'click' | 'streak' | 'mastered';
 
 interface Tone {
   frequency: number;
@@ -38,6 +38,21 @@ const SOUND_MAP: Record<SoundName, Tone[]> = {
   ],
   next: [
     { frequency: 392, duration: 0.04, type: 'sine', gain: 0.02 },
+  ],
+  click: [
+    { frequency: 620, duration: 0.03, type: 'sine', gain: 0.015 },
+  ],
+  streak: [
+    { frequency: 659.25, duration: 0.07, type: 'square', gain: 0.02 },
+    { frequency: 880, duration: 0.07, delay: 0.07, type: 'square', gain: 0.02 },
+    { frequency: 1174.66, duration: 0.14, delay: 0.14, type: 'square', gain: 0.022 },
+  ],
+  mastered: [
+    { frequency: 523.25, duration: 0.09, type: 'triangle', gain: 0.03 },
+    { frequency: 659.25, duration: 0.09, delay: 0.08, type: 'triangle', gain: 0.03 },
+    { frequency: 783.99, duration: 0.09, delay: 0.16, type: 'triangle', gain: 0.03 },
+    { frequency: 1046.5, duration: 0.1, delay: 0.24, type: 'sine', gain: 0.03 },
+    { frequency: 1318.51, duration: 0.2, delay: 0.33, type: 'sine', gain: 0.028 },
   ],
 };
 

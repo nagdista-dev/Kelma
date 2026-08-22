@@ -1,8 +1,29 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle2, Lightbulb, Link2, XCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Lightbulb, Link2, Volume2, XCircle } from 'lucide-react';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
+import { useSpeech } from '@/hooks/useSpeech';
 import type { QuizQuestion } from '@/types/index';
+
+const PRAISE_MESSAGES = [
+  'Correct! Brilliant! 🎉',
+  'Nailed it! Keep going! 🔥',
+  'Excellent memory! ⭐',
+  'You are on fire! 🚀',
+  'Perfect! That brain is sharp! 🧠',
+  'Great job! Another one down! 💪',
+];
+
+const RETRY_MESSAGES = [
+  'Not quite — but mistakes are how we learn! 🌱',
+  'Close one! Let us lock this word in. 🔒',
+  'No worries, you will get the next one! 💪',
+  'Almost! One more look at this word. 👀',
+];
+
+function pickRandom(messages: string[]) {
+  return messages[Math.floor(Math.random() * messages.length)];
+}
 
 interface FeedbackCardProps {
   question: QuizQuestion;
@@ -19,8 +40,11 @@ export function FeedbackCard({
   isLoadingFeedback,
   onNext,
 }: FeedbackCardProps) {
+  const { speak } = useSpeech();
   const word = question.wordProgress.quizData;
   const hasArabicMemoryTip = /[\u0600-\u06FF]/.test(word.memoryTip ?? '');
+  const fullSentence = word.exampleSentence.replace(/_{2,}/g, word.word);
+  const headerMessage = correct ? pickRandom(PRAISE_MESSAGES) : pickRandom(RETRY_MESSAGES);
 
   return (
     <motion.div
@@ -46,7 +70,7 @@ export function FeedbackCard({
         </div>
         <div className="min-w-0">
           <p className={`font-bold text-base ${correct ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-800 dark:text-red-300'}`}>
-            {correct ? 'Correct!' : 'Not quite…'}
+            {headerMessage}
           </p>
           {!correct && (
             <p className="text-xs text-slate-500 dark:text-gray-400">
@@ -54,6 +78,28 @@ export function FeedbackCard({
             </p>
           )}
         </div>
+      </div>
+
+      {/* Pronunciation practice */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => speak(word.word)}
+          aria-label={`Pronounce ${word.word}`}
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 transition-all hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
+        >
+          <Volume2 className="h-3.5 w-3.5" />
+          <bdi className="font-bold">{word.word}</bdi>
+        </button>
+        <button
+          type="button"
+          onClick={() => speak(fullSentence, 0.85)}
+          aria-label="Listen to example sentence"
+          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-sky-200 bg-white px-3 py-1.5 text-xs font-semibold text-sky-700 transition-all hover:border-sky-400 hover:bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300 dark:hover:bg-sky-500/20"
+        >
+          <Volume2 className="h-3.5 w-3.5" />
+          Example sentence
+        </button>
       </div>
 
       {/* Collocations (always show on correct) */}
