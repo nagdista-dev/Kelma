@@ -1,6 +1,17 @@
 // ─── AI / Settings ────────────────────────────────────────────────────────────
 
-export type AIProvider = 'openai' | 'commandcode' | 'openrouter' | 'opencode' | 'google' | 'anthropic' | 'cohere';
+export type AIProvider =
+  | 'openai'
+  | 'commandcode'
+  | 'openrouter'
+  | 'opencode'
+  | 'google'
+  | 'anthropic'
+  | 'cohere'
+  | 'groq'
+  | 'deepseek'
+  | 'mistral'
+  | 'xai';
 
 export type LanguageLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -223,6 +234,31 @@ export const PROVIDER_MODELS: Record<AIProvider, ModelOption[]> = {
     { id: 'command-r-plus', label: 'Command R+' },
     { id: 'command-r-08-2024', label: 'Command R' },
     { id: 'command-r7b-12-2024', label: 'Command R7B (Faster)' },
+  ],
+  groq: [
+    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B Versatile' },
+    { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B (Instant)' },
+    { id: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B' },
+    { id: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B (Fast)' },
+    { id: 'gemma2-9b-it', label: 'Gemma 2 9B' },
+    { id: 'qwen/qwen3-32b', label: 'Qwen 3 32B' },
+  ],
+  deepseek: [
+    { id: 'deepseek-chat', label: 'DeepSeek V3 Chat' },
+    { id: 'deepseek-reasoner', label: 'DeepSeek R1 (Reasoning)' },
+  ],
+  mistral: [
+    { id: 'mistral-large-latest', label: 'Mistral Large' },
+    { id: 'mistral-small-latest', label: 'Mistral Small' },
+    { id: 'open-mistral-nemo', label: 'Mistral Nemo' },
+    { id: 'codestral-latest', label: 'Codestral' },
+    { id: 'ministral-8b-latest', label: 'Ministral 8B (Fast)' },
+  ],
+  xai: [
+    { id: 'grok-4', label: 'Grok 4 (Strongest)' },
+    { id: 'grok-3', label: 'Grok 3' },
+    { id: 'grok-3-mini', label: 'Grok 3 Mini (Faster)' },
+    { id: 'grok-2-1212', label: 'Grok 2' },
   ],
 };
 

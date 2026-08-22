@@ -8,6 +8,7 @@ import { LandingPage } from '@/pages/LandingPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { ProviderPage } from '@/pages/ProviderPage';
 import { PricingPage } from '@/pages/PricingPage';
+import { HowToPage } from '@/pages/HowToPage';
 import { HelpPage } from '@/pages/HelpPage';
 import { SessionSetupPage } from '@/pages/SessionSetupPage';
 import { QuizPage } from '@/pages/QuizPage';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/provider" element={<ProviderPage />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/how-to" element={<HowToPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/history" element={<HistoryPage />} />
 

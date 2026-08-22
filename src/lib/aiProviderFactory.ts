@@ -37,6 +37,30 @@ export function getAIModel(provider: AIProvider, apiKey: string, model: string) 
         baseURL: 'https://opencode.ai/zen/v1',
         name: 'opencode',
       }).chat(model);
+    case 'groq':
+      return createOpenAI({
+        apiKey,
+        baseURL: 'https://api.groq.com/openai/v1',
+        name: 'groq',
+      }).chat(model);
+    case 'deepseek':
+      return createOpenAI({
+        apiKey,
+        baseURL: 'https://api.deepseek.com/v1',
+        name: 'deepseek',
+      }).chat(model);
+    case 'mistral':
+      return createOpenAI({
+        apiKey,
+        baseURL: 'https://api.mistral.ai/v1',
+        name: 'mistral',
+      }).chat(model);
+    case 'xai':
+      return createOpenAI({
+        apiKey,
+        baseURL: 'https://api.x.ai/v1',
+        name: 'xai',
+      }).chat(model);
     case 'google':
       return createGoogle({ apiKey })(model);
     case 'anthropic':

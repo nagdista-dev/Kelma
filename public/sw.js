@@ -17,6 +17,13 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+// Allow the app to activate a waiting worker (one-tap update)
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // Cache-first for same-origin static assets; network for everything else
 self.addEventListener('fetch', event => {
   const { request } = event;

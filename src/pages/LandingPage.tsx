@@ -53,7 +53,7 @@ export function LandingPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
           <button
             id="cta-start"
-            onClick={() => navigate(apiKey ? '/session' : '/settings')}
+            onClick={() => navigate(apiKey ? '/session' : '/provider')}
             className="btn-primary text-base px-8 py-3.5 gap-2"
           >
             {apiKey ? (
