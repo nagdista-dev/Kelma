@@ -32,7 +32,7 @@ export interface WordQuizData {
 
 // ─── Quiz Engine ──────────────────────────────────────────────────────────────
 
-export type RoundNumber = 1 | 2 | 3 | 4;
+export type RoundNumber = 1 | 2 | 3 | 4 | 5 | 6;
 export type WordStatus = 'pending' | 'in-progress' | 'mastered';
 
 export interface RoundAttempt {

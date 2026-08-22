@@ -16,6 +16,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/quiz/ProgressBar';
 import { useSpeech } from '@/hooks/useSpeech';
+import { MAX_XP_PER_WORD } from '@/constants/index';
 
 const statColorClasses = {
   amber: {
@@ -51,7 +52,7 @@ export function SummaryPage() {
     );
     const struggledWords = words.filter(w => w.attempts.some(a => !a.correct));
     const perfectWords = words.filter(w => w.attempts.length > 0 && w.attempts.every(a => a.correct));
-    const maxPossibleXP = totalWords * 25;
+    const maxPossibleXP = totalWords * MAX_XP_PER_WORD;
     const xpPct = maxPossibleXP > 0 ? Math.round((xp / maxPossibleXP) * 100) : 0;
     const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
     const durationMs = sessionStartTime ? Date.now() - sessionStartTime.getTime() : 0;

@@ -102,6 +102,42 @@ export function QuestionCard({ question }: QuestionCardProps) {
               </p>
             </div>
           )}
+
+          {question.round === 5 && (
+            <div className="space-y-4">
+              <p className="text-lg font-semibold text-slate-950 leading-relaxed dark:text-white">
+                Listen carefully. Which word did you hear?
+              </p>
+              <div className="flex items-center gap-4">
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => speak(quizData.word)}
+                  aria-label="Play the word"
+                  className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg shadow-sky-600/30 transition-colors hover:bg-sky-500"
+                >
+                  <Volume2 className="h-8 w-8" />
+                </motion.button>
+                <p className="text-xs font-medium text-slate-400 dark:text-gray-500">
+                  Tap the speaker to hear it again
+                </p>
+              </div>
+            </div>
+          )}
+
+          {question.round === 6 && (
+            <div className="space-y-3">
+              <p className="text-lg font-semibold text-slate-950 leading-relaxed dark:text-white">
+                Type the English word for this meaning.
+              </p>
+              <p dir="rtl" className="rtl-text rounded-lg bg-white px-3 py-2 text-right text-slate-950 dark:bg-white/5 dark:text-white">
+                {quizData.arabicMeaning}
+                {quizData.emojiAnchor && (
+                  <span className="mr-2" aria-hidden="true">{quizData.emojiAnchor}</span>
+                )}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Round description for context */}

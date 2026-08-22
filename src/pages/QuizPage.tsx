@@ -12,6 +12,7 @@ import { XPCounter } from '@/components/quiz/XPCounter';
 import { StreakBadge } from '@/components/quiz/StreakBadge';
 import { WordPipelineTracker } from '@/components/quiz/WordPipelineTracker';
 import { HintButton } from '@/components/quiz/HintButton';
+import { SpellingInput } from '@/components/quiz/SpellingInput';
 import { I_DONT_KNOW, STREAK_MILESTONES } from '@/constants/index';
 
 export function QuizPage() {
@@ -35,10 +36,10 @@ export function QuizPage() {
     handleHint,
   } = useQuizEngine();
 
-  // Auto-pronounce the word when it is revealed (round 3 shows the word)
+  // Auto-pronounce the word when it is revealed (round 3) or tested by ear (round 5)
   useEffect(() => {
     if (phase !== 'active' || !currentQuestion) return;
-    if (currentQuestion.round === 3) {
+    if (currentQuestion.round === 3 || currentQuestion.round === 5) {
       speak(currentQuestion.wordProgress.quizData.word);
     }
   }, [phase, currentQuestion?.wordProgress.word, currentQuestion?.round, speak]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -121,6 +122,7 @@ export function QuizPage() {
   }
 
   const isArabicRound = question.round === 3;
+  const isSpellingRound = question.round === 6;
 
   return (
     <div className="page-container">
@@ -156,8 +158,35 @@ export function QuizPage() {
         />
       )}
 
+      {/* Answer input (spelling round) */}
+      {phase === 'active' && isSpellingRound && (
+        <motion.div
+          key={`${question.wordProgress.word}-${question.round}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-2.5"
+        >
+          <SpellingInput
+            onSubmit={selected => {
+              play('click');
+              handleAnswer(selected);
+            }}
+            disabled={isAnswerLocked}
+          />
+          <div className="mt-4">
+            <HintButton
+              onHint={() => {
+                play('hint');
+                return handleHint();
+              }}
+              disabled={isAnswerLocked}
+            />
+          </div>
+        </motion.div>
+      )}
+
       {/* Answer buttons */}
-      {phase === 'active' && (
+      {phase === 'active' && !isSpellingRound && (
         <motion.div
           key={`${question.wordProgress.word}-${question.round}`}
           initial={{ opacity: 0 }}
@@ -191,7 +220,7 @@ export function QuizPage() {
       )}
 
       {/* Answer buttons (dimmed) during feedback */}
-      {phase === 'feedback' && (
+      {phase === 'feedback' && !isSpellingRound && (
         <div className="space-y-2.5 opacity-50 pointer-events-none mt-2">
           {currentQuestion.options.map((option, i) => (
             <AnswerButton

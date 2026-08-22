@@ -12,6 +12,8 @@ import {
   I_DONT_KNOW,
   XP_PER_ROUND,
   XP_ROUND_4,
+  XP_ROUND_5,
+  XP_ROUND_6,
   XP_HINT_PENALTY,
   TOTAL_ROUNDS,
 } from '@/constants/index';
@@ -77,6 +79,29 @@ function buildQuestion(wp: WordProgress): QuizQuestion {
         options,
         correctAnswer: quizData.word,
         contextLine: 'Fill in the blank',
+      };
+    }
+    case 5: {
+      // Listening: hear the word → pick the correct spelling
+      const options = [...shuffle([quizData.word, ...quizData.distractors]), I_DONT_KNOW];
+      return {
+        wordProgress: wp,
+        round: 5,
+        questionText: 'Listen carefully. Which word did you hear?',
+        options,
+        correctAnswer: quizData.word,
+        contextLine: 'Listening',
+      };
+    }
+    case 6: {
+      // Spelling: Arabic meaning → type the English word
+      return {
+        wordProgress: wp,
+        round: 6,
+        questionText: `Type the English word for "${quizData.arabicMeaning}".`,
+        options: [],
+        correctAnswer: quizData.word,
+        contextLine: 'Spelling',
       };
     }
     default: {
@@ -152,7 +177,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     let hintsUsed = wordInProgress?.hintsUsed ?? 0;
 
     if (correct && !isIDontKnow) {
-      const baseXp = currentQuestion.round === 4 ? XP_ROUND_4 : XP_PER_ROUND;
+      const baseXp =
+        currentQuestion.round === 4 ? XP_ROUND_4 :
+        currentQuestion.round === 5 ? XP_ROUND_5 :
+        currentQuestion.round === 6 ? XP_ROUND_6 :
+        XP_PER_ROUND;
       const hintPenalty = Math.min(hintsUsed * XP_HINT_PENALTY, baseXp - 1);
       xpGained = Math.max(baseXp - hintPenalty, 1);
     }

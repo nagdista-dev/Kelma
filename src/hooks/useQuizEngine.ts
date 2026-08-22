@@ -3,6 +3,7 @@ import { useQuizStore } from '@/store/quizStore';
 import { useAIQuiz } from '@/hooks/useAIQuiz';
 import { useSessionHistory } from '@/hooks/useSessionHistory';
 import { useSettingsStore } from '@/store/settingsStore';
+import { MAX_XP_PER_WORD } from '@/constants/index';
 
 /**
  * The main orchestrator for the quiz flow.
@@ -93,8 +94,7 @@ export function useQuizEngine() {
     const allWordStrs = words.map(w => w.word);
     const level = useQuizStore.getState().level;
 
-    // Max possible XP: each word = (3 rounds × 5) + (1 round × 10) = 25 XP
-    const maxPossibleXP = words.length * 25;
+    const maxPossibleXP = words.length * MAX_XP_PER_WORD;
 
     const durationMs = sessionStartTime
       ? Date.now() - sessionStartTime.getTime()
