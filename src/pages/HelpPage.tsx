@@ -10,6 +10,7 @@ import {
   KeyRound,
   Network,
   ShieldAlert,
+  Terminal,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
@@ -65,6 +66,20 @@ const PROVIDER_HELP: ProviderHelp[] = [
       'Choose OpenRouter in Settings and paste the key.',
     ],
     notes: ['OpenRouter model names use provider/model, such as openai/gpt-4o.'],
+  },
+  {
+    name: 'OpenCode',
+    keyFormat: 'OpenCode API key',
+    link: 'https://opencode.ai/zen',
+    linkLabel: 'OpenCode Zen',
+    Icon: Terminal,
+    steps: [
+      'Sign in at opencode.ai.',
+      'Open your console and create an API key.',
+      'Pick a model from the OpenCode list in Settings.',
+      'Choose OpenCode in Settings and paste the key.',
+    ],
+    notes: ['OpenCode Zen uses an OpenAI-compatible endpoint.'],
   },
   {
     name: 'Google Gemini',

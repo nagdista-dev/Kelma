@@ -112,9 +112,9 @@ export function WordInput({ words, onChange }: WordInputProps) {
           <button
             type="button"
             onClick={addWord}
-            className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 transition-colors"
+            className="inline-flex items-center gap-1 rounded-lg bg-violet-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-violet-600/25 transition-all hover:bg-violet-500 active:scale-95"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-3.5 h-3.5" />
             Add words
           </button>
         )}

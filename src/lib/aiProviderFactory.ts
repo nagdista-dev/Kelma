@@ -31,6 +31,12 @@ export function getAIModel(provider: AIProvider, apiKey: string, model: string) 
           'X-OpenRouter-Title': 'Play With Words',
         },
       }).chat(model);
+    case 'opencode':
+      return createOpenAI({
+        apiKey,
+        baseURL: 'https://opencode.ai/zen/v1',
+        name: 'opencode',
+      }).chat(model);
     case 'google':
       return createGoogle({ apiKey })(model);
     case 'anthropic':

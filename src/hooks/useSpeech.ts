@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useSettingsStore } from '@/store/settingsStore';
 
 /**
  * Text-to-speech with automatic fallback:
@@ -29,7 +30,10 @@ function loadVoice(): SpeechSynthesisVoice | null {
   if (!('speechSynthesis' in window)) return null;
   const voices = window.speechSynthesis.getVoices();
   if (voices.length > 0) {
+    // User-selected voice wins, then sensible English defaults
+    const preferredUri = useSettingsStore.getState().voiceURI;
     cachedVoice =
+      voices.find(v => preferredUri && v.voiceURI === preferredUri) ??
       voices.find(v => v.lang === 'en-US' && v.default) ??
       voices.find(v => v.lang === 'en-US') ??
       voices.find(v => v.lang.startsWith('en')) ??
@@ -160,5 +164,13 @@ export function useSpeech() {
     texts.forEach(text => speakWatched(text, rate));
   }, []);
 
-  return { speak, speakSequence };
+  const stop = useCallback(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    fallbackAudioRef.current?.pause();
+    fallbackAudioRef.current = null;
+  }, []);
+
+  return { speak, speakSequence, stop };
 }

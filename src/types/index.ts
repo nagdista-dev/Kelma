@@ -1,6 +1,6 @@
 // ─── AI / Settings ────────────────────────────────────────────────────────────
 
-export type AIProvider = 'openai' | 'commandcode' | 'openrouter' | 'google' | 'anthropic' | 'cohere';
+export type AIProvider = 'openai' | 'commandcode' | 'openrouter' | 'opencode' | 'google' | 'anthropic' | 'cohere';
 
 export type LanguageLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -105,6 +105,7 @@ export interface SettingsState {
   model: string;
   theme: 'dark' | 'light';
   defaultLevel: LanguageLevel;
+  voiceURI: string;
 
   // Actions
   setProvider: (provider: AIProvider) => void;
@@ -112,6 +113,7 @@ export interface SettingsState {
   setModel: (model: string) => void;
   setTheme: (theme: 'dark' | 'light') => void;
   setDefaultLevel: (level: LanguageLevel) => void;
+  setVoiceURI: (uri: string) => void;
   clearApiKey: () => void;
 }
 
@@ -163,6 +165,10 @@ export const PROVIDER_MODELS: Record<AIProvider, ModelOption[]> = {
     { id: 'gpt-4o', label: 'GPT-4o' },
     { id: 'gpt-4o-mini', label: 'GPT-4o Mini (Faster)' },
     { id: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+    { id: 'gpt-4.1', label: 'GPT-4.1' },
+    { id: 'gpt-4.1-mini', label: 'GPT-4.1 Mini (Faster)' },
+    { id: 'o3', label: 'o3 (Reasoning)' },
+    { id: 'o4-mini', label: 'o4 Mini (Reasoning, Faster)' },
   ],
   commandcode: [
     { id: 'deepseek/deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
@@ -172,26 +178,51 @@ export const PROVIDER_MODELS: Record<AIProvider, ModelOption[]> = {
     { id: 'laguna-s-2.1-free', label: 'Laguna S 2.1 Free' },
   ],
   openrouter: [
-    { id: '~openai/gpt-latest', label: 'OpenAI Latest' },
+    { id: 'stealth/ox-alpha', label: 'Ox Alpha (Free)' },
     { id: 'openrouter/auto', label: 'Auto Router' },
+    { id: '~openai/gpt-latest', label: 'OpenAI Latest' },
     { id: 'openai/gpt-4o', label: 'GPT-4o' },
+    { id: 'openai/gpt-4o-mini', label: 'GPT-4o Mini (Cheaper)' },
     { id: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4' },
+    { id: 'anthropic/claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
     { id: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash' },
+    { id: 'deepseek/deepseek-chat-v3.1', label: 'DeepSeek V3.1' },
+    { id: 'deepseek/deepseek-r1', label: 'DeepSeek R1 (Reasoning)' },
+    { id: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B' },
+    { id: 'meta-llama/llama-3.3-70b-instruct:free', label: 'Llama 3.3 70B (Free)' },
+    { id: 'qwen/qwen-2.5-72b-instruct', label: 'Qwen 2.5 72B' },
+    { id: 'qwen/qwen-2.5-72b-instruct:free', label: 'Qwen 2.5 72B (Free)' },
+    { id: 'mistralai/mistral-small-24b-instruct-2501:free', label: 'Mistral Small 3 (Free)' },
+    { id: 'google/gemma-2-9b-it:free', label: 'Gemma 2 9B (Free)' },
+  ],
+  opencode: [
+    { id: 'code-supernova', label: 'Code Supernova' },
+    { id: 'grok-code', label: 'Grok Code (Fast)' },
+    { id: 'qwen3-coder', label: 'Qwen3 Coder' },
+    { id: 'claude-sonnet-4', label: 'Claude Sonnet 4' },
+    { id: 'gpt-5', label: 'GPT-5' },
   ],
   google: [
     { id: 'gemini-flash-latest', label: 'Gemini Flash Latest' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
     { id: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+    { id: 'gemini-2.0-flash-lite', label: 'Gemini 2.0 Flash Lite (Cheapest)' },
     { id: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
     { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash (Faster)' },
   ],
   anthropic: [
+    { id: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5' },
+    { id: 'claude-opus-4-1', label: 'Claude Opus 4.1 (Strongest)' },
+    { id: 'claude-3-7-sonnet-latest', label: 'Claude 3.7 Sonnet' },
     { id: 'claude-3-5-sonnet-latest', label: 'Claude 3.5 Sonnet' },
-    { id: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku (Faster)' },
+    { id: 'claude-3-5-haiku-latest', label: 'Claude 3.5 Haiku (Faster)' },
   ],
   cohere: [
-    { id: 'command-a-03-2025', label: 'Command A' },
-    { id: 'command-r-plus', label: 'Command R+ (Stronger)' },
-    { id: 'command-r', label: 'Command R (Faster)' },
+    { id: 'command-a-03-2025', label: 'Command A (Strongest)' },
+    { id: 'command-r-plus', label: 'Command R+' },
+    { id: 'command-r-08-2024', label: 'Command R' },
+    { id: 'command-r7b-12-2024', label: 'Command R7B (Faster)' },
   ],
 };
 

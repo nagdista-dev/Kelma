@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, BrainCircuit, Gauge, History, Layers3, Wand2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, BrainCircuit, Gauge, History, Layers3, RotateCcw, Wand2 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
@@ -21,6 +21,24 @@ export function SessionSetupPage() {
   const [level, setLevel] = useState<LanguageLevel>(defaultLevel);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reviewMode, setReviewMode] = useState(false);
+
+  // Prefill weak words coming from a session report ("Practice weak words")
+  useEffect(() => {
+    const stored = sessionStorage.getItem('pww-review-words');
+    if (stored) {
+      try {
+        const parsed: string[] = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setWords(parsed);
+          setReviewMode(true);
+        }
+      } catch {
+        /* ignore malformed payload */
+      }
+      sessionStorage.removeItem('pww-review-words');
+    }
+  }, []);
 
   const canStart = words.length >= MIN_WORDS && !loading;
 
@@ -59,6 +77,13 @@ export function SessionSetupPage() {
           </div>
         </div>
 
+        {reviewMode && (
+          <div className="flex items-center gap-2 mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+            <RotateCcw className="h-4 w-4 shrink-0" />
+            Review mode: your weak words from the last session are loaded below.
+          </div>
+        )}
+
         <div className="space-y-6">
           {/* Word Input */}
           <Card>
@@ -85,7 +110,7 @@ export function SessionSetupPage() {
             </p>
             <p className="flex items-center gap-2">
               <Layers3 className="w-3.5 h-3.5 text-violet-300" />
-              Each word goes through 4 rounds of increasing difficulty
+              Each word goes through 6 rounds covering meaning, listening and spelling
             </p>
             <p className="flex items-center gap-2">
               <Gauge className="w-3.5 h-3.5 text-violet-300" />

@@ -39,6 +39,23 @@ html {
   font-family: 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+/* Native select dropdowns follow the color scheme above,
+   but force readable options as a fallback for stubborn browsers */
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+html.dark select option {
+  background-color: #111827;
+  color: #f9fafb;
 }
 
 body {

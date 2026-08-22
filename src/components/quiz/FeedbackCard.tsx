@@ -154,9 +154,17 @@ export function FeedbackCard({
           </div>
           <div className="flex flex-wrap gap-2">
             {word.collocations.map(c => (
-              <span key={c} className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-white/10 dark:bg-black/10 dark:text-gray-200">
+              <button
+                key={c}
+                type="button"
+                onClick={() => speak(c)}
+                aria-label={`Pronounce ${c}`}
+                title="Hear this collocation"
+                className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 transition-all hover:border-emerald-400 hover:bg-emerald-50 active:scale-95 dark:border-white/10 dark:bg-black/10 dark:text-gray-200 dark:hover:bg-emerald-500/20"
+              >
+                <Volume2 className="h-3 w-3 text-emerald-600 dark:text-emerald-300" />
                 {c}
-              </span>
+              </button>
             ))}
           </div>
         </div>

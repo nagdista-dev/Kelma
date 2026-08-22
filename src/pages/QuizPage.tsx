@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useSpeech } from '@/hooks/useSpeech';
+import { useQuizStore } from '@/store/quizStore';
 import { QuestionCard } from '@/components/quiz/QuestionCard';
 import { AnswerButton } from '@/components/quiz/AnswerButton';
 import { FeedbackCard } from '@/components/quiz/FeedbackCard';
@@ -13,12 +14,19 @@ import { StreakBadge } from '@/components/quiz/StreakBadge';
 import { WordPipelineTracker } from '@/components/quiz/WordPipelineTracker';
 import { HintButton } from '@/components/quiz/HintButton';
 import { SpellingInput } from '@/components/quiz/SpellingInput';
+import { QuizTimer } from '@/components/quiz/QuizTimer';
 import { I_DONT_KNOW, STREAK_MILESTONES } from '@/constants/index';
+import type { RoundNumber } from '@/types/index';
+
+function isTypingRound(round: RoundNumber) {
+  return round === 6;
+}
 
 export function QuizPage() {
   const navigate = useNavigate();
   const { play } = useSoundEffects();
-  const { speak, speakSequence } = useSpeech();
+  const { speak, stop } = useSpeech();
+  const { sessionStartTime } = useQuizStore();
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
   const {
@@ -57,16 +65,15 @@ export function QuizPage() {
     }
     prevStreakRef.current = streak;
 
-    // Reinforce learning: hear the word, then its example sentence
+    // Reinforce learning: always hear the WORD itself automatically
     if (currentQuestion) {
-      const quizData = currentQuestion.wordProgress.quizData;
-      const fullSentence = quizData.exampleSentence.replace(/_{2,}/g, quizData.word);
+      const targetWord = currentQuestion.wordProgress.quizData.word;
       const timer = window.setTimeout(() => {
-        speakSequence([quizData.word, fullSentence], 0.9);
+        speak(targetWord);
       }, 450);
       return () => window.clearTimeout(timer);
     }
-  }, [phase, lastAnswer, play, speakSequence, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phase, lastAnswer, play, speak, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Celebrate when a word reaches mastered status
   useEffect(() => {
@@ -84,6 +91,30 @@ export function QuizPage() {
       navigate('/report');
     }
   }, [phase, navigate, play]);
+
+  // Keyboard shortcuts: 1-6 pick answers, Enter continues
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.tagName === 'INPUT') return;
+
+      if (phase === 'active' && currentQuestion && !isAnswerLocked && !isTypingRound(currentQuestion.round)) {
+        const idx = Number(e.key) - 1;
+        if (idx >= 0 && idx < currentQuestion.options.length) {
+          play('click');
+          handleAnswer(currentQuestion.options[idx]);
+        }
+      }
+
+      if (phase === 'feedback' && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        stop();
+        play('next');
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [phase, currentQuestion, isAnswerLocked, handleAnswer, handleNext, play, stop]);
 
   // Redirect to session if no active quiz
   if (phase === 'idle') {
@@ -129,9 +160,10 @@ export function QuizPage() {
   return (
     <div className="page-container">
       {/* Header stats bar */}
-      <div className="flex items-center justify-between mb-4 gap-4">
+      <div className="flex items-center justify-between mb-4 gap-3">
         <XPCounter xp={xp} />
         <StreakBadge streak={streak} />
+        <QuizTimer startedAt={sessionStartTime ? sessionStartTime.getTime() : Date.now()} />
         <div className="text-xs text-slate-500 dark:text-gray-500">
           {masteredCount}/{words.length} mastered
         </div>
@@ -154,6 +186,7 @@ export function QuizPage() {
           feedbackText={feedbackText}
           isLoadingFeedback={isLoadingFeedback}
           onNext={() => {
+            stop();
             play('next');
             handleNext();
           }}
@@ -221,19 +254,30 @@ export function QuizPage() {
         </motion.div>
       )}
 
-      {/* Answer buttons (dimmed) during feedback */}
+      {/* During feedback show only the relevant options */}
       {phase === 'feedback' && !isSpellingRound && (
-        <div className="space-y-2.5 opacity-50 pointer-events-none mt-2">
-          {currentQuestion.options.map((option, i) => (
-            <AnswerButton
-              key={option}
-              option={option}
-              index={i}
-              state={getButtonState(option)}
-              onClick={() => {}}
-              isArabic={isArabicRound && option !== I_DONT_KNOW}
-            />
-          ))}
+        <div className="space-y-2.5 mt-2">
+          {currentQuestion.options
+            .filter(option => {
+              if (!lastAnswer) return false;
+              // Correct pick → hide everything else
+              if (lastAnswer.correct) return option === lastAnswer.selected;
+              // Wrong pick → show the wrong pick + reveal the correct one
+              return (
+                option === lastAnswer.selected ||
+                (option !== I_DONT_KNOW && option === question.correctAnswer)
+              );
+            })
+            .map((option, i) => (
+              <AnswerButton
+                key={option}
+                option={option}
+                index={i}
+                state={getButtonState(option)}
+                onClick={() => {}}
+                isArabic={isArabicRound && option !== I_DONT_KNOW}
+              />
+            ))}
         </div>
       )}
     </div>

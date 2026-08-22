@@ -11,6 +11,7 @@ export const useSettingsStore = create<SettingsState>()(
       model: PROVIDER_MODELS.openai[0].id,
       theme: 'dark',
       defaultLevel: 'B1',
+      voiceURI: '',
 
       setProvider: (provider: AIProvider) =>
         set({ provider, model: PROVIDER_MODELS[provider][0].id }),
@@ -30,6 +31,8 @@ export const useSettingsStore = create<SettingsState>()(
 
       setDefaultLevel: (defaultLevel: LanguageLevel) => set({ defaultLevel }),
 
+      setVoiceURI: (voiceURI: string) => set({ voiceURI }),
+
       clearApiKey: () => set({ apiKey: '' }),
     }),
     {
@@ -41,6 +44,7 @@ export const useSettingsStore = create<SettingsState>()(
         model: state.model,
         theme: state.theme,
         defaultLevel: state.defaultLevel,
+        voiceURI: state.voiceURI,
       }),
     }
   )

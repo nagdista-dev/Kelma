@@ -81,6 +81,16 @@ export function SummaryPage() {
     navigate('/session');
   };
 
+  const handlePracticeWeakWords = () => {
+    if (report.struggledWords.length === 0) return;
+    sessionStorage.setItem(
+      'pww-review-words',
+      JSON.stringify(report.struggledWords.map(w => w.word))
+    );
+    resetQuiz();
+    navigate('/session');
+  };
+
   const handleDownload = () => {
     const lines = [
       'Play With Words - Session Report',
@@ -265,6 +275,12 @@ export function SummaryPage() {
             <RotateCcw className="h-4 w-4" />
             New Session
           </Button>
+          {report.struggledWords.length > 0 && (
+            <Button id="practice-weak-btn" onClick={handlePracticeWeakWords} className="flex-1 gap-2">
+              <Target className="h-4 w-4" />
+              Practice weak words ({report.struggledWords.length})
+            </Button>
+          )}
           <Button id="download-report-btn" variant="secondary" onClick={handleDownload} className="flex-1 gap-2">
             <Download className="h-4 w-4" />
             Download Report
