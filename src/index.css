@@ -1,0 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Custom Properties ──────────────────────────────────────────────────── */
+:root {
+  --bg-primary:   #0B0F1A;
+  --bg-secondary: #111827;
+  --bg-tertiary:  #1F2937;
+
+  --accent-primary:   #7C3AED;
+  --accent-secondary: #8B5CF6;
+  --accent-light:     #A78BFA;
+
+  --success:       #10B981;
+  --success-light: #34D399;
+
+  --error:       #EF4444;
+  --error-light: #FCA5A5;
+
+  --xp-gold:  #F59E0B;
+  --xp-light: #FCD34D;
+
+  --text-primary:   #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted:     #6B7280;
+
+  --glass-bg:     rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+}
+
+/* ─── Base Resets ────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Poppins', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: #F8FAFC;
+  color: #0F172A;
+  min-height: 100svh;
+}
+
+.dark body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Scrollbar Styling ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.4);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.7);
+}
+
+/* ─── Glassmorphism Utility ──────────────────────────────────────────────────── */
+@layer components {
+  .glass {
+    @apply bg-white border border-slate-200 shadow-sm backdrop-blur-sm;
+    @apply dark:bg-white/5 dark:border-white/10 dark:shadow-none;
+  }
+
+  .glass-strong {
+    @apply bg-white border border-slate-200 shadow-md backdrop-blur-md;
+    @apply dark:bg-white/10 dark:border-white/20 dark:shadow-none;
+  }
+
+  /* ─── Answer Buttons ─────────────────────────────────────────────────────── */
+  .answer-btn {
+    @apply w-full text-left px-5 py-4 rounded-2xl border font-medium transition-all duration-200 cursor-pointer text-sm;
+    @apply bg-white border-slate-200 text-slate-900 shadow-sm;
+    @apply hover:border-violet-500 hover:bg-violet-50 hover:text-slate-950;
+    @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-100 dark:shadow-none;
+    @apply dark:hover:border-violet-500 dark:hover:bg-violet-500/10 dark:hover:text-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50;
+  }
+
+  .answer-btn-correct {
+    @apply bg-emerald-50 border-emerald-500 text-emerald-700;
+    @apply hover:bg-emerald-50 hover:border-emerald-500;
+    @apply dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/20;
+  }
+
+  .answer-btn-wrong {
+    @apply bg-red-50 border-red-500 text-red-700;
+    @apply hover:bg-red-50 hover:border-red-500;
+    @apply dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/20;
+  }
+
+  .answer-btn-idontknow {
+    @apply border-dashed border-slate-300 text-slate-500;
+    @apply hover:border-slate-400 hover:bg-slate-50 hover:text-slate-700;
+    @apply dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  }
+
+  .answer-btn-disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* ─── Primary Button ─────────────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
+    @apply bg-violet-600 hover:bg-violet-500 active:scale-95;
+    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200;
+    @apply bg-white border border-slate-200 text-slate-700 shadow-sm;
+    @apply hover:bg-slate-50 hover:border-slate-300 active:scale-95;
+    @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-200 dark:shadow-none;
+    @apply dark:hover:bg-white/10 dark:hover:border-white/20;
+    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/20;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
+    @apply bg-red-600 hover:bg-red-500 active:scale-95;
+    @apply focus:outline-none focus:ring-2 focus:ring-red-500/50;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* ─── Input ──────────────────────────────────────────────────────────────── */
+  .input-base {
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-950 placeholder-slate-400;
+    @apply dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder-gray-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50;
+    @apply transition-all duration-200;
+  }
+
+  /* ─── Card ───────────────────────────────────────────────────────────────── */
+  .card {
+    @apply glass rounded-2xl p-6;
+  }
+
+  /* ─── Badge ──────────────────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  .badge-violet {
+    @apply badge bg-violet-50 text-violet-700 border border-violet-200;
+    @apply dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-500/30;
+  }
+
+  .badge-emerald {
+    @apply badge bg-emerald-50 text-emerald-700 border border-emerald-200;
+    @apply dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/30;
+  }
+
+  .badge-amber {
+    @apply badge bg-amber-50 text-amber-700 border border-amber-200;
+    @apply dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30;
+  }
+
+  .badge-red {
+    @apply badge bg-red-50 text-red-700 border border-red-200;
+    @apply dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30;
+  }
+
+  /* ─── Page Container ─────────────────────────────────────────────────────── */
+  .page-container {
+    @apply max-w-2xl mx-auto w-full px-4 py-8;
+  }
+}
+
+/* ─── Gradient Text ──────────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #A78BFA, #7C3AED);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #FCD34D, #F59E0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glow Effects ───────────────────────────────────────────────────────────── */
+.glow-violet {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3), 0 0 60px rgba(124, 58, 237, 0.1);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 0 60px rgba(16, 185, 129, 0.1);
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 0 60px rgba(245, 158, 11, 0.15);
+}
+
+/* ─── Arabic Text ────────────────────────────────────────────────────────────── */
+.rtl-text {
+  direction: rtl;
+  font-family: 'Tajawal', system-ui, sans-serif;
+  font-size: 1.05em;
+  line-height: 1.8;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.06) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Pipeline Word Tracker ──────────────────────────────────────────────────── */
+.pipeline-word {
+  @apply px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 border;
+}
+
+.pipeline-word-pending {
+  @apply bg-white border-slate-200 text-slate-500;
+  @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-500;
+}
+
+.pipeline-word-active {
+  @apply bg-violet-50 border-violet-300 text-violet-700;
+  @apply dark:bg-violet-500/20 dark:border-violet-500/50 dark:text-violet-300;
+}
+
+.pipeline-word-mastered {
+  @apply bg-emerald-50 border-emerald-300 text-emerald-700;
+  @apply dark:bg-emerald-500/20 dark:border-emerald-500/50 dark:text-emerald-300;
+}

@@ -1,0 +1,136 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { AlertCircle, ArrowRight, BrainCircuit, Gauge, History, Layers3, Wand2 } from 'lucide-react';
+import { useSettingsStore } from '@/store/settingsStore';
+import { useQuizStore } from '@/store/quizStore';
+import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
+import { WordInput } from '@/components/session/WordInput';
+import { LevelSelector } from '@/components/session/LevelSelector';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import type { LanguageLevel } from '@/types/index';
+import { MIN_WORDS } from '@/constants/index';
+
+export function SessionSetupPage() {
+  const navigate = useNavigate();
+  const { provider, apiKey, model, defaultLevel } = useSettingsStore();
+  const { startSession, setPhase } = useQuizStore();
+
+  const [words, setWords] = useState<string[]>([]);
+  const [level, setLevel] = useState<LanguageLevel>(defaultLevel);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canStart = words.length >= MIN_WORDS && !loading;
+
+  const handleStart = async () => {
+    if (!canStart) return;
+    setLoading(true);
+    setError(null);
+    setPhase('loading');
+
+    try {
+      const quizData = await generateSessionData(words, level, provider, apiKey, model);
+      startSession(words, level, quizData);
+      navigate('/quiz');
+    } catch (err) {
+      setError(getFriendlyAIErrorMessage(err));
+      setPhase('idle');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="page-container">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="flex items-center gap-3 mb-8">
+          <Wand2 className="w-6 h-6 text-violet-400" />
+          <div>
+            <h1 className="text-2xl font-bold text-white">New Session</h1>
+            <p className="text-sm text-gray-400">
+              Enter up to 10 English words and the AI will generate a full quiz
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Word Input */}
+          <Card>
+            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">
+              Your Words
+            </h2>
+            <WordInput words={words} onChange={setWords} />
+          </Card>
+
+          {/* Level */}
+          <Card>
+            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">
+              Your Level
+            </h2>
+            <LevelSelector value={level} onChange={setLevel} />
+          </Card>
+
+          {/* What to expect */}
+          <div className="glass rounded-xl p-4 text-xs text-gray-400 space-y-1">
+            <p className="font-semibold text-gray-300 mb-2">What happens next:</p>
+            <p className="flex items-center gap-2">
+              <BrainCircuit className="w-3.5 h-3.5 text-violet-300" />
+              AI generates quiz data for all {words.length || 'N'} words (1 API call)
+            </p>
+            <p className="flex items-center gap-2">
+              <Layers3 className="w-3.5 h-3.5 text-violet-300" />
+              Each word goes through 4 rounds of increasing difficulty
+            </p>
+            <p className="flex items-center gap-2">
+              <Gauge className="w-3.5 h-3.5 text-violet-300" />
+              Earn XP for correct answers · Use hints for a small penalty
+            </p>
+            <p className="flex items-center gap-2">
+              <History className="w-3.5 h-3.5 text-violet-300" />
+              Session saved to your history when complete
+            </p>
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Loading state */}
+          {loading && (
+            <div className="text-center py-4">
+              <div className="w-8 h-8 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-sm text-gray-400">
+                Generating quiz for <span className="text-violet-300 font-medium">{words.join(', ')}</span>…
+              </p>
+              <p className="text-xs text-gray-500 mt-1">This takes 10–30 seconds</p>
+            </div>
+          )}
+
+          {/* Start button */}
+          {!loading && (
+            <Button
+              id="start-session-btn"
+              onClick={() => void handleStart()}
+              disabled={!canStart}
+              size="lg"
+              className="w-full"
+            >
+              Generate Quiz
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
