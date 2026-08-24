@@ -20,6 +20,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { useSpeech } from '@/hooks/useSpeech';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { WordVideosModal } from '@/components/quiz/WordVideosModal';
 import { TranslatableBlock } from '@/components/quiz/TranslatableBlock';
 import { getFriendlyAIErrorMessage, translateToArabic } from '@/lib/quizDataGenerator';
@@ -87,6 +88,7 @@ export function FeedbackCard({
 }: FeedbackCardProps) {
   const { speak } = useSpeech();
   const { provider, apiKey, model } = useSettingsStore();
+  const { play } = useSoundEffects();
   const word = question.wordProgress.quizData;
   const hasArabicMemoryTip = /[\u0600-\u06FF]/.test(word.memoryTip ?? '');
   const fullSentence = word.exampleSentence.replace(/_{2,}/g, word.word);
@@ -155,7 +157,7 @@ export function FeedbackCard({
           </div>
           <div className="min-w-0 flex-1">
             <p
-              className={`font-bold ${correct ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-800 dark:text-red-300'}`}
+              className={`text-base font-extrabold ${correct ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-800 dark:text-red-300'}`}
             >
               {headerMessage}
             </p>
@@ -181,7 +183,7 @@ export function FeedbackCard({
             <div className="grid grid-cols-4 gap-1.5">
               <button
                 type="button"
-                onClick={() => speak(word.word)}
+                onClick={() => { play('click'); speak(word.word); }}
                 aria-label={`Pronounce ${word.word}`}
                 className={`${ACTION_TILE} border-teal-200 bg-teal-50/60 hover:border-teal-400 hover:bg-teal-50 dark:border-teal-500/30 dark:bg-teal-500/10 dark:hover:bg-teal-500/20`}
               >
@@ -197,7 +199,7 @@ export function FeedbackCard({
               {/* Slow pronunciation — great for beginners */}
               <button
                 type="button"
-                onClick={() => speak(word.word, 0.55)}
+                onClick={() => { play('click'); speak(word.word, 0.55); }}
                 aria-label={`Hear ${word.word} slowly`}
                 id="slow-pronounce-btn"
                 className={`${ACTION_TILE} border-amber-200 bg-amber-50/60 hover:border-amber-400 hover:bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 dark:hover:bg-amber-500/20`}
@@ -211,7 +213,7 @@ export function FeedbackCard({
 
               <button
                 type="button"
-                onClick={() => speak(fullSentence, 0.85)}
+                onClick={() => { play('click'); speak(fullSentence, 0.85); }}
                 aria-label="Listen to example sentence"
                 className={`${ACTION_TILE} border-sky-200 bg-sky-50/60 hover:border-sky-400 hover:bg-sky-50 dark:border-sky-500/30 dark:bg-sky-500/10 dark:hover:bg-sky-500/20`}
               >
@@ -224,7 +226,7 @@ export function FeedbackCard({
 
               <button
                 type="button"
-                onClick={() => setShowVideos(true)}
+                onClick={() => { play('click'); setShowVideos(true); }}
                 aria-label={`Watch real videos using ${word.word} without leaving the app`}
                 className={`${ACTION_TILE} border-red-600 bg-gradient-to-b from-red-500 to-red-600 text-white shadow-md shadow-red-500/25 hover:from-red-400 hover:to-red-500`}
               >
@@ -256,7 +258,7 @@ export function FeedbackCard({
                 </div>
                 <button
                   type="button"
-                  onClick={() => void toggleCollocationTranslation()}
+                  onClick={() => { play('click'); void toggleCollocationTranslation(); }}
                   disabled={colLoading}
                   aria-label="Translate collocations to Arabic"
                   className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${
@@ -354,7 +356,7 @@ export function FeedbackCard({
 
         {/* Sticky footer — always reachable, never needs scrolling */}
         <div
-          className={`shrink-0 border-t px-4 py-3 ${
+          className={`shrink-0 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] ${
             correct
               ? 'border-emerald-500/20 bg-emerald-50/60 dark:border-emerald-500/15 dark:bg-emerald-500/5'
               : 'border-red-500/20 bg-red-50/60 dark:border-red-500/15 dark:bg-red-500/5'
