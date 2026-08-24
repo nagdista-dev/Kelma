@@ -29,6 +29,7 @@ import {
   Orbit,
   Plug,
   Rocket,
+  Search,
   Send,
   Server,
   ServerCog,
@@ -142,6 +143,7 @@ export function ProviderPage() {
 
   const { play } = useSoundEffects();
   const [validation, setValidation] = useState<ValidationState>('idle');
+  const [search, setSearch] = useState('');
   const [validationMsg, setValidationMsg] = useState('');
 
   const handleValidate = async () => {
@@ -159,6 +161,18 @@ export function ProviderPage() {
   };
 
   const isNoKey = NO_KEY_PROVIDERS.has(provider);
+
+  // Verified no-key providers float to the top, then alphabetical, then search filter
+  const visibleProviders = [...PROVIDERS]
+    .sort((a, b) => {
+      const aFree = NO_KEY_PROVIDERS.has(a.id) ? 0 : 1;
+      const bFree = NO_KEY_PROVIDERS.has(b.id) ? 0 : 1;
+      return aFree - bFree || a.label.localeCompare(b.label);
+    })
+    .filter(({ id, label }) => {
+      const q = search.trim().toLowerCase();
+      return !q || label.toLowerCase().includes(q) || id.includes(q);
+    });
 
   return (
     <div className="page-container">
@@ -182,9 +196,31 @@ export function ProviderPage() {
         <div className="space-y-6">
           {/* Provider Selection */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">Provider</h2>
+            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">Provider</h2>
+
+            {/* Search */}
+            <div className="relative mb-3">
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder={`Search ${PROVIDERS.length} providers…`}
+                aria-label="Search providers"
+                className="input-base pl-10 text-sm"
+              />
+            </div>
+
+            <div className="mb-3 flex items-center justify-between text-[11px] font-medium text-gray-500">
+              <span>{visibleProviders.length} of {PROVIDERS.length} providers</span>
+              <span className="inline-flex items-center gap-1 text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                No key needed = free to start
+              </span>
+            </div>
+
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-4">
-              {PROVIDERS.map(({ id, label, Icon }) => {
+              {visibleProviders.map(({ id, label, Icon }) => {
                 const noKey = NO_KEY_PROVIDERS.has(id);
                 const selected = provider === id;
                 return (

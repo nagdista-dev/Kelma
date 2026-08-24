@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { CorrectBurst } from '@/components/quiz/CorrectBurst';
 import { QuizCompleteModal } from '@/components/quiz/QuizCompleteModal';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -31,13 +30,8 @@ export function QuizPage() {
   const { sessionStartTime } = useQuizStore();
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
-  const prevXpRef = useRef(0);
   const questionShownAtRef = useRef(0);
   const lastWasFastRef = useRef(false);
-  const [burst, setBurst] = useState(0);
-  const [burstXp, setBurstXp] = useState(0);
-  const [burstFast, setBurstFast] = useState(false);
-  const [burstVariant, setBurstVariant] = useState<'correct' | 'wrong'>('correct');
   const [showComplete, setShowComplete] = useState(false);
   const {
     phase,
@@ -78,20 +72,10 @@ export function QuizPage() {
     if (phase !== 'feedback' || !lastAnswer) return;
     play(lastAnswer.correct ? 'correct' : 'wrong');
 
-    // Correct/wrong celebration bursts — distinct tone for each
-    if (lastAnswer.correct) {
-      setBurstVariant('correct');
-      setBurstXp(xp - prevXpRef.current);
-      setBurstFast(lastWasFastRef.current);
-      setBurst(b => b + 1);
-      if (lastWasFastRef.current) {
-        window.setTimeout(() => play('speed'), 300);
-      }
-    } else {
-      setBurstVariant('wrong');
-      setBurst(b => b + 1);
+    // Speed zap rides on top of the answer sound
+    if (lastAnswer.correct && lastWasFastRef.current) {
+      window.setTimeout(() => play('speed'), 300);
     }
-    prevXpRef.current = xp;
 
     if (!lastAnswer.correct && lastAnswer.selected === I_DONT_KNOW) return;
 
@@ -228,17 +212,6 @@ export function QuizPage() {
 
   return (
     <div className="quiz-container">
-      {/* Correct-answer micro-celebration */}
-      <CorrectBurst
-        trigger={burst}
-        variant={burstVariant}
-        xpGained={burstXp}
-        speedBonus={burstFast}
-        streak={streak}
-        isMilestone={STREAK_MILESTONES.includes(streak)}
-        onDone={() => setBurst(0)}
-      />
-
       {/* Header stats bar — one unified pill */}
       <div className="glass mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl px-3.5 py-2.5">
         <XPCounter xp={xp} />
