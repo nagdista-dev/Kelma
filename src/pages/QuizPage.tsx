@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { QuizCompleteModal } from '@/components/quiz/QuizCompleteModal';
 import { PlacementQuiz } from '@/components/quiz/PlacementQuiz';
+import { InlineCorrectBar } from '@/components/quiz/InlineCorrectBar';
 import { usePlacementStore } from '@/store/placementStore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -35,6 +36,9 @@ export function QuizPage() {
   const prevMasteredCountRef = useRef(0);
   const questionShownAtRef = useRef(0);
   const lastWasFastRef = useRef(false);
+  const prevXpRef = useRef(0);
+  const [correctXp, setCorrectXp] = useState(0);
+  const [correctFast, setCorrectFast] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
   const {
     phase,
@@ -76,9 +80,14 @@ export function QuizPage() {
     play(lastAnswer.correct ? 'correct' : 'wrong');
 
     // Speed zap rides on top of the answer sound
-    if (lastAnswer.correct && lastWasFastRef.current) {
-      window.setTimeout(() => play('speed'), 300);
+    if (lastAnswer.correct) {
+      setCorrectXp(xp - prevXpRef.current);
+      setCorrectFast(lastWasFastRef.current);
+      if (lastWasFastRef.current) {
+        window.setTimeout(() => play('speed'), 300);
+      }
     }
+    prevXpRef.current = xp;
 
     if (!lastAnswer.correct && lastAnswer.selected === I_DONT_KNOW) return;
 
@@ -245,13 +254,26 @@ export function QuizPage() {
       {/* Question */}
       <QuestionCard question={question} />
 
-      {/* Feedback (shown after answer) */}
-      {phase === 'feedback' && lastAnswer && (
+      {/* Wrong answer → full explanation sheet | Correct → slim banner */}
+      {phase === 'feedback' && lastAnswer && !lastAnswer.correct && (
         <FeedbackCard
           question={question}
-          correct={lastAnswer.correct}
+          correct={false}
           feedbackText={feedbackText}
           isLoadingFeedback={isLoadingFeedback}
+          onNext={() => {
+            stop();
+            play('next');
+            handleNext();
+          }}
+        />
+      )}
+
+      {phase === 'feedback' && lastAnswer?.correct && (
+        <InlineCorrectBar
+          message={['Great job! 💪', 'Nailed it! 🔥', 'Excellent! ⭐', 'You are on fire! 🚀'][streak % 4]}
+          xpGained={correctXp}
+          speedBonus={correctFast}
           onNext={() => {
             stop();
             play('next');
