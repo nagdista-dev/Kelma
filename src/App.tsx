@@ -7,6 +7,7 @@ import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { LandingPage } from '@/pages/LandingPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { ProviderPage } from '@/pages/ProviderPage';
+import { LevelPage } from '@/pages/LevelPage';
 import { PricingPage } from '@/pages/PricingPage';
 import { HowToPage } from '@/pages/HowToPage';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -39,6 +40,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/provider" element={<ProviderPage />} />
+          <Route path="/level" element={<LevelPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/how-to" element={<HowToPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />

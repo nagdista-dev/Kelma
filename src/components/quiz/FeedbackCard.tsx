@@ -118,7 +118,7 @@ export function FeedbackCard({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[85] flex items-end justify-center bg-bg-primary/75 backdrop-blur-md"
+      className="fixed inset-0 z-[85] flex items-end justify-stretch bg-bg-primary/75 backdrop-blur-md"
       role="dialog"
       aria-label="Answer result"
     >
@@ -127,7 +127,7 @@ export function FeedbackCard({
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 26, stiffness: 300 }}
-        className={`flex max-h-[93dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border-x border-t shadow-2xl ${
+        className={`flex max-h-[93dvh] w-full flex-col overflow-hidden rounded-t-3xl border-t border-x shadow-2xl ${
           correct
             ? 'border-emerald-500/30 bg-white dark:border-emerald-500/25 dark:bg-[#101a2c]'
             : 'border-red-500/30 bg-white dark:border-red-500/25 dark:bg-[#101a2c]'
@@ -173,7 +173,7 @@ export function FeedbackCard({
         </div>
 
         {/* Scrollable content */}
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4">
+        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-4 sm:mx-auto sm:w-full sm:max-w-xl">
           {/* Explore this word */}
           <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 dark:border-white/10 dark:bg-black/20">
             <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400">

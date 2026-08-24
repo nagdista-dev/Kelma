@@ -14,13 +14,12 @@ import {
 import { useSettingsStore } from '@/store/settingsStore';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { LevelSelector } from '@/components/session/LevelSelector';
 import { getSpeechDiagnostics, useSpeech } from '@/hooks/useSpeech';
 
 export function SettingsPage() {
   const {
     provider, apiKey, theme, defaultLevel, voiceURI, model,
-    setTheme, setDefaultLevel, setVoiceURI,
+    setTheme, setVoiceURI,
   } = useSettingsStore();
 
   const { speak } = useSpeech();
@@ -255,11 +254,18 @@ export function SettingsPage() {
             </p>
           </Card>
 
-          {/* Default Level */}
-          <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">Default Level</h2>
-            <LevelSelector value={defaultLevel} onChange={setDefaultLevel} />
-          </Card>
+          {/* Default Level — managed on its own page */}
+          <Link to="/level" id="settings-level-link" className="block">
+            <Card className="flex items-center justify-between gap-3 transition-colors hover:border-teal-500/40">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-300">Default Level</h2>
+                <p className="text-xs text-gray-500">
+                  Pick it manually or take the AI placement test
+                </p>
+              </div>
+              <span className="badge-teal">{defaultLevel}</span>
+            </Card>
+          </Link>
 
           {/* Theme */}
           <Card>

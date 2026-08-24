@@ -164,7 +164,7 @@ export function SessionSetupPage() {
           <Card className="divide-y divide-white/5 p-0">
             {/* Level row */}
             <Link
-              to="/settings"
+              to="/level"
               id="change-level-link"
               className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
             >
