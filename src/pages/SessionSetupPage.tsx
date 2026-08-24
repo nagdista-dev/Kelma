@@ -1,7 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, RotateCcw, Settings as SettingsIcon, Sparkles, Trash2, Wand2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  GraduationCap,
+  RotateCcw,
+  Settings as SettingsIcon,
+  Sparkles,
+  Trash2,
+  Wand2,
+} from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
@@ -10,7 +19,7 @@ import { QuizGeneratingOverlay } from '@/components/session/QuizGeneratingOverla
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, PROVIDER_LABELS } from '@/types/index';
-import { MIN_WORDS } from '@/constants/index';
+import { MAX_WORDS, MIN_WORDS } from '@/constants/index';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export function SessionSetupPage() {
@@ -43,6 +52,7 @@ export function SessionSetupPage() {
   }, []);
 
   const canStart = words.length >= MIN_WORDS && !loading;
+  const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
 
   const handleStart = async () => {
     if (!canStart) return;
@@ -63,117 +73,156 @@ export function SessionSetupPage() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container pb-28 sm:pb-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-3 mb-8">
-          <Wand2 className="w-6 h-6 text-teal-400" />
-          <div>
-            <h1 className="text-2xl font-bold text-white">New Session</h1>
-            <p className="text-sm text-gray-400">
-              Enter up to 10 English words and the AI will generate a full quiz
+        {/* Header — compact on mobile */}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+            <Wand2 className="h-5 w-5 text-teal-400" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">New Session</h1>
+            <p className="text-xs text-gray-400 sm:text-sm">
+              Add English words — the AI builds a full quiz
             </p>
           </div>
         </div>
 
+        {/* Review banner */}
         {reviewMode && (
-          <div className="flex items-center gap-2 mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
+          <div className="mb-5 flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
             <RotateCcw className="h-4 w-4 shrink-0" />
-            Review mode: your weak words from the last session are loaded below.
+            Review mode: your weak words are loaded below.
           </div>
         )}
 
-        <div className="space-y-6">
-          {/* Word Input */}
-          <Card>
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest">
+        <div className="space-y-4 sm:space-y-6">
+          {/* Words card */}
+          <Card className="p-4 sm:p-5">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 sm:text-sm">
                 Your Words
               </h2>
-              {words.length > 0 && (
-                <button
-                  type="button"
-                  id="clear-all-words-btn"
-                  onClick={() => { clearWords(); setReviewMode(false); }}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-400 transition-all hover:border-red-500/50 hover:text-red-300 active:scale-95"
+              <div className="flex items-center gap-2">
+                {/* Progress ring / counter */}
+                <span
+                  className={`rounded-full border px-2.5 py-1 text-[11px] font-bold tabular-nums ${
+                    words.length >= MIN_WORDS
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+                      : 'border-white/10 bg-white/5 text-gray-500'
+                  }`}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  Clear All
-                </button>
-              )}
-            </div>
-            <WordInput words={words} onChange={setWords} />
-          </Card>
-
-          {/* Level — read-only, managed in Settings */}
-          <Card className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="badge-teal text-sm">{defaultLevel}</span>
-              <div>
-                <p className="text-sm font-semibold text-gray-200">
-                  {LEVEL_DESCRIPTIONS[defaultLevel]}
-                </p>
-                <p className="text-xs text-gray-500">
-                  Your session level — change it anytime from Settings
-                </p>
+                  {words.length}/{MAX_WORDS}
+                </span>
+                {words.length > 0 && (
+                  <button
+                    type="button"
+                    id="clear-all-words-btn"
+                    onClick={() => {
+                      clearWords();
+                      setReviewMode(false);
+                    }}
+                    aria-label="Clear all words"
+                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-white/10 text-gray-400 transition-all hover:border-red-500/50 hover:text-red-300 active:scale-95"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Slim progress bar */}
+            <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
+              <motion.div
+                className={`h-full rounded-full transition-all ${
+                  words.length >= MIN_WORDS ? 'bg-emerald-400' : 'bg-teal-500'
+                }`}
+                initial={false}
+                animate={{ width: `${progressPct}%` }}
+              />
+            </div>
+
+            <WordInput words={words} onChange={setWords} />
+
+            {words.length < MIN_WORDS && (
+              <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-gray-500">
+                <Sparkles className="h-3 w-3 text-teal-400" />
+                Add at least {MIN_WORDS} word to unlock the quiz
+              </p>
+            )}
+          </Card>
+
+          {/* Session settings summary — one compact card with two rows */}
+          <Card className="divide-y divide-white/5 p-0">
+            {/* Level row */}
             <Link
               to="/settings"
               id="change-level-link"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors hover:border-teal-500/50 hover:text-teal-300"
+              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
             >
-              <SettingsIcon className="w-3.5 h-3.5" />
-              Change
-            </Link>
-          </Card>
-
-          {/* AI Model — read-only, shows which model will generate the quiz */}
-          <Card className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              {isNoKey ? (
-                <span className="badge-emerald text-xs">No key</span>
-              ) : (
-                <Sparkles className="w-4 h-4 shrink-0 text-teal-400" />
-              )}
-              <div>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
+                <GraduationCap className="h-4 w-4 text-teal-400" />
+              </span>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-gray-200">
-                  Quiz by{' '}
-                  <span id="session-model-name" className="text-teal-300">
-                    {model}
-                  </span>
+                  Level ·{' '}
+                  <span className="badge-teal ml-0.5 inline-block align-middle">{defaultLevel}</span>
                 </p>
-                <p className="text-xs text-gray-500">
-                  {PROVIDER_LABELS[provider] ?? provider} will generate this session&apos;s quiz
-                </p>
+                <p className="truncate text-xs text-gray-500">{LEVEL_DESCRIPTIONS[defaultLevel]}</p>
               </div>
-            </div>
+              <SettingsIcon className="h-4 w-4 shrink-0 text-gray-500" />
+            </Link>
+
+            {/* Model row */}
             <Link
               to="/provider"
               id="change-provider-link"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors hover:border-teal-500/50 hover:text-teal-300"
+              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
             >
-              <SettingsIcon className="w-3.5 h-3.5" />
-              Change
+              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/10">
+                <Sparkles className="h-4 w-4 text-violet-400" />
+                {isNoKey && (
+                  <span className="absolute -right-1 -top-1 rounded-full bg-emerald-500 px-1 py-px text-[8px] font-black uppercase text-emerald-950">
+                    free
+                  </span>
+                )}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-gray-200">
+                  <span id="session-model-name" className="text-violet-300">
+                    {model}
+                  </span>
+                </p>
+                <p className="truncate text-xs text-gray-500">
+                  {PROVIDER_LABELS[provider] ?? provider}
+                  {isNoKey ? ' · no key needed' : ''}
+                </p>
+              </div>
+              <SettingsIcon className="h-4 w-4 shrink-0 text-gray-500" />
             </Link>
           </Card>
 
           {/* Error */}
           {error && (
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+            <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
+        </div>
+      </motion.div>
 
-          {/* Loading state — non-dismissible full-screen overlay */}
-          {loading && <QuizGeneratingOverlay words={words} />}
+      {/* Loading overlay */}
+      {loading && <QuizGeneratingOverlay words={words} />}
 
-          {/* Start button */}
-          {!loading && (
+      {/* Sticky bottom CTA on mobile */}
+      {!loading && (
+        <>
+          <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#0f172a]/95 p-4 backdrop-blur-md sm:hidden">
             <Button
               id="start-session-btn"
               onClick={() => void handleStart()}
@@ -181,12 +230,24 @@ export function SessionSetupPage() {
               size="lg"
               className="w-full"
             >
-              Generate Quiz
-              <ArrowRight className="w-4 h-4" />
+              {canStart ? `Generate Quiz (${words.length})` : `Add at least ${MIN_WORDS} word`}
+              <ArrowRight className="h-4 w-4" />
             </Button>
-          )}
-        </div>
-      </motion.div>
+          </div>
+          <div className="hidden sm:block">
+            <Button
+              id="start-session-btn-desktop"
+              onClick={() => void handleStart()}
+              disabled={!canStart}
+              size="lg"
+              className="w-full"
+            >
+              Generate Quiz
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
