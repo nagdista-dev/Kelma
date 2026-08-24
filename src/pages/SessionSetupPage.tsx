@@ -152,6 +152,25 @@ export function SessionSetupPage() {
 
             <WordInput words={words} onChange={setWords} />
 
+            {words.length === 0 && (
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                <span className="text-[11px] text-gray-500">Try:</span>
+                {['journey', 'improve', 'brave'].map(w => (
+                  <button
+                    key={w}
+                    type='button'
+                    onClick={() => {
+                      play('click');
+                      setWords(prev => (prev.includes(w) ? prev : [...prev, w]));
+                    }}
+                    className='inline-flex cursor-pointer items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-1 text-[11px] font-semibold text-teal-300 transition-all hover:bg-teal-500/20 active:scale-95'
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {words.length < MIN_WORDS && (
               <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-gray-500">
                 <Sparkles className="h-3 w-3 text-teal-400" />
