@@ -1,33 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Custom Properties ──────────────────────────────────────────────────── */
+/* ─── CSS Custom Properties — Nagdista Brand v3.0 ───────────────────────────── */
 :root {
+  /* Foundation — Midnight Navy */
   --bg-primary:   #0f172a;
-  --bg-secondary: #111827;
-  --bg-tertiary:  #1F2937;
+  --bg-secondary: #1e293b;   /* Dark Slate — cards */
+  --bg-tertiary:  #0b1120;   /* Deep Navy — hero */
 
+  /* Identity — Egyptian Teal */
   --accent-primary:   #0d9488;
   --accent-secondary: #14b8a6;
-  --accent-light:     #2dd4bf;
+  --accent-deep:      #0f766e;
+  --accent-light:     #2DD4BF;
 
-  --success:       #10B981;
+  /* Accent — Cairo Gold (10% only) */
+  --gold:        #f59e0b;
+  --gold-deep:   #d97706;
+  --gold-light:  #fbbf24;
+  --xp-gold:     #f59e0b;
+  --xp-light:    #fbbf24;
+
+  --success:       #059669;
   --success-light: #34D399;
 
   --error:       #EF4444;
   --error-light: #FCA5A5;
 
-  --xp-gold:  #F59E0B;
-  --xp-light: #FCD34D;
+  /* Neutrals */
+  --ivory:          #f5ece4;   /* Ivory Sand — light bg */
+  --slate-dark:     #1e293b;
+  --text-primary:   #ffffff;
+  --text-secondary: #94a3b8;   /* Light Slate */
+  --text-muted:     #64748B;
 
-  --text-primary:   #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-muted:     #6B7280;
+  --glass-bg:     rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(51, 65, 85, 0.55);   /* slate-700 */
 
-  --glass-bg:     rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.10);
+  --font-display: 'Poppins', 'Tajawal', system-ui, sans-serif;
 }
 
 /* ─── Base Resets ────────────────────────────────────────────────────────────── */
@@ -36,7 +48,7 @@
 }
 
 html {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: 'Inter', 'Poppins', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: light;
@@ -60,15 +72,42 @@ html.dark select option {
 
 body {
   margin: 0;
-  background: #F8FAFC;
+  background: var(--ivory);   /* Ivory Sand — brand light mode */
   color: #0F172A;
   min-height: 100svh;
   overflow-x: hidden;
 }
 
 .dark body {
-  background: var(--bg-primary);
   color: var(--text-primary);
+  /* Signature: Fajr night — teal dawn glow + warm gold horizon (brand palette only) */
+  background:
+    radial-gradient(1100px 700px at 88% -12%, rgba(13, 148, 136, 0.12), transparent 60%),
+    radial-gradient(900px 600px at -8% 20%, rgba(13, 148, 136, 0.07), transparent 55%),
+    radial-gradient(850px 500px at 50% 118%, rgba(245, 158, 11, 0.06), transparent 60%),
+    var(--bg-primary);
+  background-attachment: fixed;
+}
+
+/* Brand heading face — Poppins Bold */
+h1, h2, .font-display {
+  font-family: var(--font-display);
+}
+
+/* Keyboard focus — Cairo Gold outline (brand standard) */
+:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 #root {
@@ -105,14 +144,13 @@ body {
     @apply dark:bg-white/10 dark:border-white/20 dark:shadow-none;
   }
 
-  /* ─── Answer Buttons ─────────────────────────────────────────────────────── */
+  /* ─── Answer Buttons — letter-tile feel, brand radius (12px) ─────────────── */
   .answer-btn {
-    @apply w-full text-left px-4 py-4 sm:px-5 rounded-2xl border font-medium transition-all duration-200 cursor-pointer text-base sm:text-sm;
+    @apply w-full text-left px-4 py-4 sm:px-5 rounded-xl border font-medium transition-all duration-200 cursor-pointer text-base sm:text-sm;
     @apply min-h-[56px] flex items-center;
     @apply bg-white border-slate-200 text-slate-900 shadow-sm;
     @apply hover:border-teal-500 hover:bg-teal-50 hover:text-slate-950;
-    @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-100 dark:shadow-none;
-    @apply dark:hover:border-teal-500 dark:hover:bg-teal-500/10 dark:hover:text-white;
+    @apply dark:bg-white/5 dark:border-white/10 dark:text-gray-100 dark:shadow-none dark:hover:border-teal-400;
     @apply focus:outline-none focus:ring-2 focus:ring-teal-500/50;
     @apply active:scale-[0.98];
   }
@@ -139,12 +177,14 @@ body {
     @apply cursor-not-allowed opacity-50;
   }
 
-  /* ─── Primary Button ─────────────────────────────────────────────────────── */
+  /* ─── Primary Button — Nile gradient (brand) ─────────────────────────────── */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-200;
-    @apply bg-teal-600 hover:bg-teal-500 active:scale-95;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200;
+    background-image: linear-gradient(180deg, #14b8a6, #0f766e);
+    @apply shadow-md active:scale-95;
+    @apply hover:brightness-110 hover:shadow-lg;
     @apply focus:outline-none focus:ring-2 focus:ring-teal-500/50;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:bg-none disabled:bg-slate-400;
   }
 
   .btn-secondary {
@@ -175,6 +215,15 @@ body {
   /* ─── Card ───────────────────────────────────────────────────────────────── */
   .card {
     @apply glass rounded-2xl p-6;
+  }
+
+  .dark .card {
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 45%);
+  }
+
+  /* ─── Quiz focus container ─────────────────────────────────────────────── */
+  .quiz-container {
+    @apply max-w-xl mx-auto w-full px-4 py-6;
   }
 
   /* ─── Badge ──────────────────────────────────────────────────────────────── */
@@ -208,9 +257,9 @@ body {
   }
 }
 
-/* ─── Gradient Text ──────────────────────────────────────────────────────────── */
+/* ─── Gradient Text — Fajr gradient (brand) ─────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #2dd4bf, #0d9488);
+  background: linear-gradient(135deg, #2DD4BF, #0d9488);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

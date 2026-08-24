@@ -22,16 +22,27 @@ export function QuestionCard({ question }: QuestionCardProps) {
         transition={{ duration: 0.3, ease: 'easeOut' }}
         className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 mb-6 shadow-sm dark:border-white/10 dark:bg-white/5 dark:backdrop-blur-sm"
       >
-        {/* Round badge + context */}
+        {/* Round badge + true sequence indicator (6 rounds) */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <span className="badge-teal bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-500/30">
             Round {question.round} · {ROUND_LABELS[question.round]}
           </span>
-          {question.contextLine && (
-            <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
-              {question.contextLine}
-            </span>
-          )}
+          {/* 6 diamonds — filled up to the current round */}
+          <span className="flex items-center gap-1" aria-label={`Round ${question.round} of 6`}>
+            {[1, 2, 3, 4, 5, 6].map(n => (
+              <span
+                key={n}
+                aria-hidden="true"
+                className={`h-1.5 w-3.5 rounded-full transition-colors ${
+                  n < question.round
+                    ? 'bg-emerald-400'
+                    : n === question.round
+                      ? 'bg-gold'
+                      : 'bg-slate-200 dark:bg-white/10'
+                }`}
+              />
+            ))}
+          </span>
         </div>
 
         {/* Question */}

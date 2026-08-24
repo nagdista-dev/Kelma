@@ -158,7 +158,7 @@ export function QuizPage() {
   const isSpellingRound = question.round === 6;
 
   return (
-    <div className="page-container">
+    <div className="quiz-container">
       {/* Header stats bar */}
       <div className="flex flex-wrap items-center justify-between mb-4 gap-2 sm:gap-3">
         <XPCounter xp={xp} />

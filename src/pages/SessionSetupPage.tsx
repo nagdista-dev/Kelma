@@ -183,8 +183,8 @@ export function SessionSetupPage() {
               id="change-provider-link"
               className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
             >
-              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/10">
-                <Sparkles className="h-4 w-4 text-violet-400" />
+              <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
+                <Sparkles className="h-4 w-4 text-teal-400" />
                 {isNoKey && (
                   <span className="absolute -right-1 -top-1 rounded-full bg-emerald-500 px-1 py-px text-[8px] font-black uppercase text-emerald-950">
                     free
@@ -193,7 +193,7 @@ export function SessionSetupPage() {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-gray-200">
-                  <span id="session-model-name" className="text-violet-300">
+                  <span id="session-model-name" className="text-teal-300">
                     {model}
                   </span>
                 </p>
@@ -219,10 +219,10 @@ export function SessionSetupPage() {
       {/* Loading overlay */}
       {loading && <QuizGeneratingOverlay words={words} />}
 
-      {/* Sticky bottom CTA on mobile */}
+      {/* Sticky bottom CTA on mobile — respects safe areas */}
       {!loading && (
         <>
-          <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#0f172a]/95 p-4 backdrop-blur-md sm:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-bg-primary/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
             <Button
               id="start-session-btn"
               onClick={() => void handleStart()}

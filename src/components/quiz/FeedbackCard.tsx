@@ -170,9 +170,9 @@ export function FeedbackCard({
             onClick={() => speak(word.word, 0.55)}
             aria-label={`Hear ${word.word} slowly`}
             id="slow-pronounce-btn"
-            className={`${ACTION_TILE} border-violet-200 bg-violet-50/60 hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:hover:bg-violet-500/20`}
+            className={`${ACTION_TILE} border-amber-200 bg-amber-50/60 hover:border-amber-400 hover:bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 dark:hover:bg-amber-500/20`}
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white dark:bg-violet-500/20 dark:text-violet-300">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600 transition-colors group-hover:bg-amber-500 group-hover:text-white dark:bg-amber-500/20 dark:text-amber-300">
               <Turtle className="h-4 w-4" />
             </span>
             <span className="text-xs font-bold text-slate-800 dark:text-gray-100">Slow</span>
