@@ -2,40 +2,136 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
+  Atom,
+  BookOpen,
   Bot,
+  Boxes,
+  BrainCircuit,
+  Braces,
   CheckCircle,
+  CircuitBoard,
+  Cloud,
   CloudCog,
   Command,
   Cpu,
+  Database,
+  Fish,
+  Flower2,
   Gem,
+  Globe,
   HelpCircle,
+  Hexagon,
   KeyRound,
+  Layers,
+  Library,
   Loader2,
   Network,
+  Orbit,
   Plug,
+  Rocket,
+  Send,
+  Server,
+  ServerCog,
+  Shapes,
+  Share2,
+  Smile,
+  Sparkles,
   Terminal,
+  Wind,
   XCircle,
+  Zap,
   type LucideIcon,
 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { ApiKeyInput } from '@/components/ui/ApiKeyInput';
-import { PROVIDER_MODELS } from '@/types/index';
+import { PROVIDER_MODELS, NO_KEY_PROVIDERS } from '@/types/index';
 import { validateApiKey } from '@/lib/quizDataGenerator';
 import type { AIProvider } from '@/types/index';
 
 type ValidationState = 'idle' | 'loading' | 'valid' | 'invalid';
 
 const PROVIDERS: { id: AIProvider; label: string; Icon: LucideIcon }[] = [
+  { id: 'kilo', label: 'Kilo Code', Icon: Braces },
+  { id: 'llm7', label: 'LLM7.io', Icon: Rocket },
+  { id: 'ovh', label: 'OVHcloud', Icon: Server },
+  { id: 'pollinations', label: 'Pollinations', Icon: Flower2 },
   { id: 'openai', label: 'OpenAI', Icon: Bot },
-  { id: 'commandcode', label: 'CommandCode', Icon: Command },
-  { id: 'openrouter', label: 'OpenRouter', Icon: Network },
-  { id: 'opencode', label: 'OpenCode', Icon: Terminal },
   { id: 'google', label: 'Google Gemini', Icon: Gem },
   { id: 'anthropic', label: 'Anthropic Claude', Icon: CloudCog },
   { id: 'cohere', label: 'Cohere', Icon: Cpu },
+  { id: 'mistral', label: 'Mistral', Icon: Wind },
+  { id: 'groq', label: 'Groq', Icon: Zap },
+  { id: 'cerebras', label: 'Cerebras', Icon: BrainCircuit },
+  { id: 'deepseek', label: 'DeepSeek', Icon: Fish },
+  { id: 'openrouter', label: 'OpenRouter', Icon: Network },
+  { id: 'opencode', label: 'OpenCode', Icon: Terminal },
+  { id: 'commandcode', label: 'CommandCode', Icon: Command },
+  { id: 'xai', label: 'xAI Grok', Icon: Sparkles },
+  { id: 'zai', label: 'Z AI GLM', Icon: Hexagon },
+  { id: 'nvidia', label: 'NVIDIA NIM', Icon: Atom },
+  { id: 'ollama', label: 'Ollama Cloud', Icon: Boxes },
+  { id: 'cloudflare', label: 'Cloudflare AI', Icon: Cloud },
+  { id: 'huggingface', label: 'Hugging Face', Icon: Smile },
+  { id: 'aionlabs', label: 'Aion Labs', Icon: BookOpen },
+  { id: 'sambanova', label: 'SambaNova', Icon: Database },
+  { id: 'alibaba', label: 'Alibaba Qwen', Icon: Globe },
+  { id: 'modelscope', label: 'ModelScope', Icon: Library },
+  { id: 'siliconflow', label: 'SiliconFlow', Icon: CircuitBoard },
+  { id: 'ai21', label: 'AI21 Jamba', Icon: Layers },
+  { id: 'glhf', label: 'Glhf.chat', Icon: Shapes },
+  { id: 'nscale', label: 'Nscale', Icon: ServerCog },
+  { id: 'nebius', label: 'Nebius', Icon: Orbit },
+  { id: 'chutes', label: 'Chutes.ai', Icon: Send },
+  { id: 'kluster', label: 'Kluster AI', Icon: Share2 },
 ];
+
+const KEY_PLACEHOLDERS: Record<AIProvider, string> = {
+  openai: 'sk-…',
+  commandcode: 'CommandCode API key',
+  openrouter: 'sk-or-v1-…',
+  opencode: 'OpenCode API key',
+  google: 'AQ… or AIza…',
+  anthropic: 'sk-ant-…',
+  cohere: 'co-…',
+  groq: 'gsk_…',
+  deepseek: 'sk-…',
+  mistral: 'Free mode key',
+  xai: 'xai-…',
+  aionlabs: 'Aion Labs API key',
+  zai: 'Z AI API key',
+  huggingface: 'hf_…',
+  kilo: 'Not required — leave empty',
+  llm7: 'Optional — free token',
+  nvidia: 'nvapi-…',
+  ollama: 'Ollama API key',
+  ovh: 'Not required — leave empty',
+  cloudflare: '<account-id>:<api-token>',
+  modelscope: 'ms-…',
+  siliconflow: 'sk-…',
+  pollinations: 'Free tier key — enter.pollinations.ai/keys',
+  cerebras: 'csk-…',
+  sambanova: 'SambaNova API key',
+  ai21: 'AI21 API key',
+  glhf: 'Glhf API key',
+  nscale: 'Nscale API key',
+  nebius: 'Nebius API key',
+  chutes: 'Chutes API key',
+  kluster: 'Kluster API key',
+  alibaba: 'sk-…',
+  together: 'Together API key',
+  fireworks: 'fw_…',
+  novita: 'Novita API key',
+  hyperbolic: 'Hyperbolic API key',
+  deepinfra: 'DeepInfra API key',
+  scaleway: 'Scaleway API key',
+  upstage: 'up_…',
+  wandb: 'W&B API key',
+  typhoon: 'Typhoon API key',
+  arli: 'Arli API key',
+  poolside: 'Poolside API key',
+};
 
 export function ProviderPage() {
   const {
@@ -47,7 +143,7 @@ export function ProviderPage() {
   const [validationMsg, setValidationMsg] = useState('');
 
   const handleValidate = async () => {
-    if (!apiKey) return;
+    if (!apiKey && !NO_KEY_PROVIDERS.has(provider)) return;
     setValidation('loading');
     setValidationMsg('');
     const result = await validateApiKey(provider, apiKey, model);
@@ -59,6 +155,8 @@ export function ProviderPage() {
       setValidationMsg(result.error ?? 'Invalid key.');
     }
   };
+
+  const isNoKey = NO_KEY_PROVIDERS.has(provider);
 
   return (
     <div className="page-container">
@@ -82,21 +180,41 @@ export function ProviderPage() {
           <Card>
             <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">Provider</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mb-4">
-              {PROVIDERS.map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  id={`provider-${id}`}
-                  onClick={() => { setProvider(id); setValidation('idle'); }}
-                  className={`py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200 text-center ${
-                    provider === id
-                      ? 'bg-teal-500/20 border-teal-500 text-teal-200'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:border-teal-500/50 hover:text-gray-200'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mx-auto mb-1.5" aria-hidden="true" />
-                  {label}
-                </button>
-              ))}
+              {PROVIDERS.map(({ id, label, Icon }) => {
+                const noKey = NO_KEY_PROVIDERS.has(id);
+                const selected = provider === id;
+                return (
+                  <button
+                    key={id}
+                    id={`provider-${id}`}
+                    onClick={() => { setProvider(id); setValidation('idle'); }}
+                    className={`relative py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200 text-center ${
+                      selected
+                        ? noKey
+                          ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200 shadow-md shadow-emerald-500/20'
+                          : 'bg-teal-500/20 border-teal-500 text-teal-200'
+                        : noKey
+                          ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-300/80 hover:border-emerald-400 hover:text-emerald-200'
+                          : 'bg-white/5 border-white/10 text-gray-400 hover:border-teal-500/50 hover:text-gray-200'
+                    }`}
+                  >
+                    {noKey && (
+                      <span
+                        className={`absolute top-1 right-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
+                          selected ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-500/25 text-emerald-300'
+                        }`}
+                      >
+                        No key
+                      </span>
+                    )}
+                    <Icon
+                      className={`w-5 h-5 mx-auto mb-1.5 ${noKey && !selected ? 'text-emerald-400' : ''}`}
+                      aria-hidden="true"
+                    />
+                    {label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Model selector */}
@@ -120,33 +238,38 @@ export function ProviderPage() {
           {/* API Key */}
           <Card>
             <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">API Key</h2>
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-              <p className="text-xs text-gray-500">
-                Your key is stored only in your browser&apos;s LocalStorage. It is never sent to any server except directly to the AI provider.
-              </p>
-              <Link
-                to="/help"
-                id="get-keys-link"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95 shrink-0"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                Get keys
-              </Link>
-            </div>
-            <ApiKeyInput
-              value={apiKey}
-              onChange={(v) => { setApiKey(v); setValidation('idle'); }}
-              placeholder={
-                provider === 'openai' ? 'sk-…' :
-                provider === 'commandcode' ? 'CommandCode API key' :
-                provider === 'openrouter' ? 'sk-or-v1-…' :
-                provider === 'opencode' ? 'OpenCode API key' :
-                provider === 'google' ? 'AQ… or AIza…' :
-                provider === 'anthropic' ? 'sk-ant-…' :
-                'co-…'
-              }
-              id="settings-api-key"
-            />
+
+            {isNoKey ? (
+              <div className="flex items-start gap-2 mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+                <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  This provider is free and needs no API key — pick a model above and start quizzing right away.
+                </span>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                <p className="text-xs text-gray-500">
+                  Your key is stored only in your browser&apos;s LocalStorage. It is never sent to any server except directly to the AI provider.
+                </p>
+                <Link
+                  to="/help"
+                  id="get-keys-link"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95 shrink-0"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  Get keys
+                </Link>
+              </div>
+            )}
+
+            {!isNoKey && (
+              <ApiKeyInput
+                value={apiKey}
+                onChange={(v) => { setApiKey(v); setValidation('idle'); }}
+                placeholder={KEY_PLACEHOLDERS[provider]}
+                id="settings-api-key"
+              />
+            )}
 
             {/* Validation feedback */}
             {validation !== 'idle' && (

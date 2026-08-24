@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar } from './Navbar';
+import { ResumeQuizButton } from './ResumeQuizButton';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ export function Layout({ children }: LayoutProps) {
       <main className="flex-1 flex flex-col">
         {children}
       </main>
+      <ResumeQuizButton />
       <footer className="border-t border-slate-200 py-8 dark:border-white/5">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex flex-col items-center justify-between gap-5 sm:flex-row">

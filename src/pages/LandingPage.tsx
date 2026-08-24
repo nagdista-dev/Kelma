@@ -14,6 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
+import { NO_KEY_PROVIDERS } from '@/types/index';
 
 const FEATURES = [
   {
@@ -60,6 +61,9 @@ const ROUNDS = [
 export function LandingPage() {
   const navigate = useNavigate();
   const apiKey = useSettingsStore(s => s.apiKey);
+  const provider = useSettingsStore(s => s.provider);
+  // No-key providers work with an empty key
+  const ready = Boolean(apiKey) || NO_KEY_PROVIDERS.has(provider);
 
   return (
     <div className="page-container flex flex-col items-center text-center">
@@ -95,10 +99,10 @@ export function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
             <button
               id="cta-start"
-              onClick={() => navigate(apiKey ? '/session' : '/provider')}
+              onClick={() => navigate(ready ? '/session' : '/provider')}
               className="btn-primary text-base px-8 py-3.5 gap-2"
             >
-              {apiKey ? (
+              {ready ? (
                 <>Start a Session <ArrowRight className="w-4 h-4" /></>
               ) : (
                 <>Get Started Free <ArrowRight className="w-4 h-4" /></>
@@ -192,7 +196,7 @@ export function LandingPage() {
           Three words is all it takes to feel the difference in your first session.
         </p>
         <button
-          onClick={() => navigate(apiKey ? '/session' : '/provider')}
+          onClick={() => navigate(ready ? '/session' : '/provider')}
           id="cta-bottom"
           className="btn-primary mt-6 px-10 py-3.5 gap-2"
         >

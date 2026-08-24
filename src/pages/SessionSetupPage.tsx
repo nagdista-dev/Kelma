@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { AlertCircle, ArrowRight, RotateCcw, Settings as SettingsIcon, Wand2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, RotateCcw, Settings as SettingsIcon, Sparkles, Trash2, Wand2 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
@@ -9,15 +9,18 @@ import { WordInput } from '@/components/session/WordInput';
 import { QuizGeneratingOverlay } from '@/components/session/QuizGeneratingOverlay';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { LEVEL_DESCRIPTIONS } from '@/types/index';
+import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, PROVIDER_LABELS } from '@/types/index';
 import { MIN_WORDS } from '@/constants/index';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export function SessionSetupPage() {
   const navigate = useNavigate();
   const { provider, apiKey, model, defaultLevel } = useSettingsStore();
   const { startSession, setPhase } = useQuizStore();
+  const isNoKey = NO_KEY_PROVIDERS.has(provider);
 
-  const [words, setWords] = useState<string[]>([]);
+  // Draft words persist across navigation and page reloads
+  const [words, setWords, clearWords] = useLocalStorage<string[]>('pww-draft-words', []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
@@ -86,9 +89,22 @@ export function SessionSetupPage() {
         <div className="space-y-6">
           {/* Word Input */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">
-              Your Words
-            </h2>
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest">
+                Your Words
+              </h2>
+              {words.length > 0 && (
+                <button
+                  type="button"
+                  id="clear-all-words-btn"
+                  onClick={() => { clearWords(); setReviewMode(false); }}
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-400 transition-all hover:border-red-500/50 hover:text-red-300 active:scale-95"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Clear All
+                </button>
+              )}
+            </div>
             <WordInput words={words} onChange={setWords} />
           </Card>
 
@@ -108,6 +124,36 @@ export function SessionSetupPage() {
             <Link
               to="/settings"
               id="change-level-link"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors hover:border-teal-500/50 hover:text-teal-300"
+            >
+              <SettingsIcon className="w-3.5 h-3.5" />
+              Change
+            </Link>
+          </Card>
+
+          {/* AI Model — read-only, shows which model will generate the quiz */}
+          <Card className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              {isNoKey ? (
+                <span className="badge-emerald text-xs">No key</span>
+              ) : (
+                <Sparkles className="w-4 h-4 shrink-0 text-teal-400" />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-gray-200">
+                  Quiz by{' '}
+                  <span id="session-model-name" className="text-teal-300">
+                    {model}
+                  </span>
+                </p>
+                <p className="text-xs text-gray-500">
+                  {PROVIDER_LABELS[provider] ?? provider} will generate this session&apos;s quiz
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/provider"
+              id="change-provider-link"
               className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors hover:border-teal-500/50 hover:text-teal-300"
             >
               <SettingsIcon className="w-3.5 h-3.5" />

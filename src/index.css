@@ -244,6 +244,15 @@ body {
   line-height: 1.8;
 }
 
+/* ─── YouGlish popup — widget fills its container ───────────────────────────── */
+.yg-fill iframe,
+.yg-fill > div > iframe {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: inherit;
+  border: 0 !important;
+}
+
 /* ─── Animations ─────────────────────────────────────────────────────────────── */
 @keyframes float {
   0%, 100% { transform: translateY(0); }

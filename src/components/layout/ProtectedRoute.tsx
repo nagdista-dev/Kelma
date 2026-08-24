@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
+import { NO_KEY_PROVIDERS } from '@/types/index';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,9 +16,13 @@ export function ProtectedRoute({
   redirectTo,
 }: ProtectedRouteProps) {
   const apiKey = useSettingsStore(s => s.apiKey);
+  const provider = useSettingsStore(s => s.provider);
   const phase = useQuizStore(s => s.phase);
 
-  if (require === 'apiKey' && !apiKey) {
+  // No-key providers work with an empty key
+  const canUseProvider = Boolean(apiKey) || NO_KEY_PROVIDERS.has(provider);
+
+  if (require === 'apiKey' && !canUseProvider) {
     return <Navigate to={redirectTo ?? '/settings'} replace />;
   }
 

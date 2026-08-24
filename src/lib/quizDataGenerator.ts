@@ -43,6 +43,7 @@ const WordQuizDataSchema = z.object({
   word: z.string(),
   arabicMeaning: z.string(),
   englishDefinition: z.string(),
+  ipa: z.string().optional(),
   exampleSentence: z.string(),
   distractors: z.array(z.string()).length(3),
   arabicDistractors: z.array(z.string()).length(3),
@@ -92,6 +93,7 @@ Generate complete quiz data for these ${words.length} English words at ${level} 
 For EACH word provide:
 - arabicMeaning: The most accurate, natural Egyptian Arabic translation (use Arabic script)
 - englishDefinition: A clear, level-appropriate English definition (${level} level vocabulary in the definition itself)
+- ipa: (optional) The IPA phonetic transcription of the word, e.g. /ˈlæd.əl/
 - exampleSentence: A natural sentence using the word with the word replaced by "___" (blank). Must be at ${level} level.
 - distractors: 3 confusable English words (similar meaning, spelling, or sound — NOT random). These are wrong answers for MCQ rounds 1 and 2.
 - arabicDistractors: 3 wrong Arabic meanings (plausible but incorrect). For MCQ round 3.
@@ -146,12 +148,16 @@ ${wordData.collocations.length ? `Common collocations: ${wordData.collocations.j
 ${wordData.emojiAnchor ? `Visual anchor: ${wordData.emojiAnchor}` : ''}
 ${wordData.memoryTip ? `Memory tip: ${wordData.memoryTip}` : ''}
 
-Write a short explanation (3–4 sentences) in Egyptian Arabic that:
-1. Explains why "${correctAnswer}" is the correct answer
-2. Clarifies the difference between the word and the student's answer (if applicable)
-3. Gives an easy way to remember the word
+Write the explanation in Egyptian Arabic, formatted EXACTLY as these 3 short lines (keep the labels):
 
-Use a warm, encouraging tone — not critical.`;
+الفرق: [one sentence: why "${correctAnswer}" is correct and the difference from the student's answer — put both words in **bold**]
+إمتى نستخدمها: [one sentence: when/how the word is used]
+طريقة التذكر: [one short memorable trick linking the word to its meaning]
+
+Rules:
+- No greeting, no intro, no closing praise.
+- Use **bold** around the English words whenever they appear.
+- Each line must stay short (max ~25 words).`;
 
   return withRetry(async () => {
     const { text } = await generateText({
@@ -160,6 +166,32 @@ Use a warm, encouraging tone — not critical.`;
       maxOutputTokens: 300,
     });
     return text.trim();
+  });
+}
+
+// ─── On-demand Translation (collocations / examples) ──────────────────────────
+
+export async function translateToArabic(
+  texts: string[],
+  provider: AIProvider,
+  apiKey: string,
+  model: string
+): Promise<string[]> {
+  const prompt = `Translate each English item below into natural Egyptian Arabic (Arabic script).
+Return ONLY JSON matching the schema — one translation per item, same order, same count.
+
+Items:
+${texts.map((t, i) => `${i + 1}. ${t}`).join('\n')}`;
+
+  return withRetry(async () => {
+    const { object } = await generateObject({
+      model: getAIModel(provider, apiKey, model) as Parameters<typeof generateObject>[0]['model'],
+      schema: z.object({ translations: z.array(z.string()).length(texts.length) }),
+      prompt,
+      temperature: 0,
+      maxOutputTokens: 1200,
+    });
+    return object.translations as string[];
   });
 }
 

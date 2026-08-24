@@ -1,11 +1,16 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
   CheckCircle2,
   Compass,
+  GraduationCap,
+  Languages,
   Lightbulb,
   Link2,
+  Loader2,
   Quote,
+  Turtle,
   Volume2,
   XCircle,
   Play,
@@ -13,6 +18,10 @@ import {
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { useSpeech } from '@/hooks/useSpeech';
+import { useSettingsStore } from '@/store/settingsStore';
+import { WordVideosModal } from '@/components/quiz/WordVideosModal';
+import { TranslatableBlock } from '@/components/quiz/TranslatableBlock';
+import { getFriendlyAIErrorMessage, translateToArabic } from '@/lib/quizDataGenerator';
 import type { QuizQuestion } from '@/types/index';
 
 const PRAISE_MESSAGES = [
@@ -35,6 +44,24 @@ function pickRandom(messages: string[]) {
   return messages[Math.floor(Math.random() * messages.length)];
 }
 
+/** Renders **bold** markers inside AI feedback lines */
+function FeedbackLine({ line }: { line: string }) {
+  const parts = line.split(/(\*\*[^*]+\*\*)/g);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.startsWith('**') && p.endsWith('**') ? (
+          <strong key={i} className="font-bold text-slate-900 dark:text-white">
+            <bdi>{p.slice(2, -2)}</bdi>
+          </strong>
+        ) : (
+          <span key={i}>{p}</span>
+        )
+      )}
+    </>
+  );
+}
+
 const ACTION_TILE =
   'group flex cursor-pointer flex-col items-center justify-center gap-1 sm:gap-1.5 rounded-xl border px-1.5 py-2.5 sm:px-2 sm:py-3.5 text-center transition-all duration-200 hover:-translate-y-0.5 active:scale-95';
 
@@ -54,10 +81,31 @@ export function FeedbackCard({
   onNext,
 }: FeedbackCardProps) {
   const { speak } = useSpeech();
+  const { provider, apiKey, model } = useSettingsStore();
   const word = question.wordProgress.quizData;
   const hasArabicMemoryTip = /[\u0600-\u06FF]/.test(word.memoryTip ?? '');
   const fullSentence = word.exampleSentence.replace(/_{2,}/g, word.word);
   const headerMessage = correct ? pickRandom(PRAISE_MESSAGES) : pickRandom(RETRY_MESSAGES);
+  const [showVideos, setShowVideos] = useState(false);
+  const [colTranslations, setColTranslations] = useState<string[] | null>(null);
+  const [colLoading, setColLoading] = useState(false);
+  const [colError, setColError] = useState('');
+
+  const toggleCollocationTranslation = async () => {
+    if (colTranslations) {
+      setColTranslations(null);
+      return;
+    }
+    setColLoading(true);
+    setColError('');
+    try {
+      setColTranslations(await translateToArabic(word.collocations, provider, apiKey, model));
+    } catch (err) {
+      setColError(getFriendlyAIErrorMessage(err));
+    } finally {
+      setColLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -100,7 +148,7 @@ export function FeedbackCard({
           <Compass className="h-3.5 w-3.5" />
           Explore this word
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <button
             type="button"
             onClick={() => speak(word.word)}
@@ -116,6 +164,21 @@ export function FeedbackCard({
             <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500">Hear it</span>
           </button>
 
+          {/* Slow pronunciation — great for beginners */}
+          <button
+            type="button"
+            onClick={() => speak(word.word, 0.55)}
+            aria-label={`Hear ${word.word} slowly`}
+            id="slow-pronounce-btn"
+            className={`${ACTION_TILE} border-violet-200 bg-violet-50/60 hover:border-violet-400 hover:bg-violet-50 dark:border-violet-500/30 dark:bg-violet-500/10 dark:hover:bg-violet-500/20`}
+          >
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white dark:bg-violet-500/20 dark:text-violet-300">
+              <Turtle className="h-4 w-4" />
+            </span>
+            <span className="text-xs font-bold text-slate-800 dark:text-gray-100">Slow</span>
+            <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500">Hear slowly</span>
+          </button>
+
           <button
             type="button"
             onClick={() => speak(fullSentence, 0.85)}
@@ -129,31 +192,55 @@ export function FeedbackCard({
             <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500">Hear context</span>
           </button>
 
-          <a
-            href={`https://youglish.com/pronounce/${encodeURIComponent(word.word)}/english/us`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Watch real videos using ${word.word} on YouGlish`}
+          <button
+            type="button"
+            onClick={() => setShowVideos(true)}
+            aria-label={`Watch real videos using ${word.word} without leaving the app`}
             className={`${ACTION_TILE} border-red-600 bg-gradient-to-b from-red-500 to-red-600 text-white shadow-lg shadow-red-500/30 hover:from-red-400 hover:to-red-500`}
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
               <Play className="h-4 w-4" />
             </span>
-            <span className="text-xs font-bold">YouGlish</span>
-            <span className="text-[10px] font-medium text-red-100">Real videos</span>
-          </a>
+            <span className="text-xs font-bold">Videos</span>
+            <span className="text-[10px] font-medium text-red-100">Real usage</span>
+          </button>
         </div>
       </div>
 
-      {/* Collocations (always show on correct) */}
-      {correct && word.collocations.length > 0 && (
+      {/* Example — complete, filled sentence with Arabic translation */}
+      <div className="mb-3">
+        <TranslatableBlock label="Example" lines={[fullSentence]} />
+      </div>
+
+      {/* Collocations — always visible, each chip speaks, section translates */}
+      {word.collocations.length > 0 && (
         <div className="mb-3 rounded-xl border border-emerald-200 bg-white p-3 dark:border-white/10 dark:bg-white/5">
-          <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400">
-            <Link2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
-            Common collocations
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400">
+              <Link2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+              Common collocations
+            </div>
+            <button
+              type="button"
+              onClick={() => void toggleCollocationTranslation()}
+              disabled={colLoading}
+              aria-label="Translate collocations to Arabic"
+              className={`inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 ${
+                colTranslations
+                  ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-300'
+                  : 'border-slate-200 text-slate-500 hover:border-teal-500/50 hover:text-teal-600 dark:border-white/10 dark:text-gray-400 dark:hover:text-teal-300'
+              }`}
+            >
+              {colLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Languages className="h-3.5 w-3.5" />
+              )}
+              {colTranslations ? 'EN' : 'عربي'}
+            </button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {word.collocations.map(c => (
+            {word.collocations.map((c, i) => (
               <button
                 key={c}
                 type="button"
@@ -162,11 +249,18 @@ export function FeedbackCard({
                 title="Hear this collocation"
                 className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 transition-all hover:border-emerald-400 hover:bg-emerald-50 active:scale-95 dark:border-white/10 dark:bg-black/10 dark:text-gray-200 dark:hover:bg-emerald-500/20"
               >
-                <Volume2 className="h-3 w-3 text-emerald-600 dark:text-emerald-300" />
-                {c}
+                <Volume2 className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-300" />
+                {colTranslations?.[i] ? (
+                  <span dir="rtl" style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}>
+                    {colTranslations[i]}
+                  </span>
+                ) : (
+                  c
+                )}
               </button>
             ))}
           </div>
+          {colError && <p className="mt-2 text-xs text-red-400">{colError}</p>}
         </div>
       )}
 
@@ -179,9 +273,30 @@ export function FeedbackCard({
               <span>Preparing a short explanation. You can continue now.</span>
             </div>
           ) : feedbackText ? (
-            <p className="text-sm text-slate-700 rtl-text leading-relaxed bg-white rounded-xl p-3 dark:text-gray-200 dark:bg-white/5">
-              {feedbackText}
-            </p>
+            <div
+              dir="rtl"
+              className="rounded-xl border border-teal-200 bg-gradient-to-br from-teal-50/80 to-white p-3.5 dark:border-teal-500/20 dark:from-teal-500/10 dark:to-white/5"
+            >
+              <p
+                dir="rtl"
+                style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
+                className="mb-2 flex items-center gap-1.5 text-[11px] font-bold tracking-widest text-teal-700 dark:text-teal-300"
+              >
+                <GraduationCap className="h-4 w-4 shrink-0" />
+                شرح سريع من المعلّم
+              </p>
+              <div className="space-y-1.5 text-sm leading-relaxed text-right text-slate-700 dark:text-gray-200">
+                {feedbackText
+                  .split('\n')
+                  .map(l => l.trim())
+                  .filter(Boolean)
+                  .map((line, i) => (
+                    <p key={i} dir="rtl" style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}>
+                      <FeedbackLine line={line} />
+                    </p>
+                  ))}
+              </div>
+            </div>
           ) : null}
         </div>
       )}
@@ -209,6 +324,11 @@ export function FeedbackCard({
         Continue
         <ArrowRight className="h-4 w-4" />
       </Button>
+
+      {/* In-app videos popup */}
+      {showVideos && (
+        <WordVideosModal word={word.word} onClose={() => setShowVideos(false)} />
+      )}
     </motion.div>
   );
 }

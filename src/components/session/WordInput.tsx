@@ -1,4 +1,5 @@
-import { useState, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
+import { useState, useRef, type ClipboardEvent, type KeyboardEvent, type ChangeEvent } from 'react';
+import toast from 'react-hot-toast';
 import { ClipboardPaste, X, Plus } from 'lucide-react';
 import { MAX_WORDS } from '@/constants/index';
 
@@ -7,9 +8,39 @@ interface WordInputProps {
   onChange: (words: string[]) => void;
 }
 
+const ARABIC_RE = /[\u0600-\u06FF]/;
+
 export function WordInput({ words, onChange }: WordInputProps) {
   const [input, setInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const lastWarnRef = useRef(0);
+
+  const warnArabic = () => {
+    const now = Date.now();
+    if (now - lastWarnRef.current < 2500) return;
+    lastWarnRef.current = now;
+    toast('English only — this list accepts English words', {
+      id: 'arabic-blocked',
+      duration: 2200,
+      style: {
+        background: 'rgba(15, 23, 42, 0.97)',
+        color: '#f1f5f9',
+        border: '1px solid rgba(245, 158, 11, 0.4)',
+        borderRadius: '12px',
+        fontSize: '13px',
+        fontWeight: 600,
+        direction: 'ltr',
+      },
+      iconTheme: { primary: '#f59e0b', secondary: '#0f172a' },
+    });
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    if (ARABIC_RE.test(raw)) warnArabic();
+    // English-only input — strip anything that isn't a letter, space or hyphen
+    setInput(raw.replace(/[^a-zA-Z\s-]/g, '').replace(/\s+/g, ' '));
+  };
 
   const normalizeWord = (value: string) =>
     value.trim().toLowerCase().replace(/[^a-z\s-]/g, '').replace(/\s+/g, ' ');
@@ -64,6 +95,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData('text');
+    if (ARABIC_RE.test(pastedText)) warnArabic();
     const pastedWords = parseWords(pastedText);
 
     if (pastedWords.length > 1 || /[\n,;\t]/.test(pastedText)) {
@@ -108,9 +140,10 @@ export function WordInput({ words, onChange }: WordInputProps) {
             autoCorrect="off"
             spellCheck={false}
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
+            lang="en"
             placeholder={words.length === 0 ? 'Type a word and press Enter…' : 'Add another…'}
             className="min-w-[120px] flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-base sm:text-sm py-1.5"
             id="word-input"

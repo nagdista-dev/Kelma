@@ -3,12 +3,16 @@ import { persist } from 'zustand/middleware';
 import type { SettingsState, AIProvider, LanguageLevel } from '@/types/index';
 import { PROVIDER_MODELS } from '@/types/index';
 
+// Default: a verified free, no-key provider so the app works on first open
+const DEFAULT_PROVIDER: AIProvider = 'llm7';
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      provider: 'openai',
+      provider: DEFAULT_PROVIDER,
       apiKey: '',
-      model: PROVIDER_MODELS.openai[0].id,
+      model: DEFAULT_MODEL,
       theme: 'dark',
       defaultLevel: 'B1',
       voiceURI: '',
@@ -37,6 +41,22 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: 'pww-settings',
+      version: 2,
+      // Migrate v1 users: if they never configured a key and were on the old
+      // openai default, move them to the free no-key default.
+      migrate: (persisted) => {
+        const s = (persisted ?? {}) as Partial<SettingsState>;
+        // v1 users on the old openai default with no key → move to free no-key default
+        const staleOpenAI = !s.apiKey && (!s.provider || s.provider === 'openai');
+        return {
+          provider: staleOpenAI ? DEFAULT_PROVIDER : (s.provider ?? DEFAULT_PROVIDER),
+          apiKey: s.apiKey ?? '',
+          model: staleOpenAI ? DEFAULT_MODEL : (s.model ?? DEFAULT_MODEL),
+          theme: s.theme ?? 'dark',
+          defaultLevel: s.defaultLevel ?? 'B1',
+          voiceURI: s.voiceURI ?? '',
+        };
+      },
       // Only persist non-sensitive / restorable settings
       partialize: (state) => ({
         provider: state.provider,
