@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { CorrectBurst } from '@/components/quiz/CorrectBurst';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
@@ -29,6 +30,9 @@ export function QuizPage() {
   const { sessionStartTime } = useQuizStore();
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
+  const prevXpRef = useRef(0);
+  const [burst, setBurst] = useState(0);
+  const [burstXp, setBurstXp] = useState(0);
   const {
     phase,
     words,
@@ -56,6 +60,13 @@ export function QuizPage() {
   useEffect(() => {
     if (phase !== 'feedback' || !lastAnswer) return;
     play(lastAnswer.correct ? 'correct' : 'wrong');
+
+    // Correct-answer celebration burst
+    if (lastAnswer.correct) {
+      setBurstXp(xp - prevXpRef.current);
+      setBurst(b => b + 1);
+    }
+    prevXpRef.current = xp;
 
     if (!lastAnswer.correct && lastAnswer.selected === I_DONT_KNOW) return;
 
@@ -159,6 +170,15 @@ export function QuizPage() {
 
   return (
     <div className="quiz-container">
+      {/* Correct-answer micro-celebration */}
+      <CorrectBurst
+        trigger={burst}
+        xpGained={burstXp}
+        streak={streak}
+        isMilestone={STREAK_MILESTONES.includes(streak)}
+        onDone={() => setBurst(0)}
+      />
+
       {/* Header stats bar — one unified pill */}
       <div className="glass mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl px-3.5 py-2.5">
         <XPCounter xp={xp} />
