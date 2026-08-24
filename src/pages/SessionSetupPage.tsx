@@ -67,6 +67,20 @@ export function SessionSetupPage() {
   }, []);
 
   const canStart = words.length >= MIN_WORDS && !loading;
+
+  // Enter starts the session from anywhere on the page
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === 'Enter' && words.length >= MIN_WORDS && !loading) {
+        e.preventDefault();
+        void handleStart();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
   const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
 
   const handleStart = async () => {
