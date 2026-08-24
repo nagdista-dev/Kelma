@@ -83,22 +83,19 @@ export function HowToPage() {
   return (
     <div className="page-container">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        {/* Hero */}
-        <div className="text-center mb-12">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-teal-500/30 bg-teal-500/15 glow-teal"
-          >
-            <Sparkles className="h-8 w-8 text-teal-300" />
-          </motion.div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-            Any word. <span className="gradient-text">Fully mastered</span> in 6 rounds.
-          </h1>
-          <p className="mt-3 text-sm sm:text-base text-gray-400 max-w-md mx-auto leading-relaxed">
-            Kelma turns raw word lists into a game-like brain workout —
-            meaning, sound, context and spelling, all in one session.
-          </p>
+        {/* Header */}
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+            <Sparkles className="h-5 w-5 text-teal-400" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">
+              How it works
+            </h1>
+            <p className="text-xs text-gray-400 sm:text-sm">
+              Any word — fully mastered in 6 rounds
+            </p>
+          </div>
         </div>
 
         {/* Steps */}

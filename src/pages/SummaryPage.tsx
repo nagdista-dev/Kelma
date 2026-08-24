@@ -131,13 +131,13 @@ export function SummaryPage() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="mb-6 flex items-start gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/20">
-            <Trophy className="h-7 w-7 text-amber-600 dark:text-amber-400" />
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/20">
+            <Trophy className="h-5 w-5 text-amber-600 dark:text-amber-400" />
           </div>
-          <div>
-            <h1 className="text-3xl font-extrabold text-slate-950 dark:text-white">Session Report</h1>
-            <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Session Report</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
               {report.totalWords} word{report.totalWords !== 1 ? 's' : ''} completed at{' '}
               <span className="font-semibold text-teal-700 dark:text-teal-300">{level}</span> level
             </p>

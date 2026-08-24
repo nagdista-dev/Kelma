@@ -159,14 +159,20 @@ export function QuizPage() {
 
   return (
     <div className="quiz-container">
-      {/* Header stats bar */}
-      <div className="flex flex-wrap items-center justify-between mb-4 gap-2 sm:gap-3">
+      {/* Header stats bar — one unified pill */}
+      <div className="glass mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 rounded-xl px-3.5 py-2.5">
         <XPCounter xp={xp} />
         <StreakBadge streak={streak} />
         <QuizTimer startedAt={sessionStartTime ? sessionStartTime.getTime() : Date.now()} />
-        <div className="text-xs text-slate-500 dark:text-gray-500">
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold tabular-nums ${
+            masteredCount === words.length && words.length > 0
+              ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+              : 'border-white/10 bg-white/5 text-gray-400'
+          }`}
+        >
           {masteredCount}/{words.length} mastered
-        </div>
+        </span>
       </div>
 
       {/* Overall progress */}
@@ -280,6 +286,11 @@ export function QuizPage() {
             ))}
         </div>
       )}
+
+      {/* Keyboard hint — desktop only */}
+      <p className="mt-4 hidden text-center text-[11px] text-gray-600 lg:block dark:text-gray-600">
+        Press 1–6 to answer · Enter to continue
+      </p>
     </div>
   );
 }

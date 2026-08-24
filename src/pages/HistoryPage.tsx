@@ -47,12 +47,14 @@ export function HistoryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <History className="w-6 h-6 text-teal-400" />
-            <div>
-              <h1 className="text-2xl font-bold text-slate-950 dark:text-white">Session History</h1>
-              <p className="text-sm text-slate-500 dark:text-gray-400">{sessions.length} session{sessions.length !== 1 ? 's' : ''} saved</p>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+              <History className="h-5 w-5 text-teal-400" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Session History</h1>
+              <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">{sessions.length} session{sessions.length !== 1 ? 's' : ''} saved</p>
             </div>
           </div>
           {sessions.length > 0 && (

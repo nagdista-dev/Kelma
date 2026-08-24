@@ -60,14 +60,16 @@ export function PricingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="text-center mb-10">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-500/15 border border-teal-500/30">
-            <Tag className="h-7 w-7 text-teal-400" />
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+            <Tag className="h-5 w-5 text-teal-400" />
           </div>
-          <h1 className="text-3xl font-extrabold text-white">Pricing</h1>
-          <p className="mt-2 text-sm text-gray-400">
-            Simple and honest — bring your own key today, managed AI tomorrow.
-          </p>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">Pricing</h1>
+            <p className="text-xs text-gray-400 sm:text-sm">
+              Simple and honest — bring your own key today, managed AI tomorrow.
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 max-w-3xl mx-auto mb-10">

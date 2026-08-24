@@ -165,11 +165,13 @@ export function ProviderPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="flex items-center gap-3 mb-8">
-          <Plug className="w-6 h-6 text-teal-400" />
-          <div>
-            <h1 className="text-2xl font-bold text-white">AI Provider</h1>
-            <p className="text-sm text-gray-400">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+            <Plug className="h-5 w-5 text-teal-400" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold text-white sm:text-2xl">AI Provider</h1>
+            <p className="text-xs text-gray-400 sm:text-sm">
               Choose the provider, model and key used to generate your quizzes
             </p>
           </div>

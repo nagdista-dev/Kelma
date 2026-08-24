@@ -8,12 +8,14 @@ export function AboutPage() {
     <div className="page-container max-w-xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         {/* Brand header */}
-        <div className="text-center mb-10">
-          <div className="mx-auto mb-4 w-16 h-16 rounded-2xl overflow-hidden border border-white/10">
-            <img src="/favicon.svg" alt="Nagdista" className="w-full h-full" />
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
+            <Sparkles className="h-5 w-5 text-teal-400" />
           </div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-gray-500">A product by</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-wide gradient-text">NAGDISTA</h1>
+          <div className="min-w-0">
+            <h1 className="text-xl font-extrabold tracking-wide gradient-text sm:text-2xl">NAGDISTA</h1>
+            <p className="text-xs uppercase tracking-[0.25em] text-gray-500 sm:text-sm">A product by Nagdista</p>
+          </div>
         </div>
 
         {/* Story */}
