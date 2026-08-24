@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { QuizCompleteModal } from '@/components/quiz/QuizCompleteModal';
+import { PlacementQuiz } from '@/components/quiz/PlacementQuiz';
+import { usePlacementStore } from '@/store/placementStore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
@@ -28,6 +30,7 @@ export function QuizPage() {
   const { play } = useSoundEffects();
   const { speak, stop } = useSpeech();
   const { sessionStartTime } = useQuizStore();
+  const placementActive = usePlacementStore(st => st.active);
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
   const questionShownAtRef = useRef(0);
@@ -166,6 +169,11 @@ export function QuizPage() {
         }}
       />
     ) : null;
+
+  // Placement test takes over the quiz page entirely
+  if (placementActive) {
+    return <PlacementQuiz />;
+  }
 
   // Redirect to session if no active quiz
   if (phase === 'idle') {

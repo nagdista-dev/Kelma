@@ -19,6 +19,7 @@ import {
   type PlacementQuestion,
 } from '@/lib/placementTest';
 import { getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
+import { usePlacementStore } from '@/store/placementStore';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, type LanguageLevel } from '@/types/index';
@@ -38,6 +39,7 @@ export function LevelPage() {
   const { play } = useSoundEffects();
   const [phase, setPhase] = useState<Phase>({ kind: 'pick' });
   const [savedFlash, setSavedFlash] = useState(false);
+  const startPlacement = usePlacementStore(st => st.start);
 
   const isNoKey = NO_KEY_PROVIDERS.has(provider);
   const canTest = Boolean(apiKey) || isNoKey;
@@ -54,7 +56,8 @@ export function LevelPage() {
     setPhase({ kind: 'loading' });
     try {
       const questions = await generatePlacementQuiz(provider, apiKey, model);
-      setPhase({ kind: 'test', questions, index: 0, answers: [] });
+      startPlacement(questions);
+      navigate('/quiz'); // runs inside the real quiz page experience
     } catch (err) {
       setPhase({ kind: 'error', message: getFriendlyAIErrorMessage(err) });
     }

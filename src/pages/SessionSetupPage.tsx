@@ -20,6 +20,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, PROVIDER_LABELS } from '@/types/index';
 import { MAX_WORDS, MIN_WORDS } from '@/constants/index';
+import { useSessionHistory } from '@/hooks/useSessionHistory';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 
@@ -29,12 +30,24 @@ export function SessionSetupPage() {
   const { startSession, setPhase } = useQuizStore();
   const isNoKey = NO_KEY_PROVIDERS.has(provider);
   const { play } = useSoundEffects();
+  const { getAllSessions } = useSessionHistory();
 
   // Draft words persist across navigation and page reloads
   const [words, setWords, clearWords] = useLocalStorage<string[]>('pww-draft-words', []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
+  const [lastSessionWords, setLastSessionWords] = useState<string[]>([]);
+
+  // Surface the previous completed session for one-tap repetition
+  useEffect(() => {
+    getAllSessions()
+      .then(sessions => {
+        const last = sessions.find(x => x.completed);
+        if (last?.words?.length) setLastSessionWords(last.words.slice(0, MAX_WORDS));
+      })
+      .catch(() => {});
+  }, [getAllSessions]);
 
   // Prefill weak words coming from a session report ("Practice weak words")
   useEffect(() => {
@@ -152,23 +165,46 @@ export function SessionSetupPage() {
 
             <WordInput words={words} onChange={setWords} />
 
+            {words.length === 0 && lastSessionWords.length > 0 && (
+              <button
+                type="button"
+                id="repeat-last-session-btn"
+                onClick={() => {
+                  play('next');
+                  setWords(lastSessionWords);
+                  setReviewMode(false);
+                }}
+                className="mt-2.5 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-gray-300 transition-all hover:border-teal-500/40 hover:text-teal-300 active:scale-95"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Repeat last session ({lastSessionWords.length} words)
+              </button>
+            )}
             {words.length === 0 && (
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
                 <span className="text-[11px] text-gray-500">Try:</span>
                 {['journey', 'improve', 'brave'].map(w => (
                   <button
                     key={w}
-                    type='button'
+                    type="button"
                     onClick={() => {
                       play('click');
                       setWords(prev => (prev.includes(w) ? prev : [...prev, w]));
                     }}
-                    className='inline-flex cursor-pointer items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-1 text-[11px] font-semibold text-teal-300 transition-all hover:bg-teal-500/20 active:scale-95'
+                    className="inline-flex cursor-pointer items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-1 text-[11px] font-semibold text-teal-300 transition-all hover:bg-teal-500/20 active:scale-95"
                   >
                     {w}
                   </button>
                 ))}
               </div>
+            )}
+
+
+            {words.length >= MAX_WORDS && (
+              <p className="mt-2.5 flex items-center gap-1.5 text-[11px] font-semibold text-gold">
+                <Sparkles className="h-3 w-3" />
+                Full house — you are ready to generate!
+              </p>
             )}
 
             {words.length < MIN_WORDS && (
