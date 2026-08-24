@@ -48,6 +48,7 @@ import { Button } from '@/components/ui/Button';
 import { ApiKeyInput } from '@/components/ui/ApiKeyInput';
 import { PROVIDER_MODELS, NO_KEY_PROVIDERS } from '@/types/index';
 import { validateApiKey } from '@/lib/quizDataGenerator';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import type { AIProvider } from '@/types/index';
 
 type ValidationState = 'idle' | 'loading' | 'valid' | 'invalid';
@@ -139,6 +140,7 @@ export function ProviderPage() {
     setProvider, setApiKey, setModel, clearApiKey,
   } = useSettingsStore();
 
+  const { play } = useSoundEffects();
   const [validation, setValidation] = useState<ValidationState>('idle');
   const [validationMsg, setValidationMsg] = useState('');
 
@@ -189,7 +191,7 @@ export function ProviderPage() {
                   <button
                     key={id}
                     id={`provider-${id}`}
-                    onClick={() => { setProvider(id); setValidation('idle'); }}
+                    onClick={() => { play('click'); setProvider(id); setValidation('idle'); }}
                     className={`relative py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200 text-center ${
                       selected
                         ? noKey
@@ -225,7 +227,7 @@ export function ProviderPage() {
               <select
                 id="model-select"
                 value={model}
-                onChange={e => setModel(e.target.value)}
+                onChange={e => { play('click'); setModel(e.target.value); }}
                 className="input-base text-sm"
               >
                 {PROVIDER_MODELS[provider].map(m => (
@@ -290,7 +292,7 @@ export function ProviderPage() {
             <div className="flex gap-2 mt-4">
               <Button
                 id="validate-key-btn"
-                onClick={() => void handleValidate()}
+                onClick={() => { play('click'); void handleValidate(); }}
                 disabled={!apiKey || validation === 'loading'}
                 loading={validation === 'loading'}
                 size="sm"

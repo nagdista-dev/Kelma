@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CorrectBurst } from '@/components/quiz/CorrectBurst';
+import { QuizCompleteModal } from '@/components/quiz/QuizCompleteModal';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
@@ -31,8 +32,13 @@ export function QuizPage() {
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
   const prevXpRef = useRef(0);
+  const questionShownAtRef = useRef(0);
+  const lastWasFastRef = useRef(false);
   const [burst, setBurst] = useState(0);
   const [burstXp, setBurstXp] = useState(0);
+  const [burstFast, setBurstFast] = useState(false);
+  const [burstVariant, setBurstVariant] = useState<'correct' | 'wrong'>('correct');
+  const [showComplete, setShowComplete] = useState(false);
   const {
     phase,
     words,
@@ -46,33 +52,53 @@ export function QuizPage() {
     handleAnswer,
     handleNext,
     handleHint,
+    resetQuiz,
   } = useQuizEngine();
 
   // Auto-pronounce the word when it is revealed (round 3) or tested by ear (round 5)
   useEffect(() => {
     if (phase !== 'active' || !currentQuestion) return;
+    questionShownAtRef.current = Date.now();
     if (currentQuestion.round === 3 || currentQuestion.round === 5) {
       speak(currentQuestion.wordProgress.quizData.word);
     }
   }, [phase, currentQuestion?.wordProgress.word, currentQuestion?.round, speak]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /** Shared answer path — measures speed and fires the answer with a bonus */
+  const answerWithSpeed = (selected: string) => {
+    const elapsedSec = (Date.now() - questionShownAtRef.current) / 1000;
+    const fast = elapsedSec <= 5;
+    lastWasFastRef.current = fast;
+    play('click');
+    handleAnswer(selected, fast ? 2 : undefined);
+  };
 
   // Feedback sounds + spoken reinforcement of the target word after EVERY answer
   useEffect(() => {
     if (phase !== 'feedback' || !lastAnswer) return;
     play(lastAnswer.correct ? 'correct' : 'wrong');
 
-    // Correct-answer celebration burst
+    // Correct/wrong celebration bursts — distinct tone for each
     if (lastAnswer.correct) {
+      setBurstVariant('correct');
       setBurstXp(xp - prevXpRef.current);
+      setBurstFast(lastWasFastRef.current);
+      setBurst(b => b + 1);
+      if (lastWasFastRef.current) {
+        window.setTimeout(() => play('speed'), 300);
+      }
+    } else {
+      setBurstVariant('wrong');
       setBurst(b => b + 1);
     }
     prevXpRef.current = xp;
 
     if (!lastAnswer.correct && lastAnswer.selected === I_DONT_KNOW) return;
 
-    // Streak milestone celebration
+    // Streak milestone celebration — pitch escalates as the streak grows
     if (streak > prevStreakRef.current && STREAK_MILESTONES.includes(streak)) {
-      window.setTimeout(() => play('streak'), 350);
+      const step = STREAK_MILESTONES.indexOf(streak);
+      window.setTimeout(() => play('streak', { pitch: 1 + step * 0.15 }), 350);
     }
     prevStreakRef.current = streak;
 
@@ -86,6 +112,13 @@ export function QuizPage() {
     }
   }, [phase, lastAnswer, play, speak, streak, currentQuestion]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Keep the next question in view — no hunting with scroll
+  useEffect(() => {
+    if (phase === 'active' && currentQuestion) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [phase, currentQuestion?.wordProgress.word, currentQuestion?.round]);
+
   // Celebrate when a word reaches mastered status
   useEffect(() => {
     const masteredCount = words.filter(w => w.status === 'mastered').length;
@@ -95,13 +128,13 @@ export function QuizPage() {
     prevMasteredCountRef.current = masteredCount;
   }, [words, phase, play]);
 
-  // Redirect to report when complete
+  // Show celebration modal when complete — navigation is a player choice now
   useEffect(() => {
     if (phase === 'complete') {
       play('complete');
-      navigate('/report');
+      setShowComplete(true);
     }
-  }, [phase, navigate, play]);
+  }, [phase, play]);
 
   // Keyboard shortcuts: 1-6 pick answers, Enter continues
   useEffect(() => {
@@ -111,8 +144,7 @@ export function QuizPage() {
       if (phase === 'active' && currentQuestion && !isAnswerLocked && !isTypingRound(currentQuestion.round)) {
         const idx = Number(e.key) - 1;
         if (idx >= 0 && idx < currentQuestion.options.length) {
-          play('click');
-          handleAnswer(currentQuestion.options[idx]);
+          answerWithSpeed(currentQuestion.options[idx]);
         }
       }
 
@@ -127,6 +159,30 @@ export function QuizPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, currentQuestion, isAnswerLocked, handleAnswer, handleNext, play, stop]);
 
+  // Session accuracy across every recorded attempt
+  const allAttempts = words.flatMap(w => w.attempts);
+  const accuracy =
+    allAttempts.length > 0
+      ? (allAttempts.filter(a => a.correct).length / allAttempts.length) * 100
+      : 0;
+
+  // Session complete modal — must render before any early returns (portal)
+  const completeModal =
+    showComplete && phase === 'complete' ? (
+      <QuizCompleteModal
+        xp={xp}
+        maxStreak={useQuizStore.getState().maxStreak}
+        accuracy={accuracy}
+        mastered={words.filter(w => w.status === 'mastered').length}
+        total={words.length}
+        onViewReport={() => navigate('/report')}
+        onNewSession={() => {
+          resetQuiz();
+          navigate('/session');
+        }}
+      />
+    ) : null;
+
   // Redirect to session if no active quiz
   if (phase === 'idle') {
     navigate('/session');
@@ -134,6 +190,8 @@ export function QuizPage() {
   }
 
   if (!currentQuestion || phase === 'loading') {
+    // Completion modal still takes priority over the loader
+    if (completeModal) return completeModal;
     return (
       <div className="page-container flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
@@ -173,7 +231,9 @@ export function QuizPage() {
       {/* Correct-answer micro-celebration */}
       <CorrectBurst
         trigger={burst}
+        variant={burstVariant}
         xpGained={burstXp}
+        speedBonus={burstFast}
         streak={streak}
         isMilestone={STREAK_MILESTONES.includes(streak)}
         onDone={() => setBurst(0)}
@@ -228,10 +288,7 @@ export function QuizPage() {
           className="space-y-2.5"
         >
           <SpellingInput
-            onSubmit={selected => {
-              play('click');
-              handleAnswer(selected);
-            }}
+            onSubmit={selected => answerWithSpeed(selected)}
             disabled={isAnswerLocked}
           />
           <div className="mt-4">
@@ -260,10 +317,7 @@ export function QuizPage() {
               option={option}
               index={i}
               state={getButtonState(option)}
-              onClick={() => {
-                play('click');
-                handleAnswer(option);
-              }}
+              onClick={() => answerWithSpeed(option)}
               isArabic={isArabicRound && option !== I_DONT_KNOW}
             />
           ))}
@@ -311,6 +365,7 @@ export function QuizPage() {
       <p className="mt-4 hidden text-center text-[11px] text-gray-600 lg:block dark:text-gray-600">
         Press 1–6 to answer · Enter to continue
       </p>
+
     </div>
   );
 }

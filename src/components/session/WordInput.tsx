@@ -2,6 +2,7 @@ import { useState, useRef, type ClipboardEvent, type KeyboardEvent, type ChangeE
 import toast from 'react-hot-toast';
 import { ClipboardPaste, X, Plus } from 'lucide-react';
 import { MAX_WORDS } from '@/constants/index';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 
 interface WordInputProps {
   words: string[];
@@ -13,6 +14,7 @@ const ARABIC_RE = /[\u0600-\u06FF]/;
 export function WordInput({ words, onChange }: WordInputProps) {
   const [input, setInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const { play } = useSoundEffects();
   const lastWarnRef = useRef(0);
 
   const warnArabic = () => {
@@ -62,6 +64,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
     });
 
     if (nextWords.length !== words.length) {
+      play('next');
       onChange(nextWords);
     }
   };
@@ -72,7 +75,10 @@ export function WordInput({ words, onChange }: WordInputProps) {
     inputRef.current?.focus();
   };
 
-  const removeWord = (w: string) => onChange(words.filter(x => x !== w));
+  const removeWord = (w: string) => {
+    play('click');
+    onChange(words.filter(x => x !== w));
+  };
 
   const pasteFromClipboard = async () => {
     try {

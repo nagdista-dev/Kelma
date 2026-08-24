@@ -2,9 +2,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { CircleHelp, KeyRound, Settings, History, Tag, Zap } from 'lucide-react';
 import { useQuizStore } from '@/store/quizStore';
 import { MobileMenu } from '@/components/layout/MobileMenu';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 
 export function Navbar() {
   const navigate = useNavigate();
+  const { play } = useSoundEffects();
   const phase = useQuizStore(s => s.phase);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -26,7 +28,7 @@ export function Navbar() {
       <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         {/* Logo */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => { play('click'); navigate('/'); }}
           className="flex shrink-0 items-center gap-2 font-bold text-slate-950 hover:text-teal-700 transition-colors dark:text-white dark:hover:text-teal-300"
           id="nav-logo"
         >

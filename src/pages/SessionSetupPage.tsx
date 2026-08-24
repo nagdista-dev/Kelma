@@ -21,12 +21,14 @@ import { Button } from '@/components/ui/Button';
 import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, PROVIDER_LABELS } from '@/types/index';
 import { MAX_WORDS, MIN_WORDS } from '@/constants/index';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 
 export function SessionSetupPage() {
   const navigate = useNavigate();
   const { provider, apiKey, model, defaultLevel } = useSettingsStore();
   const { startSession, setPhase } = useQuizStore();
   const isNoKey = NO_KEY_PROVIDERS.has(provider);
+  const { play } = useSoundEffects();
 
   // Draft words persist across navigation and page reloads
   const [words, setWords, clearWords] = useLocalStorage<string[]>('pww-draft-words', []);
@@ -56,6 +58,7 @@ export function SessionSetupPage() {
 
   const handleStart = async () => {
     if (!canStart) return;
+    play('next');
     setLoading(true);
     setError(null);
     setPhase('idle');
@@ -123,6 +126,7 @@ export function SessionSetupPage() {
                     type="button"
                     id="clear-all-words-btn"
                     onClick={() => {
+                      play('click');
                       clearWords();
                       setReviewMode(false);
                     }}

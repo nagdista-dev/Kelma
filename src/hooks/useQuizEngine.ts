@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { useQuizStore } from '@/store/quizStore';
 import { useAIQuiz } from '@/hooks/useAIQuiz';
 import { useSessionHistory } from '@/hooks/useSessionHistory';
@@ -62,11 +63,11 @@ export function useQuizEngine() {
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAnswer = useCallback(
-    (selected: string) => {
+    (selected: string, fastBonus?: number) => {
       if (isAnswerLocked || phase !== 'active') return;
       setIsAnswerLocked(true);
       setFeedbackText('');
-      answerQuestion(selected);
+      answerQuestion(selected, fastBonus);
     },
     [isAnswerLocked, phase, answerQuestion]
   );
@@ -100,7 +101,9 @@ export function useQuizEngine() {
       ? Date.now() - sessionStartTime.getTime()
       : 0;
 
-    void saveSession({
+    const durationMinutes = Math.max(1, Math.round(durationMs / 60000));
+
+    saveSession({
       date: new Date(),
       words: allWordStrs,
       level,
@@ -109,8 +112,14 @@ export function useQuizEngine() {
       maxPossibleXP,
       masteredWords,
       struggledWords,
-      durationMinutes: Math.round(durationMs / 60000),
+      durationMinutes,
       completed: true,
+    }).catch((err: unknown) => {
+      console.error('[DB] Session save failed:', err);
+      toast.error('تعذر حفظ الجلسة في السجل', {
+        duration: 3000,
+        style: { background: '#1F2937', color: '#F9FAFB', border: '1px solid rgba(239,68,68,0.4)' },
+      });
     });
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 

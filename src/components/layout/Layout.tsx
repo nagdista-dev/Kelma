@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { ResumeQuizButton } from './ResumeQuizButton';
+import { InstallButton } from './InstallButton';
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </main>
       <ResumeQuizButton />
+      <InstallButton />
     </div>
   );
 }

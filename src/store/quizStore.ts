@@ -164,7 +164,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     });
   },
 
-  answerQuestion: (selected: string) => {
+  answerQuestion: (selected: string, fastBonus?: number) => {
     const { currentQuestion, words, xp, streak } = get();
     if (!currentQuestion) return;
 
@@ -183,7 +183,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestion.round === 6 ? XP_ROUND_6 :
         XP_PER_ROUND;
       const hintPenalty = Math.min(hintsUsed * XP_HINT_PENALTY, baseXp - 1);
-      xpGained = Math.max(baseXp - hintPenalty, 1);
+      xpGained = Math.max(baseXp - hintPenalty, 1) + (fastBonus ?? 0);
     }
 
     const newStreak = correct && !isIDontKnow ? streak + 1 : 0;

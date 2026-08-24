@@ -314,16 +314,18 @@ export function FeedbackCard({
         </div>
       )}
 
-      {/* Continue button */}
-      <Button
-        id="feedback-next-btn"
-        onClick={onNext}
-        variant="primary"
-        className="mt-4 w-full"
-      >
-        Continue
-        <ArrowRight className="h-4 w-4" />
-      </Button>
+      {/* Continue button — sticky so it never requires scrolling */}
+      <div className="sticky bottom-3 z-10 mt-4">
+        <Button
+          id="feedback-next-btn"
+          onClick={onNext}
+          variant="primary"
+          className="w-full shadow-xl"
+        >
+          Continue
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
 
       {/* In-app videos popup */}
       {showVideos && (
