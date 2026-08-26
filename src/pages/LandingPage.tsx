@@ -122,13 +122,6 @@ export function LandingPage() {
             <span className="hidden sm:flex items-center gap-1.5"><Ear className="h-3.5 w-3.5 text-teal-500 dark:text-teal-400" /> Listen & learn</span>
             <span className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-orange-500 dark:text-orange-400" /> XP & streaks</span>
           </div>
-
-          {/* Trust strip */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 text-[11px] font-medium text-slate-500 dark:text-gray-500">
-            <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-amber-400" /> AI-powered</span>
-            <span className="hidden sm:flex items-center gap-1.5"><Ear className="h-3.5 w-3.5 text-teal-400" /> Listen & learn</span>
-            <span className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-orange-400" /> XP & streaks</span>
-          </div>
         </motion.div>
       </div>
 

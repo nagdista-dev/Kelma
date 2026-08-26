@@ -7,6 +7,7 @@ export const XP_ROUND_4 = 10;     // Fill in the blank (harder)
 export const XP_ROUND_5 = 10;     // Listening
 export const XP_ROUND_6 = 15;     // Spelling (production — hardest)
 export const XP_HINT_PENALTY = 3; // Deducted when hint is used
+export const XP_SKIP_PENALTY = 5; // Deducted when a spelling question is skipped
 
 // Total XP a single word can award across all rounds
 export const MAX_XP_PER_WORD = XP_PER_ROUND * 3 + XP_ROUND_4 + XP_ROUND_5 + XP_ROUND_6;

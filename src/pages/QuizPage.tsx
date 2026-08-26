@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { QuizCompleteModal } from '@/components/quiz/QuizCompleteModal';
-import { PlacementQuiz } from '@/components/quiz/PlacementQuiz';
 import { CorrectPop } from '@/components/quiz/CorrectPop';
-import { usePlacementStore } from '@/store/placementStore';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useQuizEngine } from '@/hooks/useQuizEngine';
@@ -19,7 +17,7 @@ import { WordPipelineTracker } from '@/components/quiz/WordPipelineTracker';
 import { HintButton } from '@/components/quiz/HintButton';
 import { SpellingInput } from '@/components/quiz/SpellingInput';
 import { QuizTimer } from '@/components/quiz/QuizTimer';
-import { I_DONT_KNOW, STREAK_MILESTONES } from '@/constants/index';
+import { I_DONT_KNOW, STREAK_MILESTONES, TOTAL_ROUNDS, XP_SKIP_PENALTY } from '@/constants/index';
 import type { RoundNumber } from '@/types/index';
 
 function isTypingRound(round: RoundNumber) {
@@ -31,7 +29,6 @@ export function QuizPage() {
   const { play } = useSoundEffects();
   const { stop } = useSpeech();
   const { sessionStartTime } = useQuizStore();
-  const placementActive = usePlacementStore(st => st.active);
   const prevStreakRef = useRef(0);
   const prevMasteredCountRef = useRef(0);
   const questionShownAtRef = useRef(0);
@@ -54,6 +51,7 @@ export function QuizPage() {
     handleAnswer,
     handleNext,
     handleHint,
+    handleSkip,
     resetQuiz,
   } = useQuizEngine();
 
@@ -188,11 +186,6 @@ export function QuizPage() {
       />
     ) : null;
 
-  // Placement test takes over the quiz page entirely
-  if (placementActive) {
-    return <PlacementQuiz />;
-  }
-
   // Redirect to session if no active quiz
   if (phase === 'idle') {
     navigate('/session');
@@ -214,7 +207,14 @@ export function QuizPage() {
 
   const question = currentQuestion;
   const masteredCount = words.filter(w => w.status === 'mastered').length;
-  const progress = (masteredCount / words.length) * 100;
+  // Progress counts completed ROUNDS, not mastered words — the bar advances
+  // with every correct answer (instant feedback keeps the brain engaged)
+  const totalRounds = words.length * TOTAL_ROUNDS;
+  const completedRounds = words.reduce(
+    (sum, w) => sum + (w.status === 'mastered' ? TOTAL_ROUNDS : w.currentRound - 1),
+    0
+  );
+  const progress = totalRounds > 0 ? (completedRounds / totalRounds) * 100 : 0;
 
   // Determine answer button states
   function getButtonState(option: string) {
@@ -255,7 +255,11 @@ export function QuizPage() {
       </div>
 
       {/* Overall progress */}
-      <ProgressBar value={progress} label={`Session progress`} color="teal" />
+      <ProgressBar
+        value={progress}
+        label={`${completedRounds} / ${totalRounds} rounds`}
+        color="teal"
+      />
       <div className="mt-4 mb-4">
         <WordPipelineTracker words={words} />
       </div>
@@ -300,6 +304,16 @@ export function QuizPage() {
             onSubmit={selected => answerWithSpeed(selected)}
             disabled={isAnswerLocked}
           />
+          {/* The skip offer — visible cost makes most players push through */}
+          <button
+            type="button"
+            onClick={handleSkip}
+            disabled={isAnswerLocked}
+            id="skip-question-btn"
+            className="inline-flex cursor-pointer items-center gap-1 text-[11px] font-medium text-slate-400 transition-colors hover:text-amber-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-gray-500 dark:hover:text-amber-300"
+          >
+            Too hard? Skip this one (−{XP_SKIP_PENALTY} XP)
+          </button>
           <div className="mt-4">
             <HintButton
               onHint={() => {
@@ -327,7 +341,7 @@ export function QuizPage() {
               index={i}
               state={getButtonState(option)}
               onClick={() => answerWithSpeed(option)}
-              isArabic={isArabicRound && option !== I_DONT_KNOW}
+              isArabic={isArabicRound}
             />
           ))}
 
@@ -364,7 +378,7 @@ export function QuizPage() {
                 index={i}
                 state={getButtonState(option)}
                 onClick={() => {}}
-                isArabic={isArabicRound && option !== I_DONT_KNOW}
+                isArabic={isArabicRound}
               />
             ))}
         </div>

@@ -1,8 +1,29 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { CircleHelp, HeartHandshake, KeyRound, Settings, History, Zap } from 'lucide-react';
+import {
+  CircleHelp,
+  GraduationCap,
+  HeartHandshake,
+  KeyRound,
+  LayoutDashboard,
+  Settings,
+  History,
+  Zap,
+} from 'lucide-react';
 import { useQuizStore } from '@/store/quizStore';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+
+/** Titled group of links inside the mobile menu */
+function MenuSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mt-4 first:mt-0">
+      <p className="px-4 pb-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400 dark:text-gray-500">
+        {label}
+      </p>
+      <div className="flex flex-col gap-1">{children}</div>
+    </div>
+  );
+}
 
 export function Navbar() {
   const navigate = useNavigate();
@@ -19,8 +40,8 @@ export function Navbar() {
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-teal-500/25 text-teal-200'
-        : 'text-gray-300 hover:bg-white/10'
+        ? 'bg-teal-100 text-teal-700 dark:bg-teal-500/25 dark:text-teal-200'
+        : 'text-slate-600 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-white/10'
     }`;
 
   return (
@@ -52,17 +73,21 @@ export function Navbar() {
                   <Zap className="w-4 h-4 shrink-0" />
                   <span className="hidden lg:inline">Session</span>
                 </NavLink>
-                <NavLink to="/provider" className={navLinkClass} id="nav-provider" title="AI Provider">
-                  <KeyRound className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">Provider</span>
+                <NavLink to="/level" className={navLinkClass} id="nav-level" title="Your level">
+                  <GraduationCap className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">Level</span>
                 </NavLink>
-                <NavLink to="/how-to" className={navLinkClass} id="nav-howto" title="How to use">
-                  <CircleHelp className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">Guide</span>
+                <NavLink to="/dashboard" className={navLinkClass} id="nav-dashboard" title="Dashboard">
+                  <LayoutDashboard className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">Stats</span>
                 </NavLink>
                 <NavLink to="/history" className={navLinkClass} id="nav-history" title="History">
                   <History className="w-4 h-4 shrink-0" />
                   <span className="hidden lg:inline">History</span>
+                </NavLink>
+                <NavLink to="/how-to" className={navLinkClass} id="nav-howto" title="How to use">
+                  <CircleHelp className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">Guide</span>
                 </NavLink>
                 <NavLink to="/support" className={navLinkClass} id="nav-support" title="Support">
                   <HeartHandshake className="w-4 h-4 shrink-0" />
@@ -74,36 +99,48 @@ export function Navbar() {
                 </NavLink>
               </nav>
 
-              {/* Mobile hamburger menu */}
+              {/* Mobile hamburger menu — grouped by purpose */}
               <MobileMenu>
-                <NavLink to="/session" end className={mobileLinkClass} id="m-nav-session">
-                  <Zap className="w-4 h-4 text-teal-400" />
-                  New Session
-                </NavLink>
-                <NavLink to="/provider" className={mobileLinkClass} id="m-nav-provider">
-                  <KeyRound className="w-4 h-4 text-teal-400" />
-                  AI Provider
-                </NavLink>
-                <NavLink to="/how-to" className={mobileLinkClass} id="m-nav-howto">
-                  <CircleHelp className="w-4 h-4 text-teal-400" />
-                  How to Use
-                </NavLink>
-                <NavLink to="/dashboard" className={mobileLinkClass} id="m-nav-dashboard">
-                  <History className="w-4 h-4 text-teal-400" />
-                  Dashboard
-                </NavLink>
-                <NavLink to="/history" className={mobileLinkClass} id="m-nav-history">
-                  <History className="w-4 h-4 text-teal-400" />
-                  History
-                </NavLink>
-                <NavLink to="/support" className={mobileLinkClass} id="m-nav-support">
-                  <HeartHandshake className="w-4 h-4 text-teal-400" />
-                  Support
-                </NavLink>
-                <NavLink to="/settings" className={mobileLinkClass} id="m-nav-settings">
-                  <Settings className="w-4 h-4 text-teal-400" />
-                  Settings
-                </NavLink>
+                <MenuSection label="Learn">
+                  <NavLink to="/session" end className={mobileLinkClass} id="m-nav-session">
+                    <Zap className="w-4 h-4 text-teal-400" />
+                    New Session
+                  </NavLink>
+                  <NavLink to="/level" className={mobileLinkClass} id="m-nav-level">
+                    <GraduationCap className="w-4 h-4 text-teal-400" />
+                    Your Level
+                  </NavLink>
+                  <NavLink to="/dashboard" className={mobileLinkClass} id="m-nav-dashboard">
+                    <LayoutDashboard className="w-4 h-4 text-teal-400" />
+                    Dashboard
+                  </NavLink>
+                  <NavLink to="/history" className={mobileLinkClass} id="m-nav-history">
+                    <History className="w-4 h-4 text-teal-400" />
+                    History
+                  </NavLink>
+                </MenuSection>
+
+                <MenuSection label="Setup">
+                  <NavLink to="/provider" className={mobileLinkClass} id="m-nav-provider">
+                    <KeyRound className="w-4 h-4 text-teal-400" />
+                    AI Provider
+                  </NavLink>
+                  <NavLink to="/settings" className={mobileLinkClass} id="m-nav-settings">
+                    <Settings className="w-4 h-4 text-teal-400" />
+                    Settings
+                  </NavLink>
+                </MenuSection>
+
+                <MenuSection label="More">
+                  <NavLink to="/how-to" className={mobileLinkClass} id="m-nav-howto">
+                    <CircleHelp className="w-4 h-4 text-teal-400" />
+                    How to Use
+                  </NavLink>
+                  <NavLink to="/support" className={mobileLinkClass} id="m-nav-support">
+                    <HeartHandshake className="w-4 h-4 text-teal-400" />
+                    Support
+                  </NavLink>
+                </MenuSection>
               </MobileMenu>
             </>
           )}

@@ -1,23 +1,28 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle2, History, Trash2, BookOpen, Zap } from 'lucide-react';
+import { BookOpen, CheckCircle2, History, Trash2, Zap } from 'lucide-react';
 import { useSessionHistory } from '@/hooks/useSessionHistory';
 import type { SessionRecord } from '@/types/index';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
+import { ProgressBar } from '@/components/quiz/ProgressBar';
+
+function formatDate(date: Date | string): string {
+  return new Date(date).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
 export function HistoryPage() {
   const { getAllSessions, deleteSession, clearAll } = useSessionHistory();
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const load = async () => {
-    setLoading(true);
-    const data = await getAllSessions();
-    setSessions(data);
-    setLoading(false);
-  };
+  const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -35,15 +40,20 @@ export function HistoryPage() {
     };
   }, [getAllSessions]);
 
+  const refresh = async () => {
+    const data = await getAllSessions();
+    setSessions(data);
+  };
+
   const handleDelete = async (id: number) => {
     await deleteSession(id);
-    await load();
+    await refresh();
   };
 
   const handleClearAll = async () => {
-    if (!window.confirm('Delete all session history?')) return;
     await clearAll();
     setSessions([]);
+    setConfirmClear(false);
   };
 
   if (loading) {
@@ -54,6 +64,10 @@ export function HistoryPage() {
     );
   }
 
+  const totalXP = sessions.reduce((sum, s) => sum + s.totalXP, 0);
+  const totalMastered = sessions.reduce((sum, s) => sum + s.masteredWords.length, 0);
+  const totalWords = sessions.reduce((sum, s) => sum + s.words.length, 0);
+
   return (
     <div className="page-container">
       <motion.div
@@ -61,14 +75,17 @@ export function HistoryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <div className="mb-6 flex items-center justify-between gap-3">
+        {/* Header */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
               <History className="h-5 w-5 text-teal-400" />
             </div>
             <div className="min-w-0">
               <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Session History</h1>
-              <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">{sessions.length} session{sessions.length !== 1 ? 's' : ''} saved</p>
+              <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
+                {sessions.length} session{sessions.length !== 1 ? 's' : ''} saved on this device
+              </p>
             </div>
           </div>
           {sessions.length > 0 && (
@@ -76,7 +93,7 @@ export function HistoryPage() {
               id="clear-history-btn"
               variant="danger"
               size="sm"
-              onClick={() => void handleClearAll()}
+              onClick={() => setConfirmClear(true)}
             >
               Clear All
             </Button>
@@ -84,82 +101,133 @@ export function HistoryPage() {
         </div>
 
         {sessions.length === 0 ? (
-          <div className="text-center py-16">
-            <BookOpen className="w-12 h-12 text-slate-300 dark:text-gray-600 mx-auto mb-4" />
-            <p className="text-slate-500 dark:text-gray-500">No sessions yet. Start your first quiz!</p>
-          </div>
+          /* Empty state — a next step, not a dead end */
+          <Card className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl border border-teal-500/30 bg-teal-500/10">
+              <BookOpen className="h-8 w-8 text-teal-500 dark:text-teal-300" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-950 dark:text-white">No sessions yet</h2>
+            <p className="mx-auto mt-1.5 max-w-xs text-sm text-slate-500 dark:text-gray-400">
+              Finish your first quiz and every session report will be saved here automatically.
+            </p>
+            <Link to="/session" id="history-start-btn" className="mt-6 inline-block">
+              <Button size="lg">Start your first session</Button>
+            </Link>
+          </Card>
         ) : (
-          <div className="space-y-3">
-            {sessions.map((s, i) => {
-              const xpPct = s.maxPossibleXP > 0
-                ? Math.round((s.totalXP / s.maxPossibleXP) * 100)
-                : 0;
-              const dateStr = new Date(s.date).toLocaleDateString('en-GB', {
-                day: 'numeric', month: 'short', year: 'numeric',
-              });
-
-              return (
+          <>
+            {/* Lifetime stats strip */}
+            <div className="mb-6 grid grid-cols-3 gap-2.5 sm:gap-3">
+              {[
+                { icon: History, label: 'Sessions', value: String(sessions.length) },
+                { icon: Zap, label: 'Total XP', value: totalXP.toLocaleString() },
+                {
+                  icon: CheckCircle2,
+                  label: 'Words mastered',
+                  value: `${totalMastered}/${totalWords}`,
+                },
+              ].map((stat, i) => (
                 <motion.div
-                  key={s.id ?? i}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="glass rounded-2xl p-3 text-center sm:p-4"
                 >
-                  <Card className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    {/* Date + level */}
-                    <div className="shrink-0">
-                      <p className="text-xs text-slate-500 dark:text-gray-500">{dateStr}</p>
-                      <span className="badge-teal mt-1">{s.level}</span>
-                    </div>
+                  <stat.icon className="mx-auto mb-1.5 h-4 w-4 text-teal-500 dark:text-teal-300" />
+                  <p className="text-lg font-extrabold tabular-nums text-slate-950 dark:text-white sm:text-xl">
+                    {stat.value}
+                  </p>
+                  <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-gray-500">
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
 
-                    {/* Words */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap gap-1 mb-2">
+            {/* Session cards */}
+            <div className="space-y-3">
+              {sessions.map((s, i) => {
+                const xpPct =
+                  s.maxPossibleXP > 0
+                    ? Math.round((s.totalXP / s.maxPossibleXP) * 100)
+                    : 0;
+                const masteredCount = s.masteredWords.length;
+
+                return (
+                  <motion.div
+                    key={s.id ?? i}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.05, 0.4) }}
+                  >
+                    <Card className="p-4 sm:p-5">
+                      {/* Top row: date + level + delete */}
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2.5">
+                          <span className="badge-teal shrink-0">{s.level}</span>
+                          <p className="truncate text-xs font-semibold text-slate-600 dark:text-gray-300">
+                            {formatDate(s.date)}
+                          </p>
+                          {s.durationMinutes > 0 && (
+                            <span className="hidden shrink-0 text-xs text-slate-400 dark:text-gray-500 sm:inline">
+                              · {s.durationMinutes} min
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => s.id !== undefined && void handleDelete(s.id)}
+                          aria-label="Delete session"
+                          id={`delete-session-${s.id ?? i}`}
+                          className="shrink-0 cursor-pointer rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-500/10 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+
+                      {/* Words chips */}
+                      <div className="mb-3 flex flex-wrap gap-1.5">
                         {s.words.map(w => (
                           <span
                             key={w}
-                            className={`text-[11px] px-2 py-0.5 rounded-md border font-medium ${
+                            className={`rounded-md border px-2 py-0.5 text-[11px] font-medium ${
                               s.masteredWords.includes(w)
-                                ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-500/10 dark:border-emerald-500/20 dark:text-emerald-300'
-                                : 'bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-300'
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
+                                : 'border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300'
                             }`}
                           >
                             {w}
                           </span>
                         ))}
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <Zap className="w-3 h-3 text-amber-400" />
-                          {s.totalXP} XP ({xpPct}%)
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3 text-emerald-500 dark:text-emerald-300" />
-                          {s.masteredWords.length}/{s.words.length}
-                        </span>
-                        {s.durationMinutes > 0 && (
-                          <span>~{s.durationMinutes} min</span>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Delete */}
-                    <button
-                      type="button"
-                      onClick={() => s.id !== undefined && void handleDelete(s.id)}
-                      aria-label="Delete session"
-                      id={`delete-session-${s.id ?? i}`}
-                      className="text-slate-400 hover:text-red-500 transition-colors p-1 shrink-0 dark:text-gray-600 dark:hover:text-red-400"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+                      {/* Bottom row: XP progress */}
+                      <ProgressBar
+                        value={xpPct}
+                        label={`${s.totalXP} XP · ${masteredCount}/${s.words.length} mastered`}
+                        color={xpPct >= 80 ? 'emerald' : 'amber'}
+                      />
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </>
         )}
       </motion.div>
+
+      {/* Branded confirmation — replaces window.confirm */}
+      <ConfirmDialog
+        open={confirmClear}
+        title="Delete all session history?"
+        message="Every saved session, XP record and report will be removed from this device. This cannot be undone."
+        confirmLabel="Delete all"
+        cancelLabel="Keep them"
+        variant="danger"
+        onConfirm={() => void handleClearAll()}
+        onCancel={() => setConfirmClear(false)}
+      />
     </div>
   );
 }

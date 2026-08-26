@@ -46,7 +46,7 @@ export function MobileMenu({ children }: MobileMenuProps) {
               transition={{ duration: 0.18 }}
               aria-label="Mobile navigation"
               onClick={() => setOpen(false)}
-              className="fixed inset-0 z-40 flex flex-col gap-1 bg-slate-950/85 p-4 backdrop-blur-lg"
+              className="fixed inset-0 z-40 flex flex-col gap-1 overflow-y-auto bg-white/92 p-4 backdrop-blur-lg dark:bg-slate-950/85"
               style={{ top: '56px' }}
             >
               {children}

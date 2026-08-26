@@ -86,8 +86,8 @@ const SOUND_MAP: Record<SoundName, Tone[][]> = {
       { frequency: 1046.5, duration: 0.16, delay: 0.24, type: 'sine', gain: 0.035 },
     ],
   ],
-  next: [[{ frequency: 392, duration: 0.04, type: 'sine', gain: 0.02 }]],
-  click: [[{ frequency: 620, duration: 0.03, type: 'sine', gain: 0.015 }]],
+  next: [[{ frequency: 392, duration: 0.06, type: 'sine', gain: 0.03 }]],
+  click: [[{ frequency: 620, duration: 0.05, type: 'sine', gain: 0.03 }]],
   streak: [
     [
       { frequency: 659.25, duration: 0.07, type: 'square', gain: 0.02 },
@@ -118,6 +118,14 @@ export interface PlayOptions {
   /** Multiplies all frequencies — used to escalate streak sounds */
   pitch?: number;
 }
+
+/**
+ * Per-tone gains in SOUND_MAP are musical mixing values (0.015–0.045) —
+ * on real speakers they are near-silent even though the context runs
+ * (tab shows the audio icon). This master multiplier brings them to
+ * audible level.
+ */
+const MASTER_GAIN = 5;
 
 export function useSoundEffects() {
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -167,7 +175,10 @@ export function useSoundEffects() {
         }
 
         gain.gain.setValueAtTime(0.0001, toneStart);
-        gain.gain.exponentialRampToValueAtTime(tone.gain ?? 0.03, toneStart + 0.01);
+        gain.gain.exponentialRampToValueAtTime(
+          (tone.gain ?? 0.03) * MASTER_GAIN,
+          toneStart + 0.012
+        );
         gain.gain.exponentialRampToValueAtTime(0.0001, toneEnd);
 
         oscillator.connect(gain);

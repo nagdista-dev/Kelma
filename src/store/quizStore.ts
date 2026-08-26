@@ -15,6 +15,7 @@ import {
   XP_ROUND_5,
   XP_ROUND_6,
   XP_HINT_PENALTY,
+  XP_SKIP_PENALTY,
   TOTAL_ROUNDS,
 } from '@/constants/index';
 
@@ -268,6 +269,42 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       currentQuestion: nextQuestion,
       lastAnswer: null,
       phase: 'active',
+    });
+  },
+
+  skipQuestion: () => {
+    const { currentQuestion, words, xp } = get();
+    if (!currentQuestion) return;
+
+    // Skipping costs XP and re-queues the word at the same round —
+    // the question will come back, but the player buys breathing room
+    const updatedWords = words.map(w => {
+      if (w.word !== currentQuestion.wordProgress.word) return w;
+      return {
+        ...w,
+        attempts: [
+          ...w.attempts,
+          {
+            round: currentQuestion.round,
+            correct: false,
+            usedHint: false,
+            timestamp: new Date(),
+          },
+        ],
+        xpEarned: Math.max(0, w.xpEarned - XP_SKIP_PENALTY),
+      };
+    });
+
+    set({
+      words: updatedWords,
+      xp: Math.max(0, xp - XP_SKIP_PENALTY),
+      streak: 0,
+      lastAnswer: {
+        selected: I_DONT_KNOW,
+        correct: false,
+        feedbackText: '',
+      },
+      phase: 'feedback',
     });
   },
 

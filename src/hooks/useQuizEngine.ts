@@ -22,6 +22,7 @@ export function useQuizEngine() {
     sessionStartTime,
     answerQuestion,
     nextQuestion,
+    skipQuestion,
     useHint: consumeHint,
     setPhase,
     resetQuiz,
@@ -81,6 +82,14 @@ export function useQuizEngine() {
     return consumeHint();
   }, [consumeHint]);
 
+  // Spelling-round escape hatch — costs XP, re-queues the word
+  const handleSkip = useCallback(() => {
+    if (isAnswerLocked || phase !== 'active') return;
+    setIsAnswerLocked(true);
+    setFeedbackText('');
+    skipQuestion();
+  }, [isAnswerLocked, phase, skipQuestion]);
+
   // Persist session when quiz completes
   useEffect(() => {
     if (phase !== 'complete') return;
@@ -136,6 +145,7 @@ export function useQuizEngine() {
     handleAnswer,
     handleNext,
     handleHint,
+    handleSkip,
     setPhase,
     resetQuiz,
   };

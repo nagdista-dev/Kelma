@@ -135,6 +135,7 @@ export interface QuizState {
   // Actions
   startSession: (words: string[], level: LanguageLevel, quizData: WordQuizData[]) => void;
   answerQuestion: (selected: string, fastBonus?: number) => void;
+  skipQuestion: () => void;
   nextQuestion: () => void;
   useHint: () => string;
   setPhase: (phase: QuizPhase) => void;
