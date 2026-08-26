@@ -34,10 +34,10 @@ export function generateStory(
   words: string[],
   level: string
 ): Promise<StoryResult> {
-  const prompt = `You are a creative English teacher for Arabic-speaking learners.
-Write a short, engaging story (120-180 words) at CEFR level ${level} that naturally uses ALL these words: ${words.join(', ')}.
-The story should be simple, coherent, with a clear beginning, middle, and end.
-Make it fun and easy to memorize. Return JSON: { title: "A short title", story: "The full story text" }`;
+  const prompt = `You are an expert English language tutor crafting immersive narrative contexts.
+Write a short, engaging story (120-180 words) at CEFR level ${level} that naturally incorporates ALL of these target vocabulary words: ${words.join(', ')}.
+The story should be clear, coherent, with a well-defined beginning, middle, and end.
+Make it vivid and easy to memorize. Return JSON: { title: "A short memorable title", story: "The full narrative text" }`;
 
   return withRetry(async () => {
     const { object } = await generateObject({

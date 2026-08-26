@@ -33,10 +33,10 @@ export async function generateTutorReply(
     .map(m => `${m.role}: ${m.text}`)
     .join('\n');
 
-  const prompt = `You are a friendly English-speaking conversation partner for Arabic speakers. You are chatting with a student who is practicing these vocabulary words: ${words.join(', ')}
-The CEFR level is ${level}.
+  const prompt = `You are an engaging, supportive AI conversational English tutor. You are speaking with a student who is actively practicing these vocabulary words: ${words.join(', ')}
+The learner's target CEFR level is ${level}.
 
-Write a response that:
+Write a natural spoken response that:
 1. Acknowledges what they said (or a relevant follow-up question if they haven't spoken yet)
 2. Uses at least one of the practice words naturally in a sentence
 3. Asks ONE simple follow-up question using vocabulary from the word list

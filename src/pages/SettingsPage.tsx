@@ -9,7 +9,9 @@ import {
   Plug,
   Settings,
   Sun,
+  UserRound,
   Volume2,
+  X,
   XCircle,
 } from 'lucide-react';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -18,6 +20,11 @@ import { Button } from '@/components/ui/Button';
 import { getSpeechDiagnostics, useSpeech } from '@/hooks/useSpeech';
 import { usePageMeta } from '@/hooks/usePageMeta';
 
+/** Only allow English letters, spaces, hyphens, apostrophes */
+function sanitizeUserName(v: string) {
+  return v.replace(/[^a-zA-Z\s\-']/g, '').slice(0, 30);
+}
+
 export function SettingsPage() {
   usePageMeta(
     'Settings',
@@ -25,9 +32,20 @@ export function SettingsPage() {
     '/settings'
   );
   const {
-    provider, apiKey, theme, defaultLevel, voiceURI, model,
-    setTheme, setVoiceURI,
+    provider, apiKey, theme, defaultLevel, voiceURI, model, userName,
+    setTheme, setVoiceURI, setUserName,
   } = useSettingsStore();
+
+  const [localName, setLocalName] = useState(userName);
+  const [nameSaved, setNameSaved] = useState(false);
+
+  const handleSaveName = () => {
+    const trimmed = localName.trim();
+    if (!trimmed) return;
+    setUserName(trimmed);
+    setNameSaved(true);
+    setTimeout(() => setNameSaved(false), 2000);
+  };
 
   const { speak } = useSpeech();
   const [voiceTestState, setVoiceTestState] = useState<'idle' | 'testing' | 'ok' | 'fallback'>('idle');
@@ -67,11 +85,13 @@ export function SettingsPage() {
 
     const voices = synth.getVoices();
     const english = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
-    log(`1. Engine supported. Total voices: ${voices.length}, English voices: ${english.length}`);
+    log(`1. Engine ready: ${voices.length} voices total (${english.length} English)`);
     if (english.length > 0) {
-      log(`2. Voices found: ${english.slice(0, 5).map(v => `${v.name} (${v.lang})`).join(', ')}`);
+      const sample = english.slice(0, 2).map(v => v.name).join(', ');
+      const more = english.length > 2 ? ` (+${english.length - 2} more)` : '';
+      log(`2. English voices: ${sample}${more}`);
     } else {
-      log('2. NO English voices installed on this device.');
+      log('2. No English voices installed on this device.');
     }
 
     const utterance = new SpeechSynthesisUtterance('Sound test. Your pronunciation engine is working.');
@@ -79,9 +99,9 @@ export function SettingsPage() {
     const preferred = english.find(v => v.lang === 'en-US') ?? english[0];
     if (preferred) {
       utterance.voice = preferred;
-      log(`3. Trying voice: ${preferred.name} (${preferred.lang})`);
+      log(`3. Selected: ${preferred.name}`);
     } else {
-      log('3. Trying default voice (none selected).');
+      log('3. Using default system voice.');
     }
 
     let started = false;
@@ -93,24 +113,23 @@ export function SettingsPage() {
       setVoiceTestState('ok');
     };
     utterance.onerror = e => {
-      log(`4. Speech error: "${e.error}"${started ? ' (after starting)' : ' (before starting)'}`);
+      log(`4. Speech error: "${e.error}"`);
       console.error('[TTS] settings voice test error:', e.error);
       if (!started) {
         settled = true;
-        log('5. Switching to cloud voice…');
+        log('5. Switching to cloud voice fallback…');
         speak('Sound test. Using cloud voice.');
         setVoiceTestState('fallback');
       }
     };
 
-    log('3b. Calling speechSynthesis.speak() now…');
     synth.speak(utterance);
 
     // If nothing started after 2.5s, engine is silently dead
     window.setTimeout(() => {
       if (!started && !settled) {
-        log(`4. No sound and no error after 2.5s (engine is blocked or muted — common in Brave). Speaking status: ${synth.speaking ? 'speaking' : 'not speaking'}, pending: ${synth.pending}.`);
-        log('5. Switching to cloud voice…');
+        log('4. Local audio engine timed out or was muted.');
+        log('5. Switching to cloud voice fallback…');
         speak('Sound test. Using cloud voice.');
         setVoiceTestState('fallback');
       }
@@ -136,6 +155,67 @@ export function SettingsPage() {
             </p>
           </div>
         </div>
+
+        {/* ─── Learner Identity Card ─── */}
+        <Card className="mb-6 p-5 sm:p-6 border-slate-200/90 dark:border-white/10 shadow-lg bg-gradient-to-br from-teal-500/5 to-transparent dark:from-teal-500/10">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            {/* Avatar Preview */}
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-400 text-white shadow-xl shadow-teal-500/25 select-none">
+              {userName.trim() ? (
+                <span className="text-2xl font-black uppercase">
+                  {userName.trim().charAt(0)}
+                </span>
+              ) : (
+                <UserRound className="h-7 w-7" />
+              )}
+            </div>
+
+            {/* Name Input Block */}
+            <div className="flex-1">
+              <label htmlFor="user-name-input" className="text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-gray-500 mb-1.5 block">
+                Your First Name (English only)
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    id="user-name-input"
+                    type="text"
+                    value={localName}
+                    onChange={e => setLocalName(sanitizeUserName(e.target.value))}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); }}
+                    placeholder="e.g. Ahmed, Sara, Mohamed…"
+                    maxLength={30}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500 pr-8"
+                  />
+                  {localName && (
+                    <button
+                      type="button"
+                      onClick={() => setLocalName('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-gray-300 cursor-pointer"
+                      aria-label="Clear name"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <Button
+                  id="save-name-btn"
+                  type="button"
+                  onClick={handleSaveName}
+                  disabled={!localName.trim() || localName.trim() === userName}
+                  size="sm"
+                  className="shrink-0 px-5 font-bold cursor-pointer"
+                >
+                  {nameSaved ? 'Saved!' : 'Save'}
+                </Button>
+              </div>
+              <p className="mt-1.5 text-[11px] text-slate-400 dark:text-gray-500">
+                English letters only. The AI tutor and sessions will greet you by name.
+              </p>
+            </div>
+          </div>
+        </Card>
 
         <div className="grid gap-4 sm:gap-6 lg:grid-cols-5">
           {/* ─── Left: pronunciation (the deep card) ─── */}
@@ -236,12 +316,12 @@ export function SettingsPage() {
                     {voiceTestState === 'fallback' && 'Browser engine did not respond — playing via cloud voice instead.'}
                   </p>
                   {voiceTestReport.length > 0 && (
-                    <pre
-                      className="mt-2 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-[10px] leading-relaxed text-slate-600 dark:border-white/10 dark:bg-black/30 dark:text-gray-300"
+                    <div
+                      className="mt-2.5 max-h-36 overflow-y-auto rounded-xl border border-slate-200/90 bg-slate-50/80 p-3 text-left font-mono text-[11px] leading-relaxed text-slate-700 dark:border-white/10 dark:bg-black/30 dark:text-gray-300 w-full max-w-full break-words whitespace-pre-wrap"
                       dir="ltr"
                     >
-{voiceTestReport.join('\n')}
-                    </pre>
+                      {voiceTestReport.join('\n')}
+                    </div>
                   )}
                 </div>
               )}

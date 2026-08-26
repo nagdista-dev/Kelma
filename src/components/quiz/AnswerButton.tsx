@@ -15,11 +15,10 @@ export function AnswerButton({
   index,
   state,
   onClick,
-  isArabic = false,
 }: AnswerButtonProps) {
   const isIDontKnow = option === I_DONT_KNOW;
-  const displayOption = isArabic && isIDontKnow ? 'لا أعرف' : option;
-  const shouldUseArabicLayout = isArabic;
+  const displayOption = isIDontKnow ? "I don't know" : option;
+  const shouldUseArabicLayout = false;
 
   const stateClasses = {
     default: '',

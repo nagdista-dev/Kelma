@@ -16,6 +16,7 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'dark',
       defaultLevel: 'B1',
       voiceURI: '',
+      userName: '',
 
       setProvider: (provider: AIProvider) =>
         set({ provider, model: PROVIDER_MODELS[provider][0].id }),
@@ -37,13 +38,14 @@ export const useSettingsStore = create<SettingsState>()(
 
       setVoiceURI: (voiceURI: string) => set({ voiceURI }),
 
+      setUserName: (userName: string) => set({ userName }),
+
       clearApiKey: () => set({ apiKey: '' }),
     }),
     {
       name: 'pww-settings',
-      version: 2,
-      // Migrate v1 users: if they never configured a key and were on the old
-      // openai default, move them to the free no-key default.
+      version: 3,
+      // Migrate v1/v2 users
       migrate: (persisted) => {
         const s = (persisted ?? {}) as Partial<SettingsState>;
         // v1 users on the old openai default with no key → move to free no-key default
@@ -55,6 +57,7 @@ export const useSettingsStore = create<SettingsState>()(
           theme: s.theme ?? 'dark',
           defaultLevel: s.defaultLevel ?? 'B1',
           voiceURI: s.voiceURI ?? '',
+          userName: s.userName ?? '',
         };
       },
       // Only persist non-sensitive / restorable settings
@@ -65,6 +68,7 @@ export const useSettingsStore = create<SettingsState>()(
         theme: state.theme,
         defaultLevel: state.defaultLevel,
         voiceURI: state.voiceURI,
+        userName: state.userName,
       }),
     }
   )

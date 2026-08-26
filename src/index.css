@@ -74,11 +74,10 @@ html.dark select option {
 
 body {
   margin: 0;
-  /* Signature: Ivory Sand with a faint teal dawn glow (brand palette only) */
   background:
-    radial-gradient(1100px 700px at 88% -12%, rgba(13, 148, 136, 0.07), transparent 60%),
+    radial-gradient(1100px 700px at 88% -12%, rgba(13, 148, 136, 0.06), transparent 60%),
     radial-gradient(900px 600px at -8% 20%, rgba(13, 148, 136, 0.04), transparent 55%),
-    var(--ivory);
+    #f8fafc;
   background-attachment: fixed;
   color: #0F172A;
   min-height: 100svh;
@@ -87,11 +86,9 @@ body {
 
 .dark body {
   color: var(--text-primary);
-  /* Signature: Fajr night — teal dawn glow + warm gold horizon (brand palette only) */
   background:
     radial-gradient(1100px 700px at 88% -12%, rgba(13, 148, 136, 0.12), transparent 60%),
     radial-gradient(900px 600px at -8% 20%, rgba(13, 148, 136, 0.07), transparent 55%),
-    radial-gradient(850px 500px at 50% 118%, rgba(245, 158, 11, 0.06), transparent 60%),
     var(--bg-primary);
   background-attachment: fixed;
 }
@@ -274,7 +271,11 @@ html::-webkit-scrollbar {
 
   /* ─── Page Container ─────────────────────────────────────────────────────── */
   .page-container {
-    @apply max-w-2xl mx-auto w-full px-4 py-8;
+    @apply max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8;
+  }
+
+  .page-container-narrow {
+    @apply max-w-2xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8;
   }
 }
 

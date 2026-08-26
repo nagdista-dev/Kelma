@@ -151,6 +151,7 @@ export interface SettingsState {
   theme: 'dark' | 'light';
   defaultLevel: LanguageLevel;
   voiceURI: string;
+  userName: string;
 
   // Actions
   setProvider: (provider: AIProvider) => void;
@@ -159,6 +160,7 @@ export interface SettingsState {
   setTheme: (theme: 'dark' | 'light') => void;
   setDefaultLevel: (level: LanguageLevel) => void;
   setVoiceURI: (uri: string) => void;
+  setUserName: (name: string) => void;
   clearApiKey: () => void;
 }
 

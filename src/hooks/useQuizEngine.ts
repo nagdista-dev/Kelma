@@ -124,7 +124,7 @@ export function useQuizEngine() {
       completed: true,
     }).catch((err: unknown) => {
       console.error('[DB] Session save failed:', err);
-      toast.error('تعذر حفظ الجلسة في السجل', {
+      toast.error('Could not save session to history', {
         duration: 3000,
         style: { background: '#1F2937', color: '#F9FAFB', border: '1px solid rgba(239,68,68,0.4)' },
       });

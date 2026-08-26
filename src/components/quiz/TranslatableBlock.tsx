@@ -63,7 +63,7 @@ export function TranslatableBlock({ label, lines }: TranslatableBlockProps) {
           ) : (
             <Languages className="h-3.5 w-3.5" />
           )}
-          {hasTranslation ? 'Hide' : 'عربي'}
+          {hasTranslation ? 'Hide' : 'Translate'}
         </button>
       </div>
 
@@ -192,7 +192,7 @@ export function ExampleAudioBlock({ sentence }: ExampleAudioBlockProps) {
               ) : (
                 <Languages className="h-3.5 w-3.5" />
               )}
-              {translation !== null ? 'Hide' : 'عربي'}
+              {translation !== null ? 'Hide' : 'Translate'}
             </button>
           </div>
 

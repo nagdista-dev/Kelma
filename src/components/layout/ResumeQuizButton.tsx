@@ -28,7 +28,7 @@ export function ResumeQuizButton() {
           exit={{ opacity: 0, y: 24, scale: 0.85 }}
           transition={{ type: 'spring', duration: 0.4 }}
           onClick={() => navigate('/quiz')}
-          className="fixed bottom-5 right-5 z-[70] inline-flex cursor-pointer items-center gap-2 rounded-full border border-teal-400/40 bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-95"
+          className="fixed bottom-20 md:bottom-5 right-4 md:right-5 z-[70] inline-flex cursor-pointer items-center gap-2 rounded-full border border-teal-400/40 bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-xl shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-95"
           aria-label="Resume your quiz"
           title="Resume your quiz"
         >

@@ -24,6 +24,7 @@ import { PronouncePage } from '@/pages/PronouncePage';
 import { ConfusablesPage } from '@/pages/ConfusablesPage';
 import { StoryPage } from '@/pages/StoryPage';
 import { VoiceChatPage } from '@/pages/VoiceChatPage';
+import { TutorPage } from '@/pages/TutorPage';
 import { useSettingsStore } from '@/store/settingsStore';
 
 function App() {
@@ -57,8 +58,9 @@ function App() {
           <Route path="/help" element={<HelpPage />} />
           <Route path="/history" element={<HistoryPage />} />
 
-          {/* Learn tools — API key required for AI calls */}
-          <Route path="/wotd" element={<WordOfTheDayPage />} />
+          {/* Daily Word */}
+          <Route path="/daily" element={<WordOfTheDayPage />} />
+          <Route path="/wotd" element={<Navigate to="/daily" replace />} />
           <Route
             path="/pronounce"
             element={
@@ -88,6 +90,14 @@ function App() {
             element={
               <ProtectedRoute require="apiKey" redirectTo="/provider">
                 <VoiceChatPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tutor"
+            element={
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
+                <TutorPage />
               </ProtectedRoute>
             }
           />

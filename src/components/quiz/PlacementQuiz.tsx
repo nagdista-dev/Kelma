@@ -107,24 +107,17 @@ export function PlacementQuiz() {
             {recommended}
           </motion.div>
 
-          <p
-            dir="rtl"
-            style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-            className="mt-5 text-xs text-gray-400"
-          >
-            صحّحت {correctCount} من {total} — مستوى كلماتك المقترح:
+          <p className="mt-5 text-xs text-slate-400">
+            Scored {correctCount} of {total} — Recommended CEFR Level:
           </p>
-          <h2
-            dir="rtl"
-            style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-            className="mt-1 text-2xl font-extrabold text-white"
-          >
-            تم حفظ مستواك ✓
+          <h2 className="mt-1 flex items-center justify-center gap-2 text-2xl font-extrabold text-white">
+            <span>Proficiency Level Saved</span>
+            <Check className="h-6 w-6 text-emerald-400 stroke-[3]" />
           </h2>
 
           <div className="mt-6 space-y-2.5">
-            <Button onClick={() => navigate('/session')} size="lg" className="w-full" id="placement-done-session">
-              ابدأ جلسة كلمات على مستواك
+            <Button onClick={() => navigate('/session')} size="lg" className="w-full gap-2 font-bold" id="placement-done-session">
+              <span>Start Practice at Your Level</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
             <Button
@@ -135,20 +128,16 @@ export function PlacementQuiz() {
               }}
               variant="secondary"
               size="lg"
-              className="w-full"
+              className="w-full gap-2 font-bold"
               id="placement-done-retake"
             >
               <RotateCcw className="h-4 w-4" />
-              Retake test
+              Retake Assessment
             </Button>
           </div>
 
-          <p
-            dir="rtl"
-            style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-            className="mt-4 inline-flex items-center gap-1 text-[11px] text-gray-600"
-          >
-            <Check className="h-3 w-3" /> المستوى اتحدّث في إعداداتك
+          <p className="mt-4 inline-flex items-center gap-1 text-[11px] text-slate-500">
+            <Check className="h-3 w-3 text-emerald-500" /> Target level updated in your settings
           </p>
         </motion.div>
       </div>

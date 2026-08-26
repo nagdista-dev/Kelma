@@ -148,11 +148,11 @@ ${wordData.collocations.length ? `Common collocations: ${wordData.collocations.j
 ${wordData.emojiAnchor ? `Visual anchor: ${wordData.emojiAnchor}` : ''}
 ${wordData.memoryTip ? `Memory tip: ${wordData.memoryTip}` : ''}
 
-Write the explanation in Egyptian Arabic, formatted EXACTLY as these 3 short lines (keep the labels):
+Write a clear, concise pedagogical explanation in English, formatted EXACTLY as these 3 short lines (keep the labels):
 
-الفرق: [one sentence: why "${correctAnswer}" is correct and the difference from the student's answer — put both words in **bold**]
-إمتى نستخدمها: [one sentence: when/how the word is used]
-طريقة التذكر: [one short memorable trick linking the word to its meaning]
+Key Difference: [one sentence: why "${correctAnswer}" is correct and the distinction from the student's answer — put both words in **bold**]
+Usage Context: [one sentence: when and how the word is naturally used]
+Memory Anchor: [one short memorable mnemonic linking the word to its meaning]
 
 Rules:
 - No greeting, no intro, no closing praise.

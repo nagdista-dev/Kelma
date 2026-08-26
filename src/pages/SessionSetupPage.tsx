@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   ArrowRight,
-  BrainCircuit,
-  GraduationCap,
+  Check,
+  History,
   ListChecks,
   RotateCcw,
-  Settings as SettingsIcon,
+  Search,
   Sparkles,
   Trash2,
-  Wand2,
+  X,
+  Zap,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useQuizStore } from '@/store/quizStore';
 import { generateSessionData, getFriendlyAIErrorMessage } from '@/lib/quizDataGenerator';
@@ -20,30 +22,40 @@ import { WordInput } from '@/components/session/WordInput';
 import { QuizGeneratingOverlay } from '@/components/session/QuizGeneratingOverlay';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { LEVEL_DESCRIPTIONS, NO_KEY_PROVIDERS, PROVIDER_LABELS } from '@/types/index';
-import { MAX_WORDS, MIN_WORDS, TOTAL_ROUNDS } from '@/constants/index';
+
+import { MAX_WORDS, MIN_WORDS } from '@/constants/index';
 import { useSessionHistory } from '@/hooks/useSessionHistory';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const REVIEW_WORDS_KEY = 'pww-review-words';
 
+
+
+
+
 export function SessionSetupPage() {
+  usePageMeta(
+    'New Session',
+    'Build an active recall gauntlet for your English vocabulary list. Drills each word across 6 interactive rounds.',
+    '/session'
+  );
+
   const navigate = useNavigate();
   const { provider, apiKey, model, defaultLevel } = useSettingsStore();
   const { startSession, setPhase } = useQuizStore();
-  const isNoKey = NO_KEY_PROVIDERS.has(provider);
   const { play } = useSoundEffects();
   const { getAllSessions } = useSessionHistory();
 
-  // Draft words persist across navigation and page reloads
+  // Persisted draft words
   const [words, setWords, clearWords] = useLocalStorage<string[]>('pww-draft-words', []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
   const [lastSessionWords, setLastSessionWords] = useState<string[]>([]);
 
-  // Surface the previous completed session for one-tap repetition
+  // Surface previous completed session
   useEffect(() => {
     getAllSessions()
       .then(sessions => {
@@ -53,7 +65,7 @@ export function SessionSetupPage() {
       .catch(() => {});
   }, [getAllSessions]);
 
-  // One-shot hydration of the weak-words handoff from the session report
+  // One-shot hydration of weak-words handoff
   useEffect(() => {
     const stored = sessionStorage.getItem(REVIEW_WORDS_KEY);
     if (!stored) return;
@@ -61,27 +73,28 @@ export function SessionSetupPage() {
     try {
       const parsed: unknown = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(w => typeof w === 'string')) {
-        // One-shot hydration from an external system before first paint
-        // oxlint-disable-next-line react/set-state-in-effect
         setWords(parsed as string[]);
-        // oxlint-disable-next-line react/set-state-in-effect
         setReviewMode(true);
+        toast.success(`Loaded ${parsed.length} review words from your report!`);
       }
     } catch {
-      /* ignore malformed payload */
+      /* ignore */
     }
   }, [setWords]);
 
-  // ── History word picker ──────────────────────────────────────────────────────
+  // History word picker modal state
   const [historyPickerOpen, setHistoryPickerOpen] = useState(false);
   const [historyPickerLoading, setHistoryPickerLoading] = useState(false);
   const [allHistoryWords, setAllHistoryWords] = useState<string[]>([]);
   const [historySelected, setHistorySelected] = useState<Set<string>>(new Set());
+  const [historyFilter, setHistoryFilter] = useState('');
 
   const loadHistoryWords = async () => {
+    play('click');
     setHistoryPickerOpen(true);
     setHistoryPickerLoading(true);
-    setHistorySelected(new Set());
+    setHistorySelected(new Set(words));
+    setHistoryFilter('');
     try {
       const sessions = await getAllSessions();
       const unique = [...new Set(sessions.flatMap(s => s.words))].sort();
@@ -108,7 +121,10 @@ export function SessionSetupPage() {
     setReviewMode(false);
     setHistoryPickerOpen(false);
     play('next');
+    toast.success(`Added ${historySelected.size} words from history!`);
   };
+
+
 
   const canStart = words.length >= MIN_WORDS && !loading;
 
@@ -131,7 +147,7 @@ export function SessionSetupPage() {
     }
   }, [canStart, play, setPhase, words, defaultLevel, provider, apiKey, model, startSession, navigate]);
 
-  // Enter starts the session from anywhere on the page
+  // Enter starts session
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
@@ -147,337 +163,306 @@ export function SessionSetupPage() {
 
   const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
 
-  const startButton = (id: string, fullLabel: boolean) => (
-    <Button id={id} onClick={() => void handleStart()} disabled={!canStart} size="lg" className="w-full gap-2">
-      {canStart
-        ? fullLabel
-          ? `Generate Quiz (${words.length} word${words.length !== 1 ? 's' : ''})`
-          : 'Generate Quiz'
-        : `Add at least ${MIN_WORDS} word`}
-      <ArrowRight className="h-4 w-4" />
-    </Button>
-  );
+  const filteredHistory = historyFilter.trim()
+    ? allHistoryWords.filter(w => w.toLowerCase().includes(historyFilter.toLowerCase()))
+    : allHistoryWords;
 
   return (
-    <div className="page-container pb-28 lg:pb-8">
+    <div className="page-container pb-32 lg:pb-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.35 }}
       >
-        {/* Header */}
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15">
-            <Wand2 className="h-5 w-5 text-teal-400" />
+        {/* ─── Hero Header ─── */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15 shadow-sm">
+              <Zap className="h-6 w-6 text-teal-500 dark:text-teal-300 fill-current" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold text-slate-950 dark:text-white sm:text-3xl tracking-tight">
+                New Session Gauntlet
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
+                Master 1 to 10 words through 6 attacks of active recall until they stick
+              </p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">New Session</h1>
-            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
-              Add English words — the AI builds a full quiz
-            </p>
+
+          {/* AI Model Pill */}
+          <div className="flex items-center gap-2">
+            <Link
+              to="/provider"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs hover:border-teal-500/50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
+              title="AI Provider Settings"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <span className="truncate max-w-[100px]">{model}</span>
+            </Link>
           </div>
         </div>
 
-        {/* Review banner */}
+        {/* Review Mode Banner */}
         {reviewMode && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 flex items-center gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-700 dark:text-amber-300"
+            className="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-800 dark:text-amber-200"
           >
-            <RotateCcw className="h-4 w-4 shrink-0" />
-            Review mode: your weak words from last session are loaded below.
+            <div className="flex items-center gap-2.5">
+              <RotateCcw className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span>Review Mode: Weak words from your last session are loaded below.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                play('click');
+                clearWords();
+                setReviewMode(false);
+              }}
+              className="text-xs font-bold underline hover:opacity-80 cursor-pointer shrink-0"
+            >
+              Clear & Start Fresh
+            </button>
           </motion.div>
         )}
 
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
-          {/* ─── Main column: words ─── */}
-          <div className="space-y-4 sm:space-y-6 lg:col-span-2">
-            <Card className="p-4 sm:p-6">
-              {/* Card header */}
-              <div className="mb-4 flex items-center justify-between gap-2">
-                <h2 className="flex items-center gap-2 text-sm font-bold text-slate-950 dark:text-white">
-                  <ListChecks className="h-4 w-4 text-teal-500 dark:text-teal-300" />
-                  Your Words
+        {/* ─── Main Content ─── */}
+        <div className="space-y-4">
+          <Card className="p-5 sm:p-6 shadow-xl border-slate-200/90 dark:border-white/10">
+            {/* Card Header with Counter & Clear */}
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ListChecks className="h-4 w-4 text-teal-500 dark:text-teal-400" />
+                <h2 className="text-sm font-extrabold text-slate-950 dark:text-white uppercase tracking-wider">
+                  Your Word List
                 </h2>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full border px-2.5 py-1 text-[11px] font-bold tabular-nums ${
-                      words.length >= MIN_WORDS
-                        ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
-                        : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-500'
-                    }`}
-                  >
-                    {words.length}/{MAX_WORDS}
-                  </span>
-                  {words.length > 0 && (
-                    <button
-                      type="button"
-                      id="clear-all-words-btn"
-                      onClick={() => {
-                        play('click');
-                        clearWords();
-                        setReviewMode(false);
-                      }}
-                      aria-label="Clear all words"
-                      className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition-all hover:border-red-500/50 hover:text-red-500 active:scale-95 dark:border-white/10 dark:text-gray-400 dark:hover:text-red-400"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
               </div>
 
-              {/* Capacity bar */}
-              <div className="mb-4 h-1.5 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/5">
-                <motion.div
-                  className={`h-full rounded-full ${
-                    words.length >= MIN_WORDS ? 'bg-emerald-400' : 'bg-teal-500'
+              <div className="flex items-center gap-2">
+                <span
+                  className={`rounded-full border px-3 py-0.5 text-xs font-black tabular-nums transition-colors ${
+                    words.length >= MIN_WORDS
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
+                      : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                   }`}
-                  initial={false}
-                  animate={{ width: `${progressPct}%` }}
-                  transition={{ duration: 0.35, ease: 'easeOut' }}
-                />
-              </div>
+                >
+                  {words.length} / {MAX_WORDS}
+                </span>
 
-              <WordInput words={words} onChange={setWords} />
-
-              {/* Quick fills */}
-              {words.length === 0 && (
-                <div className="mt-4 space-y-2.5">
-                  {lastSessionWords.length > 0 && (
-                    <button
-                      type="button"
-                      id="repeat-last-session-btn"
-                      onClick={() => {
-                        play('next');
-                        setWords(lastSessionWords);
-                        setReviewMode(false);
-                      }}
-                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition-all hover:border-teal-500/60 hover:text-teal-600 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300"
-                    >
-                      <RotateCcw className="h-3 w-3" />
-                      Repeat last session ({lastSessionWords.length} words)
-                    </button>
-                  )}
+                {words.length > 0 && (
                   <button
                     type="button"
-                    id="pick-history-btn"
-                    onClick={() => void loadHistoryWords()}
-                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition-all hover:border-teal-500/60 hover:text-teal-600 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300"
+                    id="clear-all-words-btn"
+                    onClick={() => {
+                      play('click');
+                      clearWords();
+                      setReviewMode(false);
+                      toast.success('Cleared word list');
+                    }}
+                    aria-label="Clear all words"
+                    className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition-all hover:border-red-500/50 hover:text-red-500 active:scale-95 dark:border-white/10 dark:text-gray-400 dark:hover:text-red-400"
+                    title="Clear all words"
                   >
-                    📚 Pick from history
+                    <Trash2 className="h-4 w-4" />
                   </button>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[11px] text-slate-500 dark:text-gray-500">Try:</span>
-                    {['journey', 'improve', 'brave'].map(w => (
-                      <button
-                        key={w}
-                        type="button"
-                        onClick={() => {
-                          play('click');
-                          setWords(prev => (prev.includes(w) ? prev : [...prev, w]));
-                        }}
-                        className="inline-flex cursor-pointer items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-1 text-[11px] font-semibold text-teal-700 transition-all hover:bg-teal-500/20 active:scale-95 dark:text-teal-300"
-                      >
-                        {w}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Hints */}
-              {words.length >= MAX_WORDS && (
-                <p className="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-amber-600 dark:text-gold">
-                  <Sparkles className="h-3 w-3" />
-                  Full house — you are ready to generate!
-                </p>
-              )}
-              {words.length > 0 && words.length < MIN_WORDS && (
-                <p className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-gray-500">
-                  <Sparkles className="h-3 w-3 text-teal-500 dark:text-teal-400" />
-                  Add at least {MIN_WORDS} word to unlock the quiz
-                </p>
-              )}
-            </Card>
-
-            {/* Error */}
-            {error && (
-              <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>{error}</span>
+                )}
               </div>
+            </div>
+
+            {/* Capacity Progress Bar */}
+            <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
+              <motion.div
+                className={`h-full rounded-full ${
+                  words.length >= MIN_WORDS
+                    ? 'bg-gradient-to-r from-teal-500 to-emerald-400'
+                    : 'bg-teal-500'
+                }`}
+                initial={false}
+                animate={{ width: `${progressPct}%` }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+              />
+            </div>
+
+            {/* Interactive Word Input */}
+            <WordInput words={words} onChange={setWords} />
+
+            {/* ─── Repeat Past History Shortcut (if available) ─── */}
+            <div className="mt-5 border-t border-slate-100 pt-4 dark:border-white/5 flex flex-wrap items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => void loadHistoryWords()}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-teal-500 hover:bg-white transition-all dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 cursor-pointer"
+              >
+                <History className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+                <span>Pick from My Past Words</span>
+              </button>
+
+              {lastSessionWords.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    play('next');
+                    setWords(lastSessionWords);
+                    setReviewMode(false);
+                    toast.success(`Loaded last session (${lastSessionWords.length} words)!`);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-1.5 text-xs font-bold text-slate-700 hover:border-teal-500 hover:bg-white transition-all dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 cursor-pointer"
+                >
+                  <RotateCcw className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+                  <span>Repeat Last Session ({lastSessionWords.slice(0, 3).join(', ')}…)</span>
+                </button>
+              )}
+            </div>
+          </Card>
+
+          {/* Launch Button */}
+          <Button
+            id="start-session-btn"
+            onClick={() => void handleStart()}
+            disabled={!canStart}
+            size="lg"
+            className="w-full gap-2 py-4 text-base font-bold cursor-pointer"
+          >
+            {canStart ? (
+              <>
+                <span>Launch Gauntlet ({words.length} words)</span>
+                <ArrowRight className="h-5 w-5" />
+              </>
+            ) : (
+              <span>Add at least {MIN_WORDS} word to start</span>
             )}
-          </div>
+          </Button>
+          {canStart && (
+            <p className="mt-2 text-center text-[10px] font-bold text-slate-400 dark:text-gray-500">
+              Press <kbd className="rounded border px-1 py-0.5 font-mono">Enter ↵</kbd> anywhere to start
+            </p>
+          )}
 
-          {/* ─── Sidebar: settings + what happens next + CTA ─── */}
-          <div className="space-y-4 sm:space-y-6">
-            <Card className="divide-y divide-slate-100 p-0 dark:divide-white/5">
-              <p className="px-4 pt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-gray-500">
-                Session setup
-              </p>
-
-              {/* Level row */}
-              <Link
-                to="/level"
-                id="change-level-link"
-                className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/5 dark:active:bg-white/10"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
-                  <GraduationCap className="h-4 w-4 text-teal-400" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-800 dark:text-gray-200">
-                    Level ·{' '}
-                    <span className="badge-teal ml-0.5 inline-block align-middle">{defaultLevel}</span>
-                  </p>
-                  <p className="truncate text-xs text-slate-500 dark:text-gray-500">
-                    {LEVEL_DESCRIPTIONS[defaultLevel]}
-                  </p>
-                </div>
-                <SettingsIcon className="h-4 w-4 shrink-0 text-slate-400 dark:text-gray-500" />
-              </Link>
-
-              {/* Model row */}
-              <Link
-                to="/provider"
-                id="change-provider-link"
-                className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/5 dark:active:bg-white/10"
-              >
-                <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
-                  <Sparkles className="h-4 w-4 text-teal-400" />
-                  {isNoKey && (
-                    <span className="absolute -right-1 -top-1 rounded-full bg-emerald-500 px-1 py-px text-[8px] font-black uppercase text-emerald-950">
-                      free
-                    </span>
-                  )}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-slate-800 dark:text-gray-200">
-                    <span id="session-model-name" className="text-teal-600 dark:text-teal-300">
-                      {model}
-                    </span>
-                  </p>
-                  <p className="truncate text-xs text-slate-500 dark:text-gray-500">
-                    {PROVIDER_LABELS[provider] ?? provider}
-                    {isNoKey ? ' · no key needed' : ''}
-                  </p>
-                </div>
-                <SettingsIcon className="h-4 w-4 shrink-0 text-slate-400 dark:text-gray-500" />
-              </Link>
-            </Card>
-
-            {/* What happens next */}
-            <Card className="p-4 sm:p-5">
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-gray-500">
-                What happens next
-              </p>
-              <ol className="space-y-2.5 text-xs leading-relaxed text-slate-600 dark:text-gray-400">
-                <li className="flex gap-2">
-                  <BrainCircuit className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-500 dark:text-teal-300" />
-                  The AI builds {TOTAL_ROUNDS} rounds of questions for every word
-                </li>
-                <li className="flex gap-2">
-                  <ListChecks className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-500 dark:text-teal-300" />
-                  You play, earn XP and build streaks
-                </li>
-                <li className="flex gap-2">
-                  <RotateCcw className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-500 dark:text-teal-300" />
-                  Weak words come back as one-tap practice
-                </li>
-              </ol>
-            </Card>
-
-            {/* Desktop CTA lives in the sidebar */}
-            <div className="hidden lg:block">{startButton('start-session-btn-desktop', false)}</div>
-          </div>
+          {/* Error Message Banner */}
+          {error && (
+            <div className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
         </div>
       </motion.div>
 
-      {/* Loading overlay */}
+      {/* ─── Loading / Generating Fullscreen Overlay ─── */}
       {loading && <QuizGeneratingOverlay words={words} />}
 
-      {/* Sticky bottom CTA on mobile — respects safe areas */}
-      {!loading && (
-        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-white/10 dark:bg-bg-primary/95 lg:hidden">
-          {startButton('start-session-btn', true)}
-        </div>
-      )}
+      {/* ─── History Word Picker Modal ─── */}
+      <AnimatePresence>
+        {historyPickerOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setHistoryPickerOpen(false)}
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-md"
+            />
 
-      {/* History word picker modal */}
-      {historyPickerOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 backdrop-blur-sm lg:items-center">
-          <div className="w-full max-w-lg rounded-t-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#0e1420] lg:rounded-2xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-950 dark:text-white">Pick words from your history</h3>
-              <button
-                type="button"
-                onClick={() => setHistoryPickerOpen(false)}
-                className="cursor-pointer rounded-lg px-2 py-1 text-xs text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
-              >
-                ✕
-              </button>
-            </div>
-
-            {historyPickerLoading && (
-              <p className="py-8 text-center text-sm text-slate-400 dark:text-gray-500">Loading…</p>
-            )}
-
-            {!historyPickerLoading && allHistoryWords.length === 0 && (
-              <p className="py-8 text-center text-sm text-slate-400 dark:text-gray-500">
-                No past sessions yet — words appear here after you complete a quiz.
-              </p>
-            )}
-
-            {!historyPickerLoading && allHistoryWords.length > 0 && (
-              <>
-                <div className="mb-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-gray-500">
-                  <span>{historySelected.size}/{MAX_WORDS} selected</span>
-                  {historySelected.size > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setHistorySelected(new Set())}
-                      className="cursor-pointer text-red-500 hover:text-red-600"
-                    >
-                      Clear
-                    </button>
-                  )}
+            <motion.div
+              initial={{ scale: 0.94, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.94, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="relative z-10 w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0f172a]"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-950 dark:text-white">
+                    Pick Words From Past History
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-gray-400">
+                    Re-drill words you studied previously
+                  </p>
                 </div>
-                <div className="mb-4 flex max-h-[50vh] flex-wrap gap-1.5 overflow-y-auto">
-                  {allHistoryWords.map(w => {
-                    const selected = historySelected.has(w);
-                    return (
-                      <button
-                        key={w}
-                        type="button"
-                        onClick={() => toggleHistoryWord(w)}
-                        disabled={!selected && historySelected.size >= MAX_WORDS}
-                        className={`inline-flex cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all active:scale-95 ${
-                          selected
-                            ? 'border-teal-500 bg-teal-500 text-white'
-                            : 'border-slate-200 bg-white text-slate-600 hover:border-teal-500/60 hover:text-teal-600 disabled:opacity-30 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300'
-                        }`}
-                      >
-                        {w}
-                      </button>
-                    );
-                  })}
-                </div>
-                <Button
-                  id="history-apply-btn"
-                  onClick={applyHistorySelection}
-                  disabled={historySelected.size === 0}
-                  size="lg"
-                  className="w-full gap-2"
+                <button
+                  type="button"
+                  onClick={() => setHistoryPickerOpen(false)}
+                  className="rounded-xl border border-slate-200 p-2 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:hover:text-white cursor-pointer"
+                  aria-label="Close modal"
                 >
-                  Add {historySelected.size} word{historySelected.size !== 1 ? 's' : ''}
-                </Button>
-              </>
-            )}
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Filter Search */}
+              <div className="relative mb-3">
+                <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={historyFilter}
+                  onChange={e => setHistoryFilter(e.target.value)}
+                  placeholder="Filter past words…"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-10 pr-4 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                />
+              </div>
+
+              {historyPickerLoading ? (
+                <p className="py-8 text-center text-sm text-slate-400">Loading your history…</p>
+              ) : allHistoryWords.length === 0 ? (
+                <p className="py-8 text-center text-sm text-slate-400">
+                  No past sessions yet. Complete your first session to build your history!
+                </p>
+              ) : (
+                <>
+                  <div className="mb-2 flex items-center justify-between text-xs text-slate-500">
+                    <span>{historySelected.size}/{MAX_WORDS} selected</span>
+                    {historySelected.size > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setHistorySelected(new Set())}
+                        className="text-red-500 hover:underline cursor-pointer"
+                      >
+                        Clear Selection
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="mb-5 flex max-h-[40vh] flex-wrap gap-1.5 overflow-y-auto pr-1">
+                    {filteredHistory.map(w => {
+                      const selected = historySelected.has(w);
+                      return (
+                        <button
+                          key={w}
+                          type="button"
+                          onClick={() => toggleHistoryWord(w)}
+                          disabled={!selected && historySelected.size >= MAX_WORDS}
+                          className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-all cursor-pointer ${
+                            selected
+                              ? 'border-teal-500 bg-teal-500 text-white shadow-sm'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-teal-500 hover:text-teal-600 disabled:opacity-30 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300'
+                          }`}
+                        >
+                          {selected && <Check className="h-3 w-3" />}
+                          <span>{w}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    id="history-apply-btn"
+                    onClick={applyHistorySelection}
+                    disabled={historySelected.size === 0}
+                    size="lg"
+                    className="w-full gap-2 shadow-lg"
+                  >
+                    Add {historySelected.size} word{historySelected.size !== 1 ? 's' : ''} to Session
+                  </Button>
+                </>
+              )}
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }

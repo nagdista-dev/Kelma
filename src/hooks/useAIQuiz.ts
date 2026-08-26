@@ -38,7 +38,7 @@ export function useAIQuiz() {
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Could not load feedback.';
         setFeedbackError(msg);
-        return 'حصل خطأ في تحميل الشرح. حاول تاني.';
+        return 'Could not load explanation. Please try again.';
       } finally {
         setIsLoadingFeedback(false);
       }

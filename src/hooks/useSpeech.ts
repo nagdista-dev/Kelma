@@ -175,7 +175,7 @@ export function useSpeech() {
   // Both engines dead (no speechSynthesis + cloud stream blocked) → warn once per burst
   useEffect(() => {
     const notifyUnsupported = () => {
-      toast.error('جهازك أو متصفحك مش بيدعم التشغيل الصوتي', {
+      toast.error('Text-to-speech audio is not supported on this browser', {
         id: 'tts-unsupported',
         duration: 4500,
         style: { background: '#1F2937', color: '#F9FAFB', border: '1px solid rgba(239,68,68,0.4)' },

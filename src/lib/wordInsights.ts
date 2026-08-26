@@ -13,8 +13,9 @@ const PronunciationSchema = z.object({
 
 const ConfusableSchema = z.object({
   word: z.string(),
-  arabicMeaning: z.string(),
+  definition: z.string(),
   difference: z.string(),
+  example: z.string(),
 });
 
 const ConfusablesSchema = z.object({
@@ -57,11 +58,11 @@ export function generateWordPronunciation(
     }
   }
 
-  const prompt = `You are an English pronunciation coach for Arabic speakers.
+  const prompt = `You are an expert English pronunciation coach.
 Provide:
 - IPA transcription for "${word}"
 - Syllable breakdown as an array (e.g. ["re", "lax"])
-- A one-sentence stress tip for Arabic speakers
+- A one-sentence phonetic stress guide explaining which syllable carries primary emphasis.
 
 Return JSON matching the schema.`;
 
@@ -78,13 +79,20 @@ Return JSON matching the schema.`;
   });
 }
 
+export interface ConfusableItem {
+  word: string;
+  definition: string;
+  difference: string;
+  example: string;
+}
+
 export function generateConfusables(
   provider: AIProvider,
   apiKey: string,
   model: string,
   word: string
-): Promise<{ target: string; confusables: Array<{ word: string; arabicMeaning: string; difference: string }> }> {
-  const cacheKey = `pww-conf-${word.toLowerCase()}`;
+): Promise<{ target: string; confusables: ConfusableItem[] }> {
+  const cacheKey = `pww-conf-v2-${word.toLowerCase()}`;
   const cached = localStorage.getItem(cacheKey);
   if (cached) {
     try {
@@ -94,16 +102,17 @@ export function generateConfusables(
     }
   }
 
-  const prompt = `You are an English teacher explaining tricky words to Arabic-speaking learners.
+  const prompt = `You are an expert English vocabulary coach distinguishing commonly confused word pairs and homophones.
 
 The target word is: "${word}"
 
-Provide 3-4 other English words that learners frequently confuse with it (similar spelling, sound, or meaning). For each confusable word:
-- its English spelling
-- its Arabic meaning (Egyptian dialect)
-- a short clear explanation in ARABIC (Egyptian dialect) of how it differs from "${word}" — include an example sentence
+Provide 2-3 English words that learners frequently confuse with "${word}" (similar sound, spelling, or overlapping usage). For each confusable word provide:
+- word: the confusable word
+- definition: concise 1-sentence English definition
+- difference: clear explanation of the core distinction from "${word}"
+- example: a natural example sentence demonstrating correct usage
 
-Return JSON: { word: "${word}", confusables: [{ word, arabicMeaning, difference }, ...] }`;
+Return JSON matching the schema: { target: "${word}", confusables: [...] }`;
 
   return withRetry(async () => {
     const { object } = await generateObject({

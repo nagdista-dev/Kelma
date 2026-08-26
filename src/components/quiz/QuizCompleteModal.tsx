@@ -14,8 +14,8 @@ import { Button } from '@/components/ui/Button';
 
 interface QuizCompleteModalProps {
   xp: number;
+  accuracy: number;
   maxStreak: number;
-  accuracy: number; // 0–100
   mastered: number;
   total: number;
   onViewReport: () => void;
@@ -25,21 +25,21 @@ interface QuizCompleteModalProps {
 function tierFor(accuracy: number, perfect: boolean) {
   if (perfect)
     return {
-      title: 'أسطوري! 👑',
-      sub: 'كل الكلمات من أول مرة — مستوى نادر',
-      ring: 'border-gold/50 bg-gold/15',
-      icon: 'text-gold',
+      title: 'Legendary Performance!',
+      sub: 'Every single word mastered on the first attempt.',
+      ring: 'border-amber-400/50 bg-amber-400/15',
+      icon: 'text-amber-400',
     };
   if (accuracy >= 80)
     return {
-      title: 'عمل رائع! 🔥',
-      sub: 'أنت بتتحسن مع كل جلسة',
+      title: 'Outstanding Work!',
+      sub: 'Consistent active recall and rapid vocabulary retention.',
       ring: 'border-teal-500/40 bg-teal-500/10',
       icon: 'text-teal-300',
     };
   return {
-    title: 'خلصت الجلسة! 💪',
-    sub: 'الغلطة أول خطوة في التعلم',
+    title: 'Session Complete!',
+    sub: 'Mistakes are the first step to permanent retention.',
     ring: 'border-slate-500/40 bg-slate-500/10',
     icon: 'text-gray-300',
   };
@@ -59,38 +59,50 @@ function Confetti({ seed }: { seed: number }) {
       })),
     [seed]
   );
+
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl" aria-hidden="true">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       {pieces.map((p, i) => (
         <motion.span
           key={i}
-          initial={{ y: -40, opacity: 0, rotate: 0 }}
-          animate={{ y: '110%', opacity: [0, 1, 1, 0], rotate: p.drift * 4 }}
-          transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
-          className="absolute top-0"
-          style={{ left: `${p.left}%`, width: p.size, height: p.size * 0.6, backgroundColor: p.color, borderRadius: 2 }}
+          initial={{ y: -20, x: 0, opacity: 0, rotate: 0 }}
+          animate={{
+            y: 320,
+            x: p.drift,
+            opacity: [0, 1, 1, 0],
+            rotate: p.drift * 8,
+          }}
+          transition={{
+            duration: p.duration,
+            delay: p.delay,
+            ease: 'easeOut',
+          }}
+          style={{
+            left: `${p.left}%`,
+            width: p.size,
+            height: p.size * 1.4,
+            backgroundColor: p.color,
+          }}
+          className="absolute top-0 rounded-sm"
         />
       ))}
     </div>
   );
 }
 
-/**
- * Full-screen celebration shown the moment a session completes.
- * Blocks the page behind it until the player picks their next move.
- */
 export function QuizCompleteModal({
   xp,
-  maxStreak,
   accuracy,
+  maxStreak,
   mastered,
   total,
   onViewReport,
   onNewSession,
 }: QuizCompleteModalProps) {
-  const perfect = accuracy === 100 && mastered === total && total > 0;
+  const perfect = accuracy >= 100;
   const tier = tierFor(accuracy, perfect);
 
+  // Keyboard shortcut: Enter views report
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter') onViewReport();
@@ -100,25 +112,25 @@ export function QuizCompleteModal({
   }, [onViewReport]);
 
   const stats = [
-    { Icon: Zap, value: xp, label: 'XP', tone: 'text-amber-300' },
-    { Icon: Target, value: `${Math.round(accuracy)}%`, label: 'الدقة', tone: 'text-teal-300' },
-    { Icon: Flame, value: maxStreak, label: 'سلسلة', tone: 'text-orange-300' },
-    { Icon: CheckCircle2, value: `${mastered}/${total}`, label: 'إتقان', tone: 'text-emerald-300' },
+    { Icon: Zap, value: `${xp}`, label: 'XP Gained', tone: 'text-amber-400' },
+    { Icon: Target, value: `${Math.round(accuracy)}%`, label: 'Accuracy', tone: 'text-teal-400' },
+    { Icon: Flame, value: `${maxStreak}`, label: 'Max Streak', tone: 'text-orange-400' },
+    { Icon: CheckCircle2, value: `${mastered}/${total}`, label: 'Mastered', tone: 'text-emerald-400' },
   ];
 
   return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[95] flex items-center justify-center bg-bg-primary/90 p-4 backdrop-blur-lg"
+      className="fixed inset-0 z-[95] flex items-center justify-center bg-slate-950/85 p-4 backdrop-blur-md"
       role="dialog"
-      aria-label="انتهت الجلسة"
+      aria-label="Session Complete"
     >
       <motion.div
         initial={{ scale: 0.8, y: 30, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ type: 'spring', duration: 0.55, bounce: 0.4 }}
-        className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900 to-bg-primary p-6 text-center shadow-2xl sm:p-8"
+        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-slate-900 via-slate-900/95 to-[#0b1120] p-6 text-center shadow-2xl sm:p-8"
       >
         <Confetti seed={xp + maxStreak} />
 
@@ -138,24 +150,16 @@ export function QuizCompleteModal({
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: 'spring', delay: 0.15, bounce: 0.5 }}
-            className={`relative flex h-24 w-24 items-center justify-center rounded-full border-2 ${tier.ring} bg-bg-primary`}
+            className={`relative flex h-24 w-24 items-center justify-center rounded-full border-2 ${tier.ring} bg-slate-900`}
           >
             <Trophy className={`h-11 w-11 ${tier.icon}`} />
           </motion.div>
         </div>
 
-        <h2
-          dir="rtl"
-          style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-          className="text-2xl font-extrabold text-white sm:text-3xl"
-        >
+        <h2 className="text-2xl font-black text-white sm:text-3xl">
           {tier.title}
         </h2>
-        <p
-          dir="rtl"
-          style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-          className="mt-1 text-sm text-gray-400"
-        >
+        <p className="mt-1 text-sm text-slate-400">
           {tier.sub}
         </p>
 
@@ -167,17 +171,13 @@ export function QuizCompleteModal({
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35 }}
-              className="flex flex-col items-center gap-0.5 rounded-xl border border-white/10 bg-white/5 px-3 py-3"
+              className="flex flex-col items-center gap-0.5 rounded-2xl border border-white/10 bg-white/5 px-3 py-3"
             >
               <Icon className={`mb-0.5 h-4 w-4 ${tone}`} />
-              <span dir="ltr" className={`text-lg font-extrabold tabular-nums ${tone}`}>
+              <span className={`text-lg font-black tabular-nums ${tone}`}>
                 {value}
               </span>
-              <span
-                dir="rtl"
-                style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-                className="text-[10px] font-semibold text-gray-500"
-              >
+              <span className="text-[10px] font-bold text-slate-400">
                 {label}
               </span>
             </motion.div>
@@ -186,28 +186,24 @@ export function QuizCompleteModal({
 
         {/* Actions */}
         <div className="mt-6 space-y-2.5">
-          <Button onClick={onViewReport} size="lg" className="w-full" id="complete-report-btn">
+          <Button onClick={onViewReport} size="lg" className="w-full gap-2 font-bold" id="complete-report-btn">
             <BookOpen className="h-4 w-4" />
-            شوف التقرير الكامل
+            View Full Session Report
           </Button>
           <Button
             onClick={onNewSession}
             variant="secondary"
             size="lg"
-            className="w-full"
+            className="w-full gap-2 font-bold"
             id="complete-new-session-btn"
           >
             <RotateCcw className="h-4 w-4" />
-            جلسة جديدة
+            Start New Session
           </Button>
         </div>
 
-        <p
-          dir="rtl"
-          style={{ fontFamily: "'Tajawal', system-ui, sans-serif" }}
-          className="mt-4 text-[11px] text-gray-600"
-        >
-          اضغط Enter لعرض التقرير
+        <p className="mt-4 text-[11px] text-slate-500">
+          Press <kbd className="rounded border border-white/10 px-1 py-0.5 font-mono">Enter ↵</kbd> to view report
         </p>
       </motion.div>
     </motion.div>,
