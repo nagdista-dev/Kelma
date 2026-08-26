@@ -6,18 +6,91 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <title>Kelma — Master English Words Like a Game | AI Vocabulary Trainer</title>
+    <meta name="description" content="Kelma turns any English word list into a 6-round brain workout: active recall, real pronunciation, real videos and AI explanations in Egyptian Arabic. Free, no signup." />
+    <meta name="keywords" content="english vocabulary, learn english words, vocabulary trainer, spaced repetition, active recall, english for arabic speakers, AI learning" />
+    <link rel="canonical" href="https://kelma-en.vercel.app/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Nagdista" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kelma" />
+    <meta property="og:url" content="https://kelma-en.vercel.app/" />
+    <meta property="og:title" content="Kelma — Master English Words Like a Game" />
+    <meta property="og:description" content="Any word list becomes a 6-round brain workout with pronunciation, real videos and smart review. Free forever." />
+    <meta property="og:image" content="https://kelma-en.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Kelma — AI vocabulary trainer" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kelma — Master English Words Like a Game" />
+    <meta name="twitter:description" content="Any word list becomes a 6-round brain workout with pronunciation, real videos and smart review. Free forever." />
+    <meta name="twitter:image" content="https://kelma-en.vercel.app/og-image.png" />
+
+    <!-- PWA -->
+    <meta name="theme-color" content="#0f172a" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Kelma" />
-    <title>Kelma — AI Vocabulary Trainer</title>
-    <meta name="description" content="AI-powered English vocabulary trainer for Arabic speakers. Master words through 6-round active recall with personalized feedback." />
-    <meta name="theme-color" content="#0f172a" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Kelma",
+      "alternateName": "Play With Words",
+      "url": "https://kelma-en.vercel.app/",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any (Web / PWA)",
+      "browserRequirements": "Requires JavaScript",
+      "description": "AI-powered English vocabulary trainer for Arabic speakers. Words are mastered through a 6-round active recall pipeline with pronunciation, real-video context and personalized feedback.",
+      "inLanguage": ["en", "ar"],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Mahmoud Elnagdy", "url": "https://kelma-en.vercel.app/about" },
+      "featureList": [
+        "6-round active recall pipeline per word",
+        "AI-generated quiz data and Egyptian-Arabic explanations",
+        "Text-to-speech pronunciation with voice picker",
+        "Real YouTube video context per word",
+        "XP, streaks and session reports",
+        "Installable progressive web app"
+      ]
+    }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static prerender shell: crawlers and first paint see the hero
+           instantly; React replaces this node when the app boots. -->
+      <main style="max-width:48rem;margin:0 auto;padding:6rem 1rem;font-family:system-ui,sans-serif;text-align:center">
+        <h1 style="font-size:2.5rem;line-height:1.15;margin:0 0 1rem;color:#f8fafc">
+          Master English Words<br />
+          <span style="color:#2dd4bf">Like a Game</span>
+        </h1>
+        <p style="color:#94a3b8;font-size:1.05rem;max-width:28rem;margin:0 auto 2rem">
+          Add any word list — Kelma's AI turns it into a 6-round brain workout
+          with pronunciation, real videos and smart review.
+        </p>
+        <p style="color:#64748b;font-size:0.85rem">
+          Loading the interactive app…
+        </p>
+      </main>
+    </div>
+    <noscript>
+      Kelma is an interactive vocabulary game and needs JavaScript.
+      It turns any English word list into a 6-round brain workout —
+      open kelma-en.vercel.app in a browser with JavaScript enabled to start free.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

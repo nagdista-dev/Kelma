@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 const STEPS = [
   {
@@ -80,6 +81,11 @@ function BookIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export function HowToPage() {
+  usePageMeta(
+    'How it works',
+    'From word list to mastery: how the 6-round active recall pipeline works — recognition, comprehension, translation, context, listening and spelling.',
+    '/how-to'
+  );
   return (
     <div className="page-container">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

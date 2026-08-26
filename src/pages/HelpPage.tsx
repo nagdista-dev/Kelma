@@ -13,6 +13,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 interface ProviderHelp {
   name: string;
@@ -126,6 +127,11 @@ const PROVIDER_HELP: ProviderHelp[] = [
 ];
 
 export function HelpPage() {
+  usePageMeta(
+    'API Key Help',
+    'Where to create AI provider keys and what to check when validation fails.',
+    '/help'
+  );
   return (
     <div className="page-container">
       <motion.div

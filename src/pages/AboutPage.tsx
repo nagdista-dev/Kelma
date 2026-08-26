@@ -2,8 +2,14 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, BookOpen, Heart, Sparkles } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
+import { usePageMeta } from '@/hooks/usePageMeta';
 
 export function AboutPage() {
+  usePageMeta(
+    'About',
+    'Kelma is built by Mahmoud Elnagdy (Nagdista) on a simple belief: a word is only yours when you can use it, not just recognize it.',
+    '/about'
+  );
   return (
     <div className="page-container max-w-xl mx-auto">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

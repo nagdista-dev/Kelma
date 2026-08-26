@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Check, Crown, KeyRound, Sparkles, Tag } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
+import { usePageMeta } from '@/hooks/usePageMeta';
 import { Button } from '@/components/ui/Button';
 
 interface Plan {
@@ -53,6 +54,11 @@ const PLANS: Plan[] = [
 ];
 
 export function PricingPage() {
+  usePageMeta(
+    'Pricing',
+    'Free forever with your own AI key — managed AI hosting coming soon. No credit card, no signup.',
+    '/pricing'
+  );
   return (
     <div className="page-container">
       <motion.div

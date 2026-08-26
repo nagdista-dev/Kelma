@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
+import { MotionConfig } from 'framer-motion';
 import { Layout } from '@/components/layout/Layout';
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
@@ -32,9 +33,10 @@ function App() {
   }, [theme]);
 
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Layout>
+    <MotionConfig reducedMotion="user">
+      <BrowserRouter>
+        <ScrollToTop />
+        <Layout>
         <Routes>
           {/* Public */}
           <Route path="/" element={<LandingPage />} />
@@ -90,7 +92,8 @@ function App() {
           },
         }}
       />
-    </BrowserRouter>
+      </BrowserRouter>
+    </MotionConfig>
   );
 }
 

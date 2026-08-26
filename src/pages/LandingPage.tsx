@@ -20,32 +20,32 @@ const FEATURES = [
   {
     icon: Brain,
     title: '6-Round Active Recall',
-    desc: 'Recognition → Comprehension → Translation → Context → Listening → Spelling',
+    desc: 'Every word survives 6 attacks — recognition to spelling — so it never slips away',
   },
   {
     icon: Volume2,
     title: 'Real Pronunciation',
-    desc: 'Duolingo-style auto voice on every answer, with your favorite system voice',
+    desc: 'Hear every word out loud with your favorite voice — train your ear, not just your eyes',
   },
   {
     icon: Quote,
     title: 'YouGlish Integration',
-    desc: 'One tap shows your word inside thousands of real YouTube clips',
+    desc: 'One tap shows your word in thousands of real YouTube clips — context you will never forget',
   },
   {
     icon: Zap,
     title: 'XP, Streaks & Hints',
-    desc: 'Game mechanics that keep you coming back every single day',
+    desc: 'XP, streaks and speed bonuses that make daily practice feel like play',
   },
   {
     icon: BarChart3,
     title: 'Personal Dashboard',
-    desc: 'Accuracy charts, mastered words and one-tap weak-word practice',
+    desc: 'See exactly where you stand — then re-drill weak words in one tap',
   },
   {
     icon: Trophy,
     title: 'Session Reports',
-    desc: 'AI explains every mistake so the next attempt is always smarter',
+    desc: 'AI explains every mistake in Egyptian Arabic — so the next attempt is smarter',
   },
 ];
 
@@ -92,11 +92,11 @@ export function LandingPage() {
           </h1>
 
           <p className="text-slate-500 dark:text-gray-400 text-base sm:text-lg mb-8 max-w-md mx-auto leading-relaxed">
-            Add any word list — Kelma's AI turns it into a 6-round brain workout
-            with pronunciation, real videos and smart review.
+            Stop forgetting the words you learn. Paste any word list and Kelma
+            drills each word through 6 rounds of active recall — until it sticks.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
             <button
               id="cta-start"
               onClick={() => navigate(ready ? '/session' : '/provider')}
@@ -111,6 +111,16 @@ export function LandingPage() {
             <Link to="/how-to" id="cta-howto" className="btn-secondary text-base px-8 py-3.5">
               See How It Works
             </Link>
+          </div>
+          <p className="mb-10 text-xs font-medium text-slate-500 dark:text-gray-500">
+            Free forever · No signup · Works with free AI keys
+          </p>
+
+          {/* Trust strip */}
+          <div className="flex items-center justify-center gap-4 sm:gap-6 text-[11px] font-medium text-slate-500 dark:text-gray-500">
+            <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" /> AI-powered</span>
+            <span className="hidden sm:flex items-center gap-1.5"><Ear className="h-3.5 w-3.5 text-teal-500 dark:text-teal-400" /> Listen & learn</span>
+            <span className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-orange-500 dark:text-orange-400" /> XP & streaks</span>
           </div>
 
           {/* Trust strip */}
@@ -191,9 +201,9 @@ export function LandingPage() {
         viewport={{ once: true }}
         className="w-full mb-8 rounded-3xl border border-teal-500/25 bg-gradient-to-br from-teal-500/10 via-transparent to-amber-500/10 p-8 sm:p-10"
       >
-        <h2 className="text-2xl font-extrabold text-slate-950 dark:text-white">Your next word is waiting</h2>
+        <h2 className="text-2xl font-extrabold text-slate-950 dark:text-white">Your first session takes 5 minutes</h2>
         <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500 dark:text-gray-400">
-          Three words is all it takes to feel the difference in your first session.
+          Bring three words you keep forgetting — and feel the difference before the session ends.
         </p>
         <button
           onClick={() => navigate(ready ? '/session' : '/provider')}
