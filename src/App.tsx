@@ -19,6 +19,11 @@ import { SessionSetupPage } from '@/pages/SessionSetupPage';
 import { QuizPage } from '@/pages/QuizPage';
 import { SummaryPage } from '@/pages/SummaryPage';
 import { HistoryPage } from '@/pages/HistoryPage';
+import { WordOfTheDayPage } from '@/pages/WordOfTheDayPage';
+import { PronouncePage } from '@/pages/PronouncePage';
+import { ConfusablesPage } from '@/pages/ConfusablesPage';
+import { StoryPage } from '@/pages/StoryPage';
+import { VoiceChatPage } from '@/pages/VoiceChatPage';
 import { useSettingsStore } from '@/store/settingsStore';
 
 function App() {
@@ -51,6 +56,41 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/history" element={<HistoryPage />} />
+
+          {/* Learn tools — API key required for AI calls */}
+          <Route path="/wotd" element={<WordOfTheDayPage />} />
+          <Route
+            path="/pronounce"
+            element={
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
+                <PronouncePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/confusables"
+            element={
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
+                <ConfusablesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/story"
+            element={
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
+                <StoryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/voice-chat"
+            element={
+              <ProtectedRoute require="apiKey" redirectTo="/provider">
+                <VoiceChatPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Requires API key */}
           <Route

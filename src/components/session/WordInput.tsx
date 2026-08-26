@@ -1,6 +1,7 @@
-import { useState, useRef, type ClipboardEvent, type KeyboardEvent, type ChangeEvent } from 'react';
+import { useState, useRef, useEffect, type ClipboardEvent, type KeyboardEvent, type ChangeEvent } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { ClipboardPaste, X, Plus } from 'lucide-react';
+import { AlertTriangle, ClipboardPaste, X, Plus } from 'lucide-react';
 import { MAX_WORDS } from '@/constants/index';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 
@@ -13,14 +14,21 @@ const ARABIC_RE = /[\u0600-\u06FF]/;
 
 export function WordInput({ words, onChange }: WordInputProps) {
   const [input, setInput] = useState('');
+  const [arabicWarn, setArabicWarn] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { play } = useSoundEffects();
   const lastWarnRef = useRef(0);
+  const warnTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  const warnArabic = () => {
+  useEffect(() => () => clearTimeout(warnTimerRef.current), []);
+
+  const showArabicWarning = () => {
     const now = Date.now();
-    if (now - lastWarnRef.current < 2500) return;
+    if (now - lastWarnRef.current < 3000) return;
     lastWarnRef.current = now;
+    setArabicWarn(true);
+    clearTimeout(warnTimerRef.current);
+    warnTimerRef.current = setTimeout(() => setArabicWarn(false), 2800);
     toast('English only — this list accepts English words', {
       id: 'arabic-blocked',
       duration: 2200,
@@ -39,8 +47,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    if (ARABIC_RE.test(raw)) warnArabic();
-    // English-only input — strip anything that isn't a letter, space or hyphen
+    if (ARABIC_RE.test(raw)) showArabicWarning();
     setInput(raw.replace(/[^a-zA-Z\s-]/g, '').replace(/\s+/g, ' '));
   };
 
@@ -101,7 +108,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
 
   const handlePaste = (e: ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData('text');
-    if (ARABIC_RE.test(pastedText)) warnArabic();
+    if (ARABIC_RE.test(pastedText)) showArabicWarning();
     const pastedWords = parseWords(pastedText);
 
     if (pastedWords.length > 1 || /[\n,;\t]/.test(pastedText)) {
@@ -116,7 +123,11 @@ export function WordInput({ words, onChange }: WordInputProps) {
     <div>
       {/* Word chips */}
       <div
-        className="flex flex-wrap items-center gap-2 mb-3 min-h-[56px] bg-white border border-slate-200 rounded-xl p-2.5 cursor-text dark:bg-white/5 dark:border-white/10"
+        className={`flex flex-wrap items-center gap-2 mb-1 min-h-[56px] bg-white border rounded-xl p-2.5 cursor-text transition-colors dark:bg-white/5 ${
+          arabicWarn
+            ? 'border-amber-400 ring-2 ring-amber-400/30 dark:border-amber-500/60 dark:ring-amber-500/20'
+            : 'border-slate-200 dark:border-white/10'
+        }`}
         onClick={() => inputRef.current?.focus()}
       >
         {words.map(w => (
@@ -157,7 +168,27 @@ export function WordInput({ words, onChange }: WordInputProps) {
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      {/* Inline Arabic warning */}
+      <AnimatePresence>
+        {arabicWarn && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-2 flex items-center gap-2 rounded-lg border border-amber-300/50 bg-amber-50 px-3 py-2 dark:border-amber-500/30 dark:bg-amber-500/10">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500 dark:text-amber-400" />
+              <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                English words only — Arabic characters are ignored
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-slate-500 dark:text-gray-500">
           {words.length}/{MAX_WORDS} words
         </p>

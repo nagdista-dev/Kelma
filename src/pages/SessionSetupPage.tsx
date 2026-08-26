@@ -72,6 +72,44 @@ export function SessionSetupPage() {
     }
   }, [setWords]);
 
+  // ── History word picker ──────────────────────────────────────────────────────
+  const [historyPickerOpen, setHistoryPickerOpen] = useState(false);
+  const [historyPickerLoading, setHistoryPickerLoading] = useState(false);
+  const [allHistoryWords, setAllHistoryWords] = useState<string[]>([]);
+  const [historySelected, setHistorySelected] = useState<Set<string>>(new Set());
+
+  const loadHistoryWords = async () => {
+    setHistoryPickerOpen(true);
+    setHistoryPickerLoading(true);
+    setHistorySelected(new Set());
+    try {
+      const sessions = await getAllSessions();
+      const unique = [...new Set(sessions.flatMap(s => s.words))].sort();
+      setAllHistoryWords(unique);
+    } catch {
+      setAllHistoryWords([]);
+    } finally {
+      setHistoryPickerLoading(false);
+    }
+  };
+
+  const toggleHistoryWord = (w: string) => {
+    setHistorySelected(prev => {
+      const next = new Set(prev);
+      if (next.has(w)) next.delete(w);
+      else if (next.size < MAX_WORDS) next.add(w);
+      return next;
+    });
+  };
+
+  const applyHistorySelection = () => {
+    if (historySelected.size === 0) return;
+    setWords([...historySelected]);
+    setReviewMode(false);
+    setHistoryPickerOpen(false);
+    play('next');
+  };
+
   const canStart = words.length >= MIN_WORDS && !loading;
 
   const handleStart = useCallback(async () => {
@@ -222,6 +260,14 @@ export function SessionSetupPage() {
                       Repeat last session ({lastSessionWords.length} words)
                     </button>
                   )}
+                  <button
+                    type="button"
+                    id="pick-history-btn"
+                    onClick={() => void loadHistoryWords()}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition-all hover:border-teal-500/60 hover:text-teal-600 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300"
+                  >
+                    📚 Pick from history
+                  </button>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[11px] text-slate-500 dark:text-gray-500">Try:</span>
                     {['journey', 'improve', 'brave'].map(w => (
@@ -356,6 +402,80 @@ export function SessionSetupPage() {
       {!loading && (
         <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-white/10 dark:bg-bg-primary/95 lg:hidden">
           {startButton('start-session-btn', true)}
+        </div>
+      )}
+
+      {/* History word picker modal */}
+      {historyPickerOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/50 backdrop-blur-sm lg:items-center">
+          <div className="w-full max-w-lg rounded-t-2xl border border-slate-200 bg-white p-5 shadow-xl dark:border-white/10 dark:bg-[#0e1420] lg:rounded-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-950 dark:text-white">Pick words from your history</h3>
+              <button
+                type="button"
+                onClick={() => setHistoryPickerOpen(false)}
+                className="cursor-pointer rounded-lg px-2 py-1 text-xs text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            {historyPickerLoading && (
+              <p className="py-8 text-center text-sm text-slate-400 dark:text-gray-500">Loading…</p>
+            )}
+
+            {!historyPickerLoading && allHistoryWords.length === 0 && (
+              <p className="py-8 text-center text-sm text-slate-400 dark:text-gray-500">
+                No past sessions yet — words appear here after you complete a quiz.
+              </p>
+            )}
+
+            {!historyPickerLoading && allHistoryWords.length > 0 && (
+              <>
+                <div className="mb-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-gray-500">
+                  <span>{historySelected.size}/{MAX_WORDS} selected</span>
+                  {historySelected.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setHistorySelected(new Set())}
+                      className="cursor-pointer text-red-500 hover:text-red-600"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="mb-4 flex max-h-[50vh] flex-wrap gap-1.5 overflow-y-auto">
+                  {allHistoryWords.map(w => {
+                    const selected = historySelected.has(w);
+                    return (
+                      <button
+                        key={w}
+                        type="button"
+                        onClick={() => toggleHistoryWord(w)}
+                        disabled={!selected && historySelected.size >= MAX_WORDS}
+                        className={`inline-flex cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all active:scale-95 ${
+                          selected
+                            ? 'border-teal-500 bg-teal-500 text-white'
+                            : 'border-slate-200 bg-white text-slate-600 hover:border-teal-500/60 hover:text-teal-600 disabled:opacity-30 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300'
+                        }`}
+                      >
+                        {w}
+                      </button>
+                    );
+                  })}
+                </div>
+                <Button
+                  id="history-apply-btn"
+                  onClick={applyHistorySelection}
+                  disabled={historySelected.size === 0}
+                  size="lg"
+                  className="w-full gap-2"
+                >
+                  Add {historySelected.size} word{historySelected.size !== 1 ? 's' : ''}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

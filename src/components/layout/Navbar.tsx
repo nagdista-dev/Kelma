@@ -1,12 +1,17 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
+  BookOpen,
   CircleHelp,
   GraduationCap,
   HeartHandshake,
-  KeyRound,
-  LayoutDashboard,
-  Settings,
   History,
+  KeyRound,
+  Layers,
+  LayoutDashboard,
+  Mic,
+  MessageCircle,
+  Settings,
+  Sparkles,
   Zap,
 } from 'lucide-react';
 import { useQuizStore } from '@/store/quizStore';
@@ -31,22 +36,25 @@ export function Navbar() {
   const phase = useQuizStore(s => s.phase);
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+    `flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-200 ${
       isActive
         ? 'bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-500/30'
         : 'text-slate-500 hover:text-slate-950 hover:bg-slate-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-white/5'
     }`;
 
   const mobileLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+    `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
       isActive
-        ? 'bg-teal-100 text-teal-700 dark:bg-teal-500/25 dark:text-teal-200'
-        : 'text-slate-600 hover:bg-slate-100 dark:text-gray-300 dark:hover:bg-white/10'
+        ? 'bg-teal-50 text-teal-700 border border-teal-200/60 dark:bg-teal-500/20 dark:text-teal-200 dark:border-teal-500/30'
+        : 'text-slate-600 hover:bg-slate-50 active:bg-slate-100 dark:text-gray-300 dark:hover:bg-white/5 dark:active:bg-white/10'
     }`;
 
+  const mobileIconClass = (isActive: boolean) =>
+    `h-4 w-4 shrink-0 ${isActive ? 'text-teal-500 dark:text-teal-300' : 'text-slate-400 dark:text-gray-500'}`;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 backdrop-blur-md bg-white/85 dark:border-white/10 dark:bg-bg-primary/80">
-      <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+    <header className="sticky top-0 z-50 border-b border-slate-200/80 backdrop-blur-xl bg-white/90 dark:border-white/10 dark:bg-[#0e1420]/85">
+      <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
         {/* Logo */}
         <button
           onClick={() => { play('click'); navigate('/'); }}
@@ -61,8 +69,8 @@ export function Navbar() {
           </span>
         </button>
 
-        {/* Desktop Nav Links */}
-        <div className="flex items-center gap-0.5 sm:gap-1">
+        {/* Right side: desktop nav + mobile hamburger */}
+        <div className="flex items-center gap-1">
           {phase === 'active' || phase === 'feedback' ? (
             <span className="badge-teal animate-pulse">
               <Zap className="w-3 h-3" />
@@ -70,76 +78,114 @@ export function Navbar() {
             </span>
           ) : (
             <>
-              <nav className="hidden sm:flex items-center gap-0.5 sm:gap-1" aria-label="Main navigation">
+              {/* ─── Desktop: icons on md, icons+text on lg ─── */}
+              <nav className="hidden sm:flex items-center gap-0.5" aria-label="Main navigation">
+                <NavLink to="/wotd" className={navLinkClass} id="nav-wotd" title="Word of the Day">
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span className="hidden lg:inline">Word</span>
+                </NavLink>
                 <NavLink to="/session" end className={navLinkClass} id="nav-session" title="New Session">
-                  <Zap className="w-4 h-4 shrink-0" />
+                  <Zap className="h-4 w-4 shrink-0" />
                   <span className="hidden lg:inline">Session</span>
                 </NavLink>
-                <NavLink to="/level" className={navLinkClass} id="nav-level" title="Your level">
-                  <GraduationCap className="w-4 h-4 shrink-0" />
+                <NavLink to="/story" className={navLinkClass} id="nav-story" title="Story Mode">
+                  <BookOpen className="h-4 w-4 shrink-0" />
+                  <span className="hidden lg:inline">Story</span>
+                </NavLink>
+                <NavLink to="/pronounce" className={navLinkClass} id="nav-pronounce" title="Pronunciation">
+                  <Mic className="h-4 w-4 shrink-0" />
+                  <span className="hidden lg:inline">Pronounce</span>
+                </NavLink>
+                <NavLink to="/confusables" className={navLinkClass} id="nav-confusables" title="Confusables">
+                  <Layers className="h-4 w-4 shrink-0" />
+                  <span className="hidden lg:inline">Confusables</span>
+                </NavLink>
+                <NavLink to="/voice-chat" className={navLinkClass} id="nav-voicechat" title="Voice Chat">
+                  <MessageCircle className="h-4 w-4 shrink-0" />
+                  <span className="hidden lg:inline">Chat</span>
+                </NavLink>
+
+                <span className="mx-1 h-5 w-px bg-slate-200 dark:bg-white/10" aria-hidden />
+
+                <NavLink to="/level" className={navLinkClass} id="nav-level" title="Your Level">
+                  <GraduationCap className="h-4 w-4 shrink-0" />
                   <span className="hidden lg:inline">Level</span>
                 </NavLink>
                 <NavLink to="/dashboard" className={navLinkClass} id="nav-dashboard" title="Dashboard">
-                  <LayoutDashboard className="w-4 h-4 shrink-0" />
+                  <LayoutDashboard className="h-4 w-4 shrink-0" />
                   <span className="hidden lg:inline">Stats</span>
                 </NavLink>
-                <NavLink to="/history" className={navLinkClass} id="nav-history" title="History">
-                  <History className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">History</span>
-                </NavLink>
-                <NavLink to="/how-to" className={navLinkClass} id="nav-howto" title="How to use">
-                  <CircleHelp className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">Guide</span>
-                </NavLink>
-                <NavLink to="/support" className={navLinkClass} id="nav-support" title="Support">
-                  <HeartHandshake className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">Support</span>
-                </NavLink>
                 <NavLink to="/settings" className={navLinkClass} id="nav-settings" title="Settings">
-                  <Settings className="w-4 h-4 shrink-0" />
+                  <Settings className="h-4 w-4 shrink-0" />
                   <span className="hidden lg:inline">Settings</span>
                 </NavLink>
               </nav>
 
-              {/* Mobile hamburger menu — grouped by purpose */}
+              {/* ─── Mobile: hamburger menu ─── */}
               <MobileMenu>
                 <MenuSection label="Learn">
+                  <NavLink to="/wotd" className={mobileLinkClass} id="m-nav-wotd">
+                    <Sparkles className={mobileIconClass(false)} />
+                    Word of the Day
+                  </NavLink>
                   <NavLink to="/session" end className={mobileLinkClass} id="m-nav-session">
-                    <Zap className="w-4 h-4 text-teal-400" />
+                    <Zap className={mobileIconClass(false)} />
                     New Session
                   </NavLink>
+                  <NavLink to="/story" className={mobileLinkClass} id="m-nav-story">
+                    <BookOpen className={mobileIconClass(false)} />
+                    Story Mode
+                  </NavLink>
+                </MenuSection>
+
+                <MenuSection label="Practice">
+                  <NavLink to="/pronounce" className={mobileLinkClass} id="m-nav-pronounce">
+                    <Mic className={mobileIconClass(false)} />
+                    Pronunciation Lab
+                  </NavLink>
+                  <NavLink to="/confusables" className={mobileLinkClass} id="m-nav-confusables">
+                    <Layers className={mobileIconClass(false)} />
+                    Confusable Words
+                  </NavLink>
+                  <NavLink to="/voice-chat" className={mobileLinkClass} id="m-nav-voicechat">
+                    <MessageCircle className={mobileIconClass(false)} />
+                    Voice Chat
+                  </NavLink>
+                </MenuSection>
+
+                <MenuSection label="Progress">
                   <NavLink to="/level" className={mobileLinkClass} id="m-nav-level">
-                    <GraduationCap className="w-4 h-4 text-teal-400" />
+                    <GraduationCap className={mobileIconClass(false)} />
                     Your Level
                   </NavLink>
                   <NavLink to="/dashboard" className={mobileLinkClass} id="m-nav-dashboard">
-                    <LayoutDashboard className="w-4 h-4 text-teal-400" />
+                    <LayoutDashboard className={mobileIconClass(false)} />
                     Dashboard
                   </NavLink>
                   <NavLink to="/history" className={mobileLinkClass} id="m-nav-history">
-                    <History className="w-4 h-4 text-teal-400" />
+                    <History className={mobileIconClass(false)} />
                     History
                   </NavLink>
                 </MenuSection>
 
                 <MenuSection label="Setup">
                   <NavLink to="/provider" className={mobileLinkClass} id="m-nav-provider">
-                    <KeyRound className="w-4 h-4 text-teal-400" />
+                    <KeyRound className={mobileIconClass(false)} />
                     AI Provider
                   </NavLink>
                   <NavLink to="/settings" className={mobileLinkClass} id="m-nav-settings">
-                    <Settings className="w-4 h-4 text-teal-400" />
+                    <Settings className={mobileIconClass(false)} />
                     Settings
                   </NavLink>
                 </MenuSection>
 
-                <MenuSection label="More">
+                <MenuSection label="Help">
                   <NavLink to="/how-to" className={mobileLinkClass} id="m-nav-howto">
-                    <CircleHelp className="w-4 h-4 text-teal-400" />
+                    <CircleHelp className={mobileIconClass(false)} />
                     How to Use
                   </NavLink>
                   <NavLink to="/support" className={mobileLinkClass} id="m-nav-support">
-                    <HeartHandshake className="w-4 h-4 text-teal-400" />
+                    <HeartHandshake className={mobileIconClass(false)} />
                     Support
                   </NavLink>
                 </MenuSection>
