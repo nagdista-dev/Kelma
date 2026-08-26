@@ -18,7 +18,7 @@ export function ApiKeyInput({
 
   return (
     <div className="relative">
-      <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+      <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-gray-500" />
       <input
         id={id}
         type={show ? 'text' : 'password'}
@@ -33,7 +33,7 @@ export function ApiKeyInput({
         type="button"
         onClick={() => setShow(s => !s)}
         aria-label={show ? 'Hide API key' : 'Show API key'}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
       >
         {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
       </button>

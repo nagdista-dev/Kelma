@@ -85,13 +85,13 @@ export function LandingPage() {
             </div>
           </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-950 dark:text-white mb-4 leading-tight">
             Master English Words
             <br />
             <span className="gradient-text">Like a Game</span>
           </h1>
 
-          <p className="text-gray-400 text-base sm:text-lg mb-8 max-w-md mx-auto leading-relaxed">
+          <p className="text-slate-500 dark:text-gray-400 text-base sm:text-lg mb-8 max-w-md mx-auto leading-relaxed">
             Add any word list — Kelma's AI turns it into a 6-round brain workout
             with pronunciation, real videos and smart review.
           </p>
@@ -114,7 +114,7 @@ export function LandingPage() {
           </div>
 
           {/* Trust strip */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 text-[11px] font-medium text-gray-500">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 text-[11px] font-medium text-slate-500 dark:text-gray-500">
             <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-amber-400" /> AI-powered</span>
             <span className="hidden sm:flex items-center gap-1.5"><Ear className="h-3.5 w-3.5 text-teal-400" /> Listen & learn</span>
             <span className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-orange-400" /> XP & streaks</span>
@@ -128,7 +128,7 @@ export function LandingPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-6"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500 mb-6"
         >
           Everything a word needs
         </motion.h2>
@@ -144,10 +144,10 @@ export function LandingPage() {
               className="glass rounded-2xl p-5 text-left"
             >
               <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl border border-teal-500/25 bg-teal-500/10">
-                <f.icon className="w-5 h-5 text-teal-300" />
+                <f.icon className="w-5 h-5 text-teal-600 dark:text-teal-300" />
               </div>
-              <h2 className="text-sm font-bold text-white mb-1.5">{f.title}</h2>
-              <p className="text-xs text-gray-400 leading-relaxed">{f.desc}</p>
+              <h2 className="text-sm font-bold text-slate-950 dark:text-white mb-1.5">{f.title}</h2>
+              <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -159,7 +159,7 @@ export function LandingPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 mb-6"
+          className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-gray-500 mb-6"
         >
           The 6-round gauntlet
         </motion.h2>
@@ -174,11 +174,11 @@ export function LandingPage() {
               whileHover={{ scale: 1.06 }}
               className="glass rounded-2xl p-3 sm:p-4"
             >
-              <div className="mx-auto mb-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-teal-500/30 to-teal-600/20 border border-teal-500/40 text-teal-200 font-bold text-sm">
+              <div className="mx-auto mb-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-b from-teal-500/30 to-teal-600/20 border border-teal-500/40 text-teal-700 dark:text-teal-200 font-bold text-sm">
                 {r.n}
               </div>
-              <p className="text-[11px] sm:text-xs font-bold text-gray-200">{r.label}</p>
-              <p className="mt-0.5 text-[9px] sm:text-[10px] text-gray-500">{r.sub}</p>
+              <p className="text-[11px] sm:text-xs font-bold text-slate-800 dark:text-gray-200">{r.label}</p>
+              <p className="mt-0.5 text-[9px] sm:text-[10px] text-slate-500 dark:text-gray-500">{r.sub}</p>
             </motion.div>
           ))}
         </div>
@@ -191,8 +191,8 @@ export function LandingPage() {
         viewport={{ once: true }}
         className="w-full mb-8 rounded-3xl border border-teal-500/25 bg-gradient-to-br from-teal-500/10 via-transparent to-amber-500/10 p-8 sm:p-10"
       >
-        <h2 className="text-2xl font-extrabold text-white">Your next word is waiting</h2>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-gray-400">
+        <h2 className="text-2xl font-extrabold text-slate-950 dark:text-white">Your next word is waiting</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500 dark:text-gray-400">
           Three words is all it takes to feel the difference in your first session.
         </p>
         <button

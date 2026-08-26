@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -23,6 +23,8 @@ import { MAX_WORDS, MIN_WORDS } from '@/constants/index';
 import { useSessionHistory } from '@/hooks/useSessionHistory';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+
+const REVIEW_WORDS_KEY = 'pww-review-words';
 
 export function SessionSetupPage() {
   const navigate = useNavigate();
@@ -49,41 +51,28 @@ export function SessionSetupPage() {
       .catch(() => {});
   }, [getAllSessions]);
 
-  // Prefill weak words coming from a session report ("Practice weak words")
+  // One-shot hydration of the weak-words handoff from the session report
   useEffect(() => {
-    const stored = sessionStorage.getItem('pww-review-words');
-    if (stored) {
-      try {
-        const parsed: string[] = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setWords(parsed);
-          setReviewMode(true);
-        }
-      } catch {
-        /* ignore malformed payload */
+    const stored = sessionStorage.getItem(REVIEW_WORDS_KEY);
+    if (!stored) return;
+    sessionStorage.removeItem(REVIEW_WORDS_KEY);
+    try {
+      const parsed: unknown = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(w => typeof w === 'string')) {
+        // One-shot hydration from an external system before first paint
+        // oxlint-disable-next-line react/set-state-in-effect
+        setWords(parsed as string[]);
+        // oxlint-disable-next-line react/set-state-in-effect
+        setReviewMode(true);
       }
-      sessionStorage.removeItem('pww-review-words');
+    } catch {
+      /* ignore malformed payload */
     }
-  }, []);
+  }, [setWords]);
 
   const canStart = words.length >= MIN_WORDS && !loading;
 
-  // Enter starts the session from anywhere on the page
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (e.key === 'Enter' && words.length >= MIN_WORDS && !loading) {
-        e.preventDefault();
-        void handleStart();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  });
-  const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
-
-  const handleStart = async () => {
+  const handleStart = useCallback(async () => {
     if (!canStart) return;
     play('next');
     setLoading(true);
@@ -100,7 +89,23 @@ export function SessionSetupPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [canStart, play, setPhase, words, defaultLevel, provider, apiKey, model, startSession, navigate]);
+
+  // Enter starts the session from anywhere on the page
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === 'Enter' && words.length >= MIN_WORDS && !loading) {
+        e.preventDefault();
+        void handleStart();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [handleStart, loading, words.length]);
+
+  const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
 
   return (
     <div className="page-container pb-28 sm:pb-8">
@@ -115,8 +120,8 @@ export function SessionSetupPage() {
             <Wand2 className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">New Session</h1>
-            <p className="text-xs text-gray-400 sm:text-sm">
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">New Session</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
               Add English words — the AI builds a full quiz
             </p>
           </div>
@@ -134,7 +139,7 @@ export function SessionSetupPage() {
           {/* Words card */}
           <Card className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 sm:text-sm">
+              <h2 className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400 sm:text-sm">
                 Your Words
               </h2>
               <div className="flex items-center gap-2">
@@ -143,7 +148,7 @@ export function SessionSetupPage() {
                   className={`rounded-full border px-2.5 py-1 text-[11px] font-bold tabular-nums ${
                     words.length >= MIN_WORDS
                       ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
-                      : 'border-white/10 bg-white/5 text-gray-500'
+                      : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-500'
                   }`}
                 >
                   {words.length}/{MAX_WORDS}
@@ -158,7 +163,7 @@ export function SessionSetupPage() {
                       setReviewMode(false);
                     }}
                     aria-label="Clear all words"
-                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-white/10 text-gray-400 transition-all hover:border-red-500/50 hover:text-red-300 active:scale-95"
+                    className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition-all hover:border-red-500/50 dark:border-white/10 dark:text-gray-400 hover:text-red-300 active:scale-95"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -167,7 +172,7 @@ export function SessionSetupPage() {
             </div>
 
             {/* Slim progress bar */}
-            <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-white/5">
+            <div className="mb-3 h-1 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/5">
               <motion.div
                 className={`h-full rounded-full transition-all ${
                   words.length >= MIN_WORDS ? 'bg-emerald-400' : 'bg-teal-500'
@@ -188,7 +193,7 @@ export function SessionSetupPage() {
                   setWords(lastSessionWords);
                   setReviewMode(false);
                 }}
-                className="mt-2.5 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] font-semibold text-gray-300 transition-all hover:border-teal-500/40 hover:text-teal-300 active:scale-95"
+                className="mt-2.5 inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition-all hover:border-teal-500/40 hover:text-teal-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:text-teal-300 active:scale-95"
               >
                 <RotateCcw className="h-3 w-3" />
                 Repeat last session ({lastSessionWords.length} words)
@@ -196,7 +201,7 @@ export function SessionSetupPage() {
             )}
             {words.length === 0 && (
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                <span className="text-[11px] text-gray-500">Try:</span>
+                <span className="text-[11px] text-slate-500 dark:text-gray-500">Try:</span>
                 {['journey', 'improve', 'brave'].map(w => (
                   <button
                     key={w}
@@ -222,7 +227,7 @@ export function SessionSetupPage() {
             )}
 
             {words.length < MIN_WORDS && (
-              <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-gray-500">
+              <p className="mt-2.5 flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-gray-500">
                 <Sparkles className="h-3 w-3 text-teal-400" />
                 Add at least {MIN_WORDS} word to unlock the quiz
               </p>
@@ -235,26 +240,26 @@ export function SessionSetupPage() {
             <Link
               to="/level"
               id="change-level-link"
-              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
+              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/5 dark:active:bg-white/10"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
                 <GraduationCap className="h-4 w-4 text-teal-400" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-gray-200">
+                <p className="text-sm font-semibold text-slate-800 dark:text-gray-200">
                   Level ·{' '}
                   <span className="badge-teal ml-0.5 inline-block align-middle">{defaultLevel}</span>
                 </p>
-                <p className="truncate text-xs text-gray-500">{LEVEL_DESCRIPTIONS[defaultLevel]}</p>
+                <p className="truncate text-xs text-slate-500 dark:text-gray-500">{LEVEL_DESCRIPTIONS[defaultLevel]}</p>
               </div>
-              <SettingsIcon className="h-4 w-4 shrink-0 text-gray-500" />
+              <SettingsIcon className="h-4 w-4 shrink-0 text-slate-500 dark:text-gray-500" />
             </Link>
 
             {/* Model row */}
             <Link
               to="/provider"
               id="change-provider-link"
-              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/5 active:bg-white/10"
+              className="flex cursor-pointer items-center gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/5 dark:active:bg-white/10"
             >
               <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-teal-500/30 bg-teal-500/10">
                 <Sparkles className="h-4 w-4 text-teal-400" />
@@ -265,17 +270,17 @@ export function SessionSetupPage() {
                 )}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-gray-200">
+                <p className="truncate text-sm font-semibold text-slate-800 dark:text-gray-200">
                   <span id="session-model-name" className="text-teal-300">
                     {model}
                   </span>
                 </p>
-                <p className="truncate text-xs text-gray-500">
+                <p className="truncate text-xs text-slate-500 dark:text-gray-500">
                   {PROVIDER_LABELS[provider] ?? provider}
                   {isNoKey ? ' · no key needed' : ''}
                 </p>
               </div>
-              <SettingsIcon className="h-4 w-4 shrink-0 text-gray-500" />
+              <SettingsIcon className="h-4 w-4 shrink-0 text-slate-500 dark:text-gray-500" />
             </Link>
           </Card>
 
@@ -295,7 +300,7 @@ export function SessionSetupPage() {
       {/* Sticky bottom CTA on mobile — respects safe areas */}
       {!loading && (
         <>
-          <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-bg-primary/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 p-4 dark:border-white/10 dark:bg-bg-primary/95 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md sm:hidden">
             <Button
               id="start-session-btn"
               onClick={() => void handleStart()}

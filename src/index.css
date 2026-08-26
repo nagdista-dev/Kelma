@@ -53,6 +53,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -73,7 +74,12 @@ html.dark select option {
 
 body {
   margin: 0;
-  background: var(--ivory);   /* Ivory Sand — brand light mode */
+  /* Signature: Ivory Sand with a faint teal dawn glow (brand palette only) */
+  background:
+    radial-gradient(1100px 700px at 88% -12%, rgba(13, 148, 136, 0.07), transparent 60%),
+    radial-gradient(900px 600px at -8% 20%, rgba(13, 148, 136, 0.04), transparent 55%),
+    var(--ivory);
+  background-attachment: fixed;
   color: #0F172A;
   min-height: 100svh;
   overflow-x: hidden;
@@ -93,6 +99,11 @@ body {
 /* Brand heading face — Poppins Bold */
 h1, h2, .font-display {
   font-family: var(--font-display);
+}
+
+/* Headlines never orphan their last word */
+h1, h2 {
+  text-wrap: balance;
 }
 
 /* Keyboard focus — Cairo Gold outline (brand standard) */

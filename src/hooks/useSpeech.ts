@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useSettingsStore } from '@/store/settingsStore';
 
 /**
@@ -64,6 +65,22 @@ if (typeof window !== 'undefined') {
 
 const fallbackAudioRef: { current: HTMLAudioElement | null } = { current: null };
 
+/* ─── Failure signaling — lets the UI warn when a device cannot play audio ─── */
+
+type SpeechFailureListener = () => void;
+const failureListeners = new Set<SpeechFailureListener>();
+
+export function onSpeechFailure(listener: SpeechFailureListener) {
+  failureListeners.add(listener);
+  return () => {
+    failureListeners.delete(listener);
+  };
+}
+
+function notifySpeechFailure() {
+  failureListeners.forEach(notify => notify());
+}
+
 // Free cloud TTS used when the browser engine is missing or fails
 function playFallbackAudio(text: string) {
   try {
@@ -76,9 +93,10 @@ function playFallbackAudio(text: string) {
     console.log('[TTS] playing cloud fallback audio (Google Translate TTS)');
     void audio.play().catch(err => {
       console.error('[TTS] cloud fallback FAILED to play:', err?.message ?? err);
+      notifySpeechFailure();
     });
   } catch {
-    /* audio is best-effort */
+    notifySpeechFailure();
   }
 }
 
@@ -154,6 +172,18 @@ function speakWatched(text: string, rate: number) {
 }
 
 export function useSpeech() {
+  // Both engines dead (no speechSynthesis + cloud stream blocked) → warn once per burst
+  useEffect(() => {
+    const notifyUnsupported = () => {
+      toast.error('جهازك أو متصفحك مش بيدعم التشغيل الصوتي', {
+        id: 'tts-unsupported',
+        duration: 4500,
+        style: { background: '#1F2937', color: '#F9FAFB', border: '1px solid rgba(239,68,68,0.4)' },
+      });
+    };
+    return onSpeechFailure(notifyUnsupported);
+  }, []);
+
   const speak = useCallback((text: string, rate = 0.9) => {
     speakWatched(text, rate);
   }, []);

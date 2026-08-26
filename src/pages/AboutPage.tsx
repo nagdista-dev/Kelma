@@ -14,7 +14,7 @@ export function AboutPage() {
           </div>
           <div className="min-w-0">
             <h1 className="text-xl font-extrabold tracking-wide gradient-text sm:text-2xl">NAGDISTA</h1>
-            <p className="text-xs uppercase tracking-[0.25em] text-gray-500 sm:text-sm">A product by Nagdista</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-slate-500 dark:text-gray-500 sm:text-sm">A product by Nagdista</p>
           </div>
         </div>
 
@@ -24,13 +24,13 @@ export function AboutPage() {
             <BookOpen className="h-4 w-4" />
             Why Kelma exists
           </h2>
-          <p className="text-sm leading-relaxed text-gray-300">
+          <p className="text-sm leading-relaxed text-slate-700 dark:text-gray-300">
             Most vocabulary apps drill random words with no context. Kelma was built
-            on a simple belief: <span className="font-semibold text-white">a word is only
+            on a simple belief: <span className="font-semibold text-slate-950 dark:text-white">a word is only
             yours when you have heard it, used it, misspelled it once, and seen it in
             real life.</span> That is exactly what the 6 rounds make you do — every single time.
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-gray-400">
+          <p className="mt-3 text-sm leading-relaxed text-slate-500 dark:text-gray-400">
             It is designed for Arabic speakers learning English, with Egyptian-Arabic
             meanings, memory tips and AI feedback that talks to you like a teacher, not a robot.
           </p>
@@ -45,16 +45,16 @@ export function AboutPage() {
           ].map(v => (
             <div key={v.title} className="glass rounded-2xl p-4 text-center">
               <v.icon className="mx-auto mb-2 h-5 w-5 text-amber-400" />
-              <p className="text-xs font-bold text-white">{v.title}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-gray-500">{v.desc}</p>
+              <p className="text-xs font-bold text-slate-950 dark:text-white">{v.title}</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-500 dark:text-gray-500">{v.desc}</p>
             </div>
           ))}
         </div>
 
         {/* Maker */}
         <Card className="mb-8 text-center">
-          <p className="text-sm font-bold text-white">Mahmoud Elnagdy</p>
-          <p className="mt-1 text-xs text-gray-500">MERN Developer · Cairo, Egypt</p>
+          <p className="text-sm font-bold text-slate-950 dark:text-white">Mahmoud Elnagdy</p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-gray-500">MERN Developer · Cairo, Egypt</p>
           <a
             href="https://github.com/nagdista-dev"
             target="_blank"
@@ -67,7 +67,7 @@ export function AboutPage() {
           </a>
         </Card>
 
-        <p className="text-center text-sm italic text-gray-500">"Keep Learning, Keep Building"</p>
+        <p className="text-center text-sm italic text-slate-500 dark:text-gray-500">"Keep Learning, Keep Building"</p>
 
         <div className="mt-6 text-center">
           <Link to="/session" id="about-cta" className="btn-primary inline-flex px-8 py-3">

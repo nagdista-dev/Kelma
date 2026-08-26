@@ -27,7 +27,7 @@ export function HintButton({ onHint, disabled }: HintButtonProps) {
         className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-all duration-200 ${
           used
             ? 'border-amber-500/30 text-amber-400 bg-amber-500/10 cursor-default'
-            : 'border-white/10 text-gray-400 bg-white/5 hover:border-amber-500/40 hover:text-amber-300 hover:bg-amber-500/10 cursor-pointer'
+            : 'border-slate-200 text-slate-500 bg-white hover:border-amber-500/50 hover:text-amber-600 hover:bg-amber-50 cursor-pointer dark:border-white/10 dark:text-gray-400 dark:bg-white/5 dark:hover:border-amber-500/40 dark:hover:text-amber-300 dark:hover:bg-amber-500/10'
         } disabled:opacity-40 disabled:cursor-not-allowed`}
       >
         <Lightbulb className="w-3.5 h-3.5" />

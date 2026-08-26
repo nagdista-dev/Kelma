@@ -53,9 +53,8 @@ export function useQuizEngine() {
       ).then(text => {
         if (!ignore) setFeedbackText(text);
       });
-    } else {
-      setFeedbackText('');
     }
+    // Correct answers never carry feedback text — handleAnswer clears it already
 
     return () => {
       ignore = true;

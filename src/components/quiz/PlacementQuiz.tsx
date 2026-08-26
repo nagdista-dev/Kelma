@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -30,10 +30,6 @@ export function PlacementQuiz() {
   const question = questions[index];
   const total = questions.length;
 
-  useEffect(() => {
-    setSelectedIndex(null);
-  }, [index]);
-
   if (!question && !done) return null;
 
   const pick = (i: number) => {
@@ -52,6 +48,7 @@ export function PlacementQuiz() {
   };
 
   const handleNext = () => {
+    setSelectedIndex(null);
     if (index + 1 < total) {
       play('next');
       next();

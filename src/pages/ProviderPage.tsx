@@ -186,8 +186,8 @@ export function ProviderPage() {
             <Plug className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">AI Provider</h1>
-            <p className="text-xs text-gray-400 sm:text-sm">
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">AI Provider</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
               Choose the provider, model and key used to generate your quizzes
             </p>
           </div>
@@ -196,11 +196,11 @@ export function ProviderPage() {
         <div className="space-y-6">
           {/* Provider Selection */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">Provider</h2>
+            <h2 className="text-sm font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-widest mb-3">Provider</h2>
 
             {/* Search */}
             <div className="relative mb-3">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 dark:text-gray-500" />
               <input
                 type="text"
                 value={search}
@@ -211,7 +211,7 @@ export function ProviderPage() {
               />
             </div>
 
-            <div className="mb-3 flex items-center justify-between text-[11px] font-medium text-gray-500">
+            <div className="mb-3 flex items-center justify-between text-[11px] font-medium text-slate-500 dark:text-gray-500">
               <span>{visibleProviders.length} of {PROVIDERS.length} providers</span>
               <span className="inline-flex items-center gap-1 text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -231,17 +231,17 @@ export function ProviderPage() {
                     className={`relative py-3 px-2 rounded-xl border text-sm font-medium transition-all duration-200 text-center ${
                       selected
                         ? noKey
-                          ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200 shadow-md shadow-emerald-500/20'
-                          : 'bg-teal-500/20 border-teal-500 text-teal-200'
+                          ? 'bg-emerald-100 border-emerald-500 text-emerald-800 shadow-md shadow-emerald-500/20 dark:bg-emerald-500/20 dark:border-emerald-400 dark:text-emerald-200 dark:shadow-none'
+                          : 'bg-teal-50 border-teal-600 text-teal-800 dark:bg-teal-500/20 dark:border-teal-500 dark:text-teal-200'
                         : noKey
-                          ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-300/80 hover:border-emerald-400 hover:text-emerald-200'
-                          : 'bg-white/5 border-white/10 text-gray-400 hover:border-teal-500/50 hover:text-gray-200'
+                          ? 'bg-emerald-50 border-emerald-500/40 text-emerald-700 hover:border-emerald-500 hover:text-emerald-800 dark:bg-emerald-500/5 dark:border-emerald-500/30 dark:text-emerald-300/80 dark:hover:border-emerald-400 dark:hover:text-emerald-200'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-teal-500/60 hover:text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-gray-400 dark:hover:border-teal-500/50 dark:hover:text-gray-200'
                     }`}
                   >
                     {noKey && (
                       <span
                         className={`absolute top-1 right-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${
-                          selected ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-500/25 text-emerald-300'
+                          selected ? 'bg-emerald-400 text-emerald-950' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/25 dark:text-emerald-300'
                         }`}
                       >
                         No key
@@ -259,7 +259,7 @@ export function ProviderPage() {
 
             {/* Model selector */}
             <div>
-              <label htmlFor="model-select" className="block text-xs text-gray-400 mb-1.5">Model</label>
+              <label htmlFor="model-select" className="block text-xs text-slate-500 dark:text-gray-400 mb-1.5">Model</label>
               <select
                 id="model-select"
                 value={model}
@@ -277,7 +277,7 @@ export function ProviderPage() {
 
           {/* API Key */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">API Key</h2>
+            <h2 className="text-sm font-semibold text-slate-600 dark:text-gray-300 uppercase tracking-widest mb-4">API Key</h2>
 
             {isNoKey ? (
               <div className="flex items-start gap-2 mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
@@ -288,7 +288,7 @@ export function ProviderPage() {
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500 dark:text-gray-500">
                   Your key is stored only in your browser&apos;s LocalStorage. It is never sent to any server except directly to the AI provider.
                 </p>
                 <Link
@@ -314,9 +314,9 @@ export function ProviderPage() {
             {/* Validation feedback */}
             {validation !== 'idle' && (
               <div className={`flex items-start gap-2 mt-3 text-sm min-w-0 ${
-                validation === 'valid' ? 'text-emerald-400' :
-                validation === 'invalid' ? 'text-red-400' :
-                'text-gray-400'
+                validation === 'valid' ? 'text-emerald-600 dark:text-emerald-400' :
+                validation === 'invalid' ? 'text-red-600 dark:text-red-400' :
+                'text-slate-500 dark:text-gray-400'
               }`}>
                 {validation === 'loading' && <Loader2 className="w-4 h-4 shrink-0 mt-0.5 animate-spin" />}
                 {validation === 'valid' && <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />}
@@ -348,7 +348,7 @@ export function ProviderPage() {
             </div>
           </Card>
 
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-gray-500">
             <HelpCircle className="w-3.5 h-3.5" />
             Model choice affects token cost — free models are marked as such.
           </div>

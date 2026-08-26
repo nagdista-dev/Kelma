@@ -105,7 +105,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
                     </p>
                   )}
                   <p className="text-xs font-medium text-slate-400 dark:text-gray-500">
-                    Tap to hear it again
+                    Tap to hear it
                   </p>
                 </div>
               </div>
@@ -132,6 +132,8 @@ export function QuestionCard({ question }: QuestionCardProps) {
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.9 }}
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
                   onClick={() => speak(quizData.word)}
                   aria-label="Play the word"
                   className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-sky-600 text-white shadow-lg shadow-sky-600/30 transition-colors hover:bg-sky-500"
@@ -139,7 +141,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
                   <Volume2 className="h-8 w-8" />
                 </motion.button>
                 <p className="text-sm font-medium text-slate-400 dark:text-gray-500">
-                  Tap the speaker to hear it again
+                  Tap to hear it
                 </p>
               </div>
             </div>

@@ -30,13 +30,15 @@ function recentlyDismissed() {
   return Date.now() - at < DISMISS_DAYS * 24 * 60 * 60 * 1000;
 }
 
+// Stable per session — iOS Safari never fires beforeinstallprompt
+const IOS_DEVICE = isIos();
+
 /**
  * Install app popup (bottom banner over a blurred backdrop).
  * Android/Chrome: native install prompt. iOS: manual instructions.
  * Portaled to <body> so navbar effects never shift its position.
  */
 export function InstallButton() {
-  const [iosMode, setIosMode] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -47,9 +49,7 @@ export function InstallButton() {
     };
     window.addEventListener('pww-install-available', onAvailable);
 
-    // iOS Safari never fires beforeinstallprompt — offer manual instructions
-    if (isIos()) {
-      setIosMode(true);
+    if (IOS_DEVICE) {
       window.setTimeout(() => setShowPopup(true), 2000);
     }
 
@@ -129,7 +129,7 @@ export function InstallButton() {
                     </span>
                   </p>
                   <p className="mt-0.5 text-xs leading-relaxed text-gray-400">
-                    {iosMode
+                    {IOS_DEVICE
                       ? 'Add Kelma to your Home Screen for a full-screen app experience.'
                       : 'Install Kelma on your device — faster, full-screen, works offline.'}
                   </p>
@@ -141,8 +141,8 @@ export function InstallButton() {
                       id="popup-install-btn"
                       className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-teal-600/25 transition-all hover:bg-teal-500 active:scale-95"
                     >
-                      {iosMode ? <Share2 className="h-3.5 w-3.5" /> : <Download className="h-3.5 w-3.5" />}
-                      {iosMode ? 'How to install' : 'Install app'}
+                      {IOS_DEVICE ? <Share2 className="h-3.5 w-3.5" /> : <Download className="h-3.5 w-3.5" />}
+                      {IOS_DEVICE ? 'How to install' : 'Install app'}
                     </button>
                     <button
                       type="button"

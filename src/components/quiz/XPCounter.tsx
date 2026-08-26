@@ -14,12 +14,12 @@ export function XPCounter({ xp, gained }: XPCounterProps) {
         key={xp}
         initial={{ y: 6, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="font-bold text-amber-300 tabular-nums"
+        className="font-bold text-amber-500 tabular-nums dark:text-amber-300"
         id="xp-counter"
       >
         {xp}
       </motion.span>
-      <span className="text-xs text-gray-500">XP</span>
+      <span className="text-xs text-slate-500 dark:text-gray-500">XP</span>
 
       {/* Floating +XP indicator */}
       <AnimatePresence>

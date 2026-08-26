@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -43,6 +43,9 @@ export function SummaryPage() {
   const { speak } = useSpeech();
   const { words, xp, maxStreak, level, sessionStartTime, resetQuiz } = useQuizStore();
 
+  // Captured once at mount — the report reflects the moment it was opened
+  const [endedAt] = useState(() => Date.now());
+
   const report = useMemo(() => {
     const totalWords = words.length;
     const masteredWords = words.filter(w => w.status === 'mastered');
@@ -56,7 +59,7 @@ export function SummaryPage() {
     const maxPossibleXP = totalWords * MAX_XP_PER_WORD;
     const xpPct = maxPossibleXP > 0 ? Math.round((xp / maxPossibleXP) * 100) : 0;
     const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 0;
-    const durationMs = sessionStartTime ? Date.now() - sessionStartTime.getTime() : 0;
+    const durationMs = sessionStartTime ? endedAt - sessionStartTime.getTime() : 0;
     const durationMin = Math.max(1, Math.round(durationMs / 60000));
 
     let focus = 'Keep reviewing these words tomorrow to lock them into memory.';
@@ -74,7 +77,7 @@ export function SummaryPage() {
       durationMin,
       focus,
     };
-  }, [maxStreak, sessionStartTime, words, xp]);
+  }, [endedAt, sessionStartTime, words, xp]);
 
   const handleNewSession = () => {
     resetQuiz();

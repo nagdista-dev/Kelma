@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -175,20 +175,33 @@ export function WordVideosModal({ word, onClose }: WordVideosModalProps) {
   const playerRef = useRef<YTPlayer | null>(null);
   const wordTimeRef = useRef(0);
 
-  const load = useCallback(() => {
-    setLoading(true);
+  useEffect(() => {
+    let cancelled = false;
+    searchVideos(word)
+      .then(v => {
+        if (!cancelled) setVideos(v);
+      })
+      .catch(() => {
+        if (!cancelled) setFailed(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [word]);
+
+  const retry = () => {
     setFailed(false);
     setVideos(null);
     setCurrent(0);
+    setLoading(true);
     searchVideos(word)
       .then(v => setVideos(v))
       .catch(() => setFailed(true))
       .finally(() => setLoading(false));
-  }, [word]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -323,7 +336,7 @@ export function WordVideosModal({ word, onClose }: WordVideosModalProps) {
               <p className="text-sm font-semibold text-red-300">Couldn&apos;t find videos.</p>
               <button
                 type="button"
-                onClick={load}
+                onClick={retry}
                 className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-white/15 px-5 py-2.5 text-sm font-semibold text-gray-200 transition-colors hover:border-teal-400 hover:text-teal-300"
               >
                 <RefreshCw className="h-4 w-4" />

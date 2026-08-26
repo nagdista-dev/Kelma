@@ -89,10 +89,10 @@ export function HowToPage() {
             <Sparkles className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">
               How it works
             </h1>
-            <p className="text-xs text-gray-400 sm:text-sm">
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
               Any word — fully mastered in 6 rounds
             </p>
           </div>
@@ -114,18 +114,18 @@ export function HowToPage() {
                     ? 'border-amber-500/30 bg-amber-500/10'
                     : 'border-teal-500/30 bg-teal-500/10'
                 }`}>
-                  <step.icon className={`h-5 w-5 ${step.color === 'amber' ? 'text-amber-300' : 'text-teal-300'}`} />
+                  <step.icon className={`h-5 w-5 ${step.color === 'amber' ? 'text-amber-600 dark:text-amber-300' : 'text-teal-600 dark:text-teal-300'}`} />
                 </div>
                 <div className="min-w-0">
-                  <p className="flex items-center gap-2 text-sm font-bold text-white">
+                  <p className="flex items-center gap-2 text-sm font-bold text-slate-950 dark:text-white">
                     <span className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
-                      step.color === 'amber' ? 'bg-amber-500/20 text-amber-300' : 'bg-teal-500/20 text-teal-300'
+                      step.color === 'amber' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-300'
                     }`}>
                       {step.n}
                     </span>
                     {step.title}
                   </p>
-                  <p className="mt-1 text-xs sm:text-sm leading-relaxed text-gray-400">{step.desc}</p>
+                  <p className="mt-1 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-gray-400">{step.desc}</p>
                 </div>
               </Card>
             </motion.div>
@@ -139,7 +139,7 @@ export function HowToPage() {
           viewport={{ once: true }}
           className="mb-14"
         >
-          <h2 className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gray-400">
+          <h2 className="mb-5 flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-gray-400">
             <Trophy className="h-4 w-4 text-amber-400" />
             The 6 rounds every word survives
           </h2>
@@ -155,10 +155,10 @@ export function HowToPage() {
                 className="glass rounded-2xl p-4 text-center"
               >
                 <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full border border-teal-500/30 bg-teal-500/15">
-                  <r.icon className="h-4 w-4 text-teal-300" />
+                  <r.icon className="h-4 w-4 text-teal-600 dark:text-teal-300" />
                 </div>
-                <p className="text-xs font-bold text-white">{r.label}</p>
-                <p className="mt-0.5 text-[10px] text-gray-500">{r.sub}</p>
+                <p className="text-xs font-bold text-slate-950 dark:text-white">{r.label}</p>
+                <p className="mt-0.5 text-[10px] text-slate-500 dark:text-gray-500">{r.sub}</p>
               </motion.div>
             ))}
           </div>
@@ -171,8 +171,8 @@ export function HowToPage() {
           viewport={{ once: true }}
           className="rounded-3xl border border-teal-500/25 bg-gradient-to-br from-teal-500/10 via-transparent to-amber-500/10 p-8 text-center"
         >
-          <h2 className="text-xl font-extrabold text-white">Ready to make words stick?</h2>
-          <p className="mx-auto mt-2 max-w-sm text-sm text-gray-400">
+          <h2 className="text-xl font-extrabold text-slate-950 dark:text-white">Ready to make words stick?</h2>
+          <p className="mx-auto mt-2 max-w-sm text-sm text-slate-500 dark:text-gray-400">
             Your first session takes less than 5 minutes — bring 3 words and feel the difference.
           </p>
           <Link to="/session" id="howto-cta-btn">
@@ -181,7 +181,7 @@ export function HowToPage() {
               <ArrowRight className="w-4 h-4" />
             </Button>
           </Link>
-          <p className="mt-3 text-[11px] text-gray-600">
+          <p className="mt-3 text-[11px] text-slate-500 dark:text-gray-600">
             Free forever · works with OpenRouter free models · by Nagdista
           </p>
         </motion.div>

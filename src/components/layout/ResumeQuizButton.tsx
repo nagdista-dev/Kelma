@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlayCircle } from 'lucide-react';
@@ -14,12 +13,9 @@ export function ResumeQuizButton() {
   const navigate = useNavigate();
   const location = useLocation();
   const phase = useQuizStore(s => s.phase);
-  const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    const quizRunning = phase === 'active' || phase === 'feedback';
-    setVisible(quizRunning && !HIDDEN_PATHS.some(p => location.pathname.startsWith(p)));
-  }, [phase, location.pathname]);
+  const quizRunning = phase === 'active' || phase === 'feedback';
+  const visible = quizRunning && !HIDDEN_PATHS.some(p => location.pathname.startsWith(p));
 
   return (
     <AnimatePresence>

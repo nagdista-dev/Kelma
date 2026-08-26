@@ -49,7 +49,7 @@ export function AnswerButton({
       })}
     >
       <span className="flex items-center gap-3">
-        <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-gray-400 shrink-0">
+        <span className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0 dark:bg-white/10 dark:text-gray-400">
           {String.fromCharCode(65 + index)}
         </span>
         <span

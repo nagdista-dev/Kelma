@@ -138,8 +138,8 @@ export function HelpPage() {
             <HelpCircle className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">API Key Help</h1>
-            <p className="text-xs text-gray-400 sm:text-sm">Where to create keys and what to check when they fail</p>
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">API Key Help</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">Where to create keys and what to check when they fail</p>
           </div>
         </div>
 
@@ -147,9 +147,9 @@ export function HelpPage() {
           <Card>
             <div className="flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 text-amber-300 shrink-0 mt-0.5" />
-              <div className="space-y-2 text-sm text-gray-300">
-                <h2 className="font-semibold text-white">Keep keys private</h2>
-                <p className="text-gray-400">
+              <div className="space-y-2 text-sm text-slate-700 dark:text-gray-300">
+                <h2 className="font-semibold text-slate-950 dark:text-white">Keep keys private</h2>
+                <p className="text-slate-500 dark:text-gray-400">
                   Never paste API keys in chat, screenshots, public repos, or support messages.
                   If a key is exposed, revoke it and create a new one.
                 </p>
@@ -167,8 +167,8 @@ export function HelpPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                       <div>
-                        <h2 className="text-base font-semibold text-white">{name}</h2>
-                        <div className="inline-flex items-center gap-1.5 mt-1 text-xs text-gray-400">
+                        <h2 className="text-base font-semibold text-slate-950 dark:text-white">{name}</h2>
+                        <div className="inline-flex items-center gap-1.5 mt-1 text-xs text-slate-500 dark:text-gray-400">
                           <KeyRound className="w-3.5 h-3.5" />
                           <span className="font-mono break-all">{keyFormat}</span>
                         </div>
@@ -184,7 +184,7 @@ export function HelpPage() {
                       </a>
                     </div>
 
-                    <ol className="space-y-1.5 text-sm text-gray-300 list-decimal list-inside">
+                    <ol className="space-y-1.5 text-sm text-slate-700 dark:text-gray-300 list-decimal list-inside">
                       {steps.map(step => (
                         <li key={step}>{step}</li>
                       ))}
@@ -192,7 +192,7 @@ export function HelpPage() {
 
                     <div className="mt-3 space-y-1">
                       {notes.map(note => (
-                        <p key={note} className="text-xs text-gray-500">
+                        <p key={note} className="text-xs text-slate-500 dark:text-gray-500">
                           {note}
                         </p>
                       ))}
@@ -204,10 +204,10 @@ export function HelpPage() {
           </div>
 
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-3">
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-widest mb-3">
               If Test Key Fails
             </h2>
-            <div className="grid gap-2 text-sm text-gray-400">
+            <div className="grid gap-2 text-sm text-slate-500 dark:text-gray-400">
               <p>Check that the provider selected in Settings matches the key source.</p>
               <p>Check billing, credits, rate limits, and model access on the provider dashboard.</p>
               <p>Use a fresh key if the old one was pasted anywhere public.</p>

@@ -122,8 +122,8 @@ export function SettingsPage() {
             <Settings className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">Settings</h1>
-            <p className="text-xs text-gray-400 sm:text-sm">Configure your learning preferences</p>
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Settings</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">Configure your learning preferences</p>
           </div>
         </div>
 
@@ -132,12 +132,12 @@ export function SettingsPage() {
           <Card>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-white/5">
                   <Plug className="h-5 w-5 text-teal-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-200 capitalize">{provider}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm font-semibold text-slate-800 dark:text-gray-200 capitalize">{provider}</p>
+                  <p className="text-xs text-slate-500 dark:text-gray-500">
                     {apiKey ? `Key configured · ${model}` : 'No API key yet'}
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export function SettingsPage() {
 
           {/* Sound / Voice Check */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">Pronunciation</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-widest mb-4">Pronunciation</h2>
             <div className="space-y-2 mb-4 text-xs">
               <div className="flex items-center gap-2">
                 {diagnostics.supported ? (
@@ -163,7 +163,7 @@ export function SettingsPage() {
                 ) : (
                   <XCircle className="w-4 h-4 text-red-400 shrink-0" />
                 )}
-                <span className="text-gray-400">
+                <span className="text-slate-500 dark:text-gray-400">
                   Browser speech engine: {diagnostics.supported ? 'supported' : 'not supported — cloud voice will be used'}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export function SettingsPage() {
                 ) : (
                   <XCircle className="w-4 h-4 text-red-400 shrink-0" />
                 )}
-                <span className="text-gray-400">
+                <span className="text-slate-500 dark:text-gray-400">
                   English voices installed: {diagnostics.englishVoices}
                   {diagnostics.supported && diagnostics.englishVoices === 0 && ' (cloud voice will be used)'}
                 </span>
@@ -193,7 +193,7 @@ export function SettingsPage() {
 
             {/* Voice picker */}
             <div className="mt-4">
-              <label htmlFor="voice-select" className="block text-xs text-gray-400 mb-1.5">
+              <label htmlFor="voice-select" className="block text-xs text-slate-500 dark:text-gray-400 mb-1.5">
                 Pronunciation voice
               </label>
               <div className="flex flex-col sm:flex-row gap-2">
@@ -223,7 +223,7 @@ export function SettingsPage() {
                 </Button>
               </div>
               {englishVoices.length === 0 && (
-                <p className="mt-1.5 text-[11px] text-gray-500">
+                <p className="mt-1.5 text-[11px] text-slate-500 dark:text-gray-500">
                   No English voices found on this device — the cloud voice will be used.
                 </p>
               )}
@@ -232,23 +232,23 @@ export function SettingsPage() {
             {voiceTestState !== 'idle' && (
               <div className="mt-3">
                 <p className={`text-xs font-semibold ${
-                  voiceTestState === 'ok' ? 'text-emerald-400' :
-                  voiceTestState === 'fallback' ? 'text-amber-400' :
-                  'text-gray-400'
+                  voiceTestState === 'ok' ? 'text-emerald-600 dark:text-emerald-400' :
+                  voiceTestState === 'fallback' ? 'text-amber-600 dark:text-amber-400' :
+                  'text-slate-500 dark:text-gray-400'
                 }`}>
                   {voiceTestState === 'testing' && 'Testing…'}
                   {voiceTestState === 'ok' && '✅ Working! You should have heard the test sentence.'}
                   {voiceTestState === 'fallback' && '⚠️ Browser engine did not respond — playing via cloud voice instead.'}
                 </p>
                 {voiceTestReport.length > 0 && (
-                  <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-white/10 bg-black/30 p-3 text-left text-[10px] leading-relaxed text-gray-300" dir="ltr">
+                  <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-left text-[10px] leading-relaxed text-slate-600 dark:border-white/10 dark:bg-black/30 dark:text-gray-300" dir="ltr">
 {voiceTestReport.join('\n')}
                   </pre>
                 )}
               </div>
             )}
 
-            <p className="mt-3 text-[11px] text-gray-500 leading-relaxed">
+            <p className="mt-3 text-[11px] text-slate-500 dark:text-gray-500 leading-relaxed">
               No permission is required for pronunciation — it uses your browser&apos;s built-in voices,
               with a free cloud voice as automatic backup.
             </p>
@@ -258,8 +258,8 @@ export function SettingsPage() {
           <Link to="/level" id="settings-level-link" className="block">
             <Card className="flex items-center justify-between gap-3 transition-colors hover:border-teal-500/40">
               <div>
-                <h2 className="text-sm font-semibold text-gray-300">Default Level</h2>
-                <p className="text-xs text-gray-500">
+                <h2 className="text-sm font-semibold text-slate-700 dark:text-gray-300">Default Level</h2>
+                <p className="text-xs text-slate-500 dark:text-gray-500">
                   Pick it manually or take the AI placement test
                 </p>
               </div>
@@ -269,7 +269,7 @@ export function SettingsPage() {
 
           {/* Theme */}
           <Card>
-            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-widest mb-4">Theme</h2>
+            <h2 className="text-sm font-semibold text-slate-700 dark:text-gray-300 uppercase tracking-widest mb-4">Theme</h2>
             <div className="flex gap-2">
               {(['dark', 'light'] as const).map(t => (
                 <button
@@ -280,7 +280,7 @@ export function SettingsPage() {
                   className={`inline-flex items-center gap-2 px-5 py-2 rounded-xl border text-sm font-medium transition-all ${
                     theme === t
                       ? 'bg-teal-500/20 border-teal-500 text-teal-200'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+                      : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 dark:bg-white/5 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20'
                   }`}
                 >
                   {t === 'dark' ? (

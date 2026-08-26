@@ -65,8 +65,8 @@ export function PricingPage() {
             <Tag className="h-5 w-5 text-teal-400" />
           </div>
           <div className="min-w-0">
-            <h1 className="text-xl font-bold text-white sm:text-2xl">Pricing</h1>
-            <p className="text-xs text-gray-400 sm:text-sm">
+            <h1 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">Pricing</h1>
+            <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm">
               Simple and honest — bring your own key today, managed AI tomorrow.
             </p>
           </div>
@@ -95,16 +95,16 @@ export function PricingPage() {
                 )}
 
                 <div className="mb-4 flex items-baseline gap-2">
-                  <h2 className="text-lg font-bold text-white">{plan.name}</h2>
-                  <span className={`text-2xl font-extrabold ${plan.featured ? 'text-amber-400' : 'text-teal-300'}`}>
+                  <h2 className="text-lg font-bold text-slate-950 dark:text-white">{plan.name}</h2>
+                  <span className={`text-2xl font-extrabold ${plan.featured ? 'text-amber-500 dark:text-amber-400' : 'text-teal-600 dark:text-teal-300'}`}>
                     {plan.price}
                   </span>
-                  <span className="text-xs text-gray-500">{plan.period}</span>
+                  <span className="text-xs text-slate-500 dark:text-gray-500">{plan.period}</span>
                 </div>
 
-                <p className="mb-4 text-sm text-gray-400">{plan.tagline}</p>
+                <p className="mb-4 text-sm text-slate-500 dark:text-gray-400">{plan.tagline}</p>
 
-                <ul className="mb-6 space-y-2.5 text-sm text-gray-300">
+                <ul className="mb-6 space-y-2.5 text-sm text-slate-700 dark:text-gray-300">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-2">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />
@@ -126,7 +126,7 @@ export function PricingPage() {
           ))}
         </div>
 
-        <div className="mx-auto max-w-3xl rounded-xl border border-white/10 bg-white/5 p-4 text-center text-xs text-gray-500">
+        <div className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-4 text-center text-xs text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-500">
           <KeyRound className="mr-1.5 inline-block h-3.5 w-3.5 text-teal-400" />
           Free plan uses your own provider key (OpenRouter, Gemini, OpenCode…) stored only in your
           browser. See{' '}

@@ -116,7 +116,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
     <div>
       {/* Word chips */}
       <div
-        className="flex flex-wrap items-center gap-2 mb-3 min-h-[56px] bg-white/5 border border-white/10 rounded-xl p-2.5 cursor-text"
+        className="flex flex-wrap items-center gap-2 mb-3 min-h-[56px] bg-white border border-slate-200 rounded-xl p-2.5 cursor-text dark:bg-white/5 dark:border-white/10"
         onClick={() => inputRef.current?.focus()}
       >
         {words.map(w => (
@@ -151,14 +151,14 @@ export function WordInput({ words, onChange }: WordInputProps) {
             onPaste={handlePaste}
             lang="en"
             placeholder={words.length === 0 ? 'Type a word and press Enter…' : 'Add another…'}
-            className="min-w-[120px] flex-1 bg-transparent outline-none text-white placeholder-gray-500 text-base sm:text-sm py-1.5"
+            className="min-w-[120px] flex-1 bg-transparent outline-none text-slate-950 placeholder-slate-400 text-base sm:text-sm py-1.5 dark:text-white dark:placeholder-gray-500"
             id="word-input"
           />
         )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-slate-500 dark:text-gray-500">
           {words.length}/{MAX_WORDS} words
         </p>
         <div className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
             onClick={() => void pasteFromClipboard()}
             id="paste-words-btn"
             aria-label="Paste words from clipboard"
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 transition-all hover:border-teal-500/50 hover:text-teal-300 active:scale-95"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition-all hover:border-teal-500/60 hover:text-teal-600 dark:border-white/10 dark:text-gray-300 dark:hover:text-teal-300 active:scale-95"
           >
             <ClipboardPaste className="w-3.5 h-3.5" />
             Paste

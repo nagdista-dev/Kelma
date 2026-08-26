@@ -19,7 +19,21 @@ export function HistoryPage() {
     setLoading(false);
   };
 
-  useEffect(() => { void load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    let ignore = false;
+    getAllSessions()
+      .then(data => {
+        if (ignore) return;
+        setSessions(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!ignore) setLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [getAllSessions]);
 
   const handleDelete = async (id: number) => {
     await deleteSession(id);
