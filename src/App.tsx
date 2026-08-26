@@ -9,7 +9,7 @@ import { LandingPage } from '@/pages/LandingPage';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { ProviderPage } from '@/pages/ProviderPage';
 import { LevelPage } from '@/pages/LevelPage';
-import { PricingPage } from '@/pages/PricingPage';
+import { SupportPage } from '@/pages/SupportPage';
 import { HowToPage } from '@/pages/HowToPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { AboutPage } from '@/pages/AboutPage';
@@ -43,7 +43,7 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/provider" element={<ProviderPage />} />
           <Route path="/level" element={<LevelPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/support" element={<SupportPage />} />
           <Route path="/how-to" element={<HowToPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/about" element={<AboutPage />} />

@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { CircleHelp, KeyRound, Settings, History, Tag, Zap } from 'lucide-react';
+import { CircleHelp, HeartHandshake, KeyRound, Settings, History, Zap } from 'lucide-react';
 import { useQuizStore } from '@/store/quizStore';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
@@ -64,9 +64,9 @@ export function Navbar() {
                   <History className="w-4 h-4 shrink-0" />
                   <span className="hidden lg:inline">History</span>
                 </NavLink>
-                <NavLink to="/pricing" className={navLinkClass} id="nav-pricing" title="Pricing">
-                  <Tag className="w-4 h-4 shrink-0" />
-                  <span className="hidden lg:inline">Pricing</span>
+                <NavLink to="/support" className={navLinkClass} id="nav-support" title="Support">
+                  <HeartHandshake className="w-4 h-4 shrink-0" />
+                  <span className="hidden lg:inline">Support</span>
                 </NavLink>
                 <NavLink to="/settings" className={navLinkClass} id="nav-settings" title="Settings">
                   <Settings className="w-4 h-4 shrink-0" />
@@ -96,9 +96,9 @@ export function Navbar() {
                   <History className="w-4 h-4 text-teal-400" />
                   History
                 </NavLink>
-                <NavLink to="/pricing" className={mobileLinkClass} id="m-nav-pricing">
-                  <Tag className="w-4 h-4 text-teal-400" />
-                  Pricing
+                <NavLink to="/support" className={mobileLinkClass} id="m-nav-support">
+                  <HeartHandshake className="w-4 h-4 text-teal-400" />
+                  Support
                 </NavLink>
                 <NavLink to="/settings" className={mobileLinkClass} id="m-nav-settings">
                   <Settings className="w-4 h-4 text-teal-400" />
