@@ -53,7 +53,9 @@ export function Navbar() {
           className="flex shrink-0 items-center gap-2 font-bold text-slate-950 hover:text-teal-700 transition-colors dark:text-white dark:hover:text-teal-300"
           id="nav-logo"
         >
-          <span className="gradient-text">Kelma</span>
+          <span className="text-slate-950 dark:text-white">
+            <span className="gradient-text">K</span>elma
+          </span>
           <span className="hidden md:inline-flex items-center h-4 rounded-full border border-slate-300/70 dark:border-white/15 px-1.5 text-[8px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-gray-500">
             Nagdista
           </span>

@@ -1,8 +1,8 @@
 {
-  "name": "Kelma — AI Vocabulary Trainer",
+  "name": "Kelma — Master English Words Like a Game",
   "short_name": "Kelma",
   "id": "/",
-  "description": "AI-powered English vocabulary trainer for Arabic speakers. Master words through 6-round active recall with pronunciation and personalized feedback.",
+  "description": "Kelma turns any English word list into a 6-round brain workout: active recall, real pronunciation, real videos and AI feedback in Egyptian Arabic. Free forever.",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
@@ -27,18 +27,10 @@
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "New Session",
-      "short_name": "Session",
-      "url": "/session",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -9,19 +9,18 @@
       <stop offset="1" stop-color="#0d9488"/>
     </linearGradient>
     <radialGradient id="glow" cx="0.85" cy="0.1" r="0.9">
-      <stop offset="0" stop-color="#0d9488" stop-opacity="0.25"/>
-      <stop offset="0.55" stop-color="#0d9488" stop-opacity="0"/>
+      <stop offset="0" stop-color="#0d9488" stop-opacity="0.22"/>
+      <stop offset="0.6" stop-color="#0d9488" stop-opacity="0"/>
     </radialGradient>
   </defs>
-
-  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
-  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
-
-  <!-- Letter tile K -->
-  <rect x="148" y="128" width="66" height="256" rx="18" fill="url(#teal)"/>
-  <line x1="238" y1="150" x2="368" y2="256" stroke="url(#teal)" stroke-width="62" stroke-linecap="round"/>
-  <line x1="244" y1="256" x2="368" y2="362" stroke="url(#teal)" stroke-width="62" stroke-linecap="round"/>
-
-  <!-- Cairo gold accent dot -->
-  <circle cx="398" cy="132" r="24" fill="#f59e0b"/>
+  <rect width="512" height="512" rx="113" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="113" fill="url(#glow)"/>
+  <g transform="translate(94.3 94.3) scale(3.686)">
+    <rect x="27" y="21" width="17" height="58" fill="#2DD4BF"/>
+    <g stroke="url(#teal)" stroke-width="17" fill="none">
+      <line x1="45" y1="50" x2="75" y2="20"/>
+      <line x1="45" y1="50" x2="75" y2="80"/>
+    </g>
+    <circle cx="45" cy="50" r="8.5" fill="#2DD4BF"/>
+  </g>
 </svg>
