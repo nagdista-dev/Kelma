@@ -35,9 +35,9 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl transition-colors dark:border-white/10 dark:bg-[#0e1420]/95 select-none">
-        <div className="flex h-14 w-full items-center justify-between px-3 sm:px-5 lg:px-6">
+        <div className="flex h-14 w-full items-center justify-between gap-2 px-3 sm:px-5 lg:px-6">
           {/* Left: Hamburger Menu Trigger + Brand Typography Logo */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             {/* Menu Trigger: On mobile opens Drawer, on desktop triggers sidebar toggle */}
             <button
               type="button"
@@ -51,7 +51,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
                   setMobileMenuOpen(true);
                 }
               }}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all hover:bg-slate-100 active:scale-95 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all hover:bg-slate-100 active:scale-95 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer"
               aria-label="Toggle navigation menu"
               id="global-menu-btn"
             >
@@ -64,13 +64,13 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
                 play('click');
                 navigate('/');
               }}
-              className="flex shrink-0 items-center gap-2 text-slate-950 transition-transform active:scale-95 dark:text-white cursor-pointer"
+              className="flex shrink-0 items-center gap-1.5 sm:gap-2 text-slate-950 transition-transform active:scale-95 dark:text-white cursor-pointer"
               id="nav-logo"
             >
-              <span className="font-black text-xl tracking-tight">
+              <span className="font-black text-lg sm:text-xl tracking-tight">
                 <span className="gradient-text">K</span>elma
               </span>
-              <span className="inline-flex items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-400">
+              <span className="hidden xs:inline-flex items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-400">
                 {defaultLevel}
               </span>
             </button>
@@ -107,7 +107,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
           </div>
 
           {/* Right Action Bar */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Active Quiz Indicator */}
             {isQuizActive && (
               <NavLink
@@ -119,9 +119,9 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
               </NavLink>
             )}
 
-            {/* XP / Streak Pill */}
+            {/* XP / Streak Pill — hidden on smallest screens to free up space */}
             {(streak > 0 || xp > 0) && (
-              <div className="flex items-center gap-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+              <div className="hidden xs:flex items-center gap-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
                 <span className="flex items-center gap-1">
                   <Zap className="h-3 w-3 fill-current" />
                   {xp} XP
@@ -144,7 +144,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
               title={userName ? `${userName}'s Settings` : 'Settings'}
               aria-label="Settings"
               id="nav-settings-avatar"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 transition-all hover:border-teal-500 active:scale-95 dark:border-white/10 dark:hover:border-teal-500/60 overflow-hidden cursor-pointer"
+              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 transition-all hover:border-teal-500 active:scale-95 dark:border-white/10 dark:hover:border-teal-500/60 overflow-hidden cursor-pointer"
             >
               {initial ? (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-600 to-emerald-400 text-white">

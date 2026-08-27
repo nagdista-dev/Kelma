@@ -1,15 +1,18 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight,
+  ArrowUpRight,
   BarChart3,
   BookOpen,
   Brain,
   CheckCircle2,
   Ear,
+  Headphones,
   Keyboard,
   Layers,
   Lightbulb,
+  Quote,
   Sparkles,
   Speech,
   Trophy,
@@ -19,74 +22,64 @@ import {
 import { useSettingsStore } from '@/store/settingsStore';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { NO_KEY_PROVIDERS } from '@/types/index';
-import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
 const HIGHLIGHT_MODULES = [
   {
-    icon: Brain,
-    title: '6-Round Cognitive Gauntlet',
-    desc: 'Every word survives 6 progressive attacks — from fast recognition to active spelling — locking it permanently into long-term memory.',
-    tag: 'Core Engine',
-    tagColor: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/30',
-    path: '/session',
-  },
-  {
     icon: Speech,
-    title: 'Real-Time Voice Chat Tutor',
-    desc: 'Speak English out loud in live interactive conversations. Real-time microphone transcription with instant audio feedback.',
-    tag: 'Voice Lab',
-    tagColor: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/30',
+    title: 'Real-Time Voice Chat',
+    desc: 'Speak English out loud in live conversations. The mic listens, the AI replies, your ear sharpens.',
     path: '/voice-chat',
+    accent: 'from-pink-500/15 to-rose-500/0',
+    iconWrap: 'bg-pink-500/10 text-pink-500',
   },
   {
     icon: BookOpen,
     title: 'Story Immersion Lab',
-    desc: 'Weave your target words into engaging contextual narratives adapted to your exact CEFR level with dual-speed audio narration.',
-    tag: 'Narrative',
-    tagColor: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/30',
+    desc: 'Target words woven into contextual narratives at your CEFR level, with dual-speed narration.',
     path: '/story',
+    accent: 'from-blue-500/15 to-indigo-500/0',
+    iconWrap: 'bg-blue-500/10 text-blue-500',
   },
   {
     icon: Layers,
-    title: 'Confusable Words Disambiguator',
-    desc: 'Uncover subtle distinctions between tricky word pairs, homophones, and near-synonyms with clear usage comparisons.',
-    tag: 'Nuance',
-    tagColor: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30',
+    title: 'Confusables Disambiguator',
+    desc: 'Subtle distinctions between tricky pairs, homophones, and near-synonyms in one clear comparison.',
     path: '/confusables',
+    accent: 'from-indigo-500/15 to-violet-500/0',
+    iconWrap: 'bg-indigo-500/10 text-indigo-500',
   },
   {
     icon: Volume2,
     title: 'Pronunciation & Phonetics',
-    desc: 'Phonetic IPA breakdowns, syllable stress indicators, and instant speech synthesis to train your ear alongside your memory.',
-    tag: 'Phonetics',
-    tagColor: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30',
+    desc: 'IPA, syllable stress, instant synthesis. Train the ear so the mouth can follow.',
     path: '/pronounce',
+    accent: 'from-amber-500/15 to-orange-500/0',
+    iconWrap: 'bg-amber-500/10 text-amber-500',
   },
   {
     icon: BarChart3,
-    title: 'Weak-Word Recovery & Analytics',
-    desc: 'Deep analytics track retention velocity, streaks, and XP. Re-drill struggled words in a single tap until 100% mastered.',
-    tag: 'Mastery',
-    tagColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+    title: 'Weak-Word Recovery',
+    desc: 'Retention velocity, streaks, XP. Re-drill struggled words in a single tap until they stick.',
     path: '/dashboard',
+    accent: 'from-emerald-500/15 to-teal-500/0',
+    iconWrap: 'bg-emerald-500/10 text-emerald-500',
   },
 ];
 
 const GAUNTLET_ROUNDS = [
-  { n: 1, label: 'Fast Recognition', sub: 'Meaning → English Word', icon: Sparkles },
-  { n: 2, label: 'Comprehension', sub: 'Definition → Target Word', icon: BookOpen },
-  { n: 3, label: 'Translation', sub: 'English → Context Meaning', icon: Layers },
-  { n: 4, label: 'Context Fill', sub: 'Real Sentence Context', icon: Lightbulb },
-  { n: 5, label: 'Audio Recall', sub: 'Listen & Identify', icon: Ear },
-  { n: 6, label: 'Active Spelling', sub: 'Produce from Memory', icon: Keyboard },
+  { n: 1, label: 'Recognition', sub: 'Meaning → word', icon: Sparkles, xp: 5 },
+  { n: 2, label: 'Comprehension', sub: 'Definition → word', icon: BookOpen, xp: 5 },
+  { n: 3, label: 'Translation', sub: 'Word → Arabic', icon: Layers, xp: 5 },
+  { n: 4, label: 'Context Fill', sub: 'Sentence blank', icon: Lightbulb, xp: 10 },
+  { n: 5, label: 'Audio Recall', sub: 'Listen → identify', icon: Ear, xp: 10 },
+  { n: 6, label: 'Active Spelling', sub: 'Produce from memory', icon: Keyboard, xp: 15 },
 ];
-
-
 
 export function LandingPage() {
   const navigate = useNavigate();
   const { play } = useSoundEffects();
+  const reduce = useReducedMotion();
   const apiKey = useSettingsStore(s => s.apiKey);
   const provider = useSettingsStore(s => s.provider);
   const ready = Boolean(apiKey) || NO_KEY_PROVIDERS.has(provider);
@@ -96,225 +89,538 @@ export function LandingPage() {
     navigate(ready ? '/session' : '/provider');
   };
 
+  const fadeUp = reduce
+    ? {}
+    : {
+        initial: { opacity: 0, y: 18 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.3 },
+        transition: { duration: 0.5, ease: 'easeOut' as const },
+      };
+
   return (
-    <div className="page-container pb-28 lg:pb-16 flex flex-col items-center">
-      {/* ─── Hero Section ─── */}
-      <section className="min-h-[calc(100svh-5rem)] flex flex-col items-center justify-center w-full max-w-4xl text-center py-8 sm:py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="space-y-6"
-        >
-          {/* Announcement Pill Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-1.5 text-xs font-black text-teal-800 dark:text-teal-300 shadow-xs">
-            <Sparkles className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
-            <span>AI-Powered Cognitive Vocabulary Mastery</span>
-          </div>
+    <div className="page-container pb-24 lg:pb-16 flex flex-col items-center">
+      {/* ─── HERO — asymmetric split ─── */}
+      <section className="w-full max-w-6xl pt-10 sm:pt-14 lg:pt-20 pb-16 lg:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          {/* Left: text block (7 cols) */}
+          <motion.div
+            {...fadeUp}
+            className="lg:col-span-7 space-y-7 text-center lg:text-left"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
+              <span>Active Recall Pipeline</span>
+            </div>
 
-          {/* Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-950 dark:text-white tracking-tight leading-[1.1]">
-            Master English Words.
-            <br />
-            <span className="gradient-text">Never Forget Them.</span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-slate-600 dark:text-gray-300 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-normal">
-            Paste any list of English words. Kelma attacks each word through 6 progressive rounds of cognitive active recall, live AI conversations, and contextual stories until it becomes permanent.
-          </p>
-
-          {/* Action CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Button
-              id="cta-start"
-              type="button"
-              onClick={handleStart}
-              size="lg"
-              className="w-full sm:w-auto px-8 py-4 text-base font-bold gap-2 cursor-pointer"
+            <h1
+              className="font-black text-slate-950 dark:text-white tracking-[-0.025em] leading-[1.05]"
+              style={{ fontSize: 'clamp(2rem, 1.4rem + 3.2vw, 4.25rem)' }}
             >
-              <span>Start Practice Session</span>
-              <ArrowRight className="h-4.5 w-4.5" />
-            </Button>
+              <span className="block">Master English words.</span>
+              <span className="block">
+                <span className="gradient-text">Forget them once</span>
+                <span className="text-slate-400 dark:text-slate-500"> — never again.</span>
+              </span>
+            </h1>
 
-            <Link
-              to="/daily"
-              onClick={() => play('click')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-7 py-3.5 text-sm font-bold text-slate-800 shadow-xs hover:border-teal-500/60 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 transition-all cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 text-amber-500" />
-              <span>Today's Daily Word</span>
-            </Link>
+            <p className="text-base sm:text-lg text-slate-600 dark:text-gray-300 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Paste any list. Kelma attacks each word through 6 progressive rounds of
+              active recall, then locks it in with stories, voice, and analytics.
+            </p>
 
-            <Link
-              to="/how-to"
-              onClick={() => play('click')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-transparent px-5 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer"
-            >
-              <span>How It Works</span>
-            </Link>
-          </div>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 pt-1">
+              <Button
+                id="cta-start"
+                type="button"
+                onClick={handleStart}
+                size="lg"
+                className="w-full sm:w-auto px-7 py-4 text-base font-bold gap-2 cursor-pointer"
+              >
+                <Zap className="h-4 w-4 fill-current" />
+                <span>Start a session</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
 
-          {/* Trust strip */}
-          <div className="pt-6 flex flex-wrap items-center justify-center gap-5 text-xs font-semibold text-slate-500 dark:text-gray-400 border-t border-slate-100 dark:border-white/5 max-w-md mx-auto">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" /> 100% Free Forever
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Volume2 className="h-4 w-4 text-teal-500" /> Native Audio Speech
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Trophy className="h-4 w-4 text-amber-500" /> XP & Streak Game
-            </span>
-          </div>
-        </motion.div>
+              <Link
+                to="/daily"
+                onClick={() => play('click')}
+                className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-800 shadow-xs hover:border-teal-500/60 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 transition-all cursor-pointer"
+              >
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                <span>Today's word</span>
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Right: live word card (5 cols) — the signature element */}
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' as const }}
+            className="lg:col-span-5 w-full max-w-[22rem] sm:max-w-md mx-auto lg:max-w-none lg:ml-auto"
+          >
+            <HeroWordCard reduce={!!reduce} />
+          </motion.div>
+        </div>
       </section>
 
-      {/* ─── 6-Round Gauntlet Architecture ─── */}
-      <section className="w-full max-w-5xl mb-20">
-        <div className="text-center mb-8 space-y-2">
-          <div className="inline-flex items-center gap-1.5 rounded-md bg-teal-500/10 border border-teal-500/20 px-2.5 py-0.5 text-[11px] font-black text-teal-700 dark:text-teal-300 uppercase tracking-wider">
-            Active Recall Pipeline
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
-            The 6-Round Cognitive Gauntlet
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 max-w-xl mx-auto">
-            Every session forces your brain to retrieve words from 6 different angles, transforming passive recognition into active fluency.
-          </p>
+      {/* ─── TRUST STRIP — separated from hero ─── */}
+      <section className="w-full max-w-5xl border-y border-slate-200/80 dark:border-white/10 py-5 mb-20">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs font-semibold text-slate-500 dark:text-gray-400">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Free forever
+          </span>
+          <span className="hidden sm:block h-3 w-px bg-slate-300 dark:bg-white/10" />
+          <span className="flex items-center gap-2">
+            <Volume2 className="h-4 w-4 text-teal-500" /> Native audio
+          </span>
+          <span className="hidden sm:block h-3 w-px bg-slate-300 dark:bg-white/10" />
+          <span className="flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-amber-500" /> XP & streak game
+          </span>
+          <span className="hidden sm:block h-3 w-px bg-slate-300 dark:bg-white/10" />
+          <span className="flex items-center gap-2">
+            <Headphones className="h-4 w-4 text-blue-500" /> Voice + listening
+          </span>
         </div>
+      </section>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {GAUNTLET_ROUNDS.map((r, i) => {
-            const RoundIcon = r.icon;
+      {/* ─── HOW IT WORKS — quote as section header ─── */}
+      <section className="w-full max-w-5xl mb-20">
+        <motion.figure
+          {...fadeUp}
+          className="relative rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white/60 dark:bg-white/[0.02] px-6 sm:px-10 py-10 sm:py-12"
+        >
+          <Quote className="absolute top-5 left-5 h-7 w-7 text-teal-500/40 -scale-x-100" />
+          <blockquote className="max-w-3xl mx-auto text-center">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white leading-snug tracking-[-0.01em]">
+              One word. Six angles. <span className="text-teal-600 dark:text-teal-400">Zero shortcuts</span> to long-term memory.
+            </p>
+            <figcaption className="mt-5 flex items-center justify-center gap-3 text-xs font-semibold text-slate-500 dark:text-gray-400">
+              <span className="h-px w-8 bg-slate-300 dark:bg-white/15" />
+              The Cognitive Gauntlet
+              <span className="h-px w-8 bg-slate-300 dark:bg-white/15" />
+            </figcaption>
+          </blockquote>
+        </motion.figure>
+      </section>
+
+      {/* ─── 6-ROUND GAUNTLET — asymmetric bento, 6 cells ─── */}
+      <section className="w-full max-w-6xl mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+          {/* Header cell — bento left, full width on mobile */}
+          <motion.div
+            {...fadeUp}
+            className="lg:col-span-7 rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 sm:p-8 lg:p-9 flex flex-col justify-between min-h-[200px] sm:min-h-[220px]"
+          >
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-600 dark:text-teal-400">
+              <Brain className="h-3.5 w-3.5" />
+              <span>The pipeline</span>
+            </div>
+            <div className="space-y-3">
+              <h2 className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white tracking-tight leading-[1.05]">
+                Six rounds.<br />One permanent word.
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-gray-400 max-w-md leading-relaxed">
+                Each round attacks the word from a different cognitive angle. Skip
+                one and the memory cracks; finish all six and it sticks for good.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Featured round (round 6 — Spelling) — the hardest, biggest visual */}
+          <motion.div
+            {...fadeUp}
+            className="lg:col-span-5 rounded-3xl border border-teal-500/30 bg-gradient-to-br from-teal-500/15 via-teal-500/5 to-transparent p-6 sm:p-8 lg:p-9 flex flex-col justify-between min-h-[200px] sm:min-h-[220px] relative overflow-hidden"
+          >
+            <div className="absolute -right-8 -top-8 h-40 w-40 rounded-full bg-teal-500/15 blur-2xl pointer-events-none" />
+            <div className="relative flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700 dark:text-teal-300">
+                Final round
+              </span>
+              <span className="rounded-full bg-teal-600 text-white text-[10px] font-black px-2.5 py-1">
+                +15 XP
+              </span>
+            </div>
+            <div className="relative space-y-2">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-600 text-white font-black text-sm shadow-lg shadow-teal-500/30">
+                  R6
+                </span>
+                <Keyboard className="h-5 w-5 text-teal-600 dark:text-teal-300" />
+              </div>
+              <h3 className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">
+                Active Spelling
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-gray-300">
+                Type the word from its Arabic meaning. Production — the hardest
+                round — proves the word is yours.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Round cards 1-5 — two-column bento */}
+          {GAUNTLET_ROUNDS.slice(0, 5).map((r, i) => {
+            const Icon = r.icon;
+            const isWide = i === 0;
             return (
               <motion.div
                 key={r.n}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                whileHover={{ y: -4 }}
+                {...fadeUp}
+                transition={{ duration: 0.5, delay: 0.05 * i, ease: 'easeOut' as const }}
+                className={
+                  isWide
+                    ? 'lg:col-span-5'
+                    : 'lg:col-span-3'
+                }
               >
-                <Card className="p-4 h-full flex flex-col items-center text-center justify-between border-slate-200/90 dark:border-white/10 hover:border-teal-500/50 shadow-md">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-600 text-white font-black text-xs mb-2 shadow-xs">
-                    R{r.n}
+                <div className="h-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.02] p-5 hover:border-teal-500/40 transition-colors flex flex-col gap-3 min-h-[140px] sm:min-h-[150px]">
+                  <div className="flex items-center justify-between">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 dark:bg-slate-700 text-white text-xs font-black">
+                      R{r.n}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                      +{r.xp} XP
+                    </span>
                   </div>
-                  <RoundIcon className="h-5 w-5 text-teal-600 dark:text-teal-400 mb-1.5" />
-                  <p className="text-xs font-black text-slate-900 dark:text-white leading-tight">
-                    {r.label}
-                  </p>
-                  <p className="text-[10px] text-slate-500 dark:text-gray-400 mt-1">
-                    {r.sub}
-                  </p>
-                </Card>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                      <h3 className="text-sm font-black text-slate-900 dark:text-white">
+                        {r.label}
+                      </h3>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
+                      {r.sub}
+                    </p>
+                  </div>
+                </div>
               </motion.div>
             );
           })}
+
+          {/* Footer cell — total XP callout, right of last 3 cards */}
+          <motion.div
+            {...fadeUp}
+            className="lg:col-span-7 rounded-2xl border border-dashed border-slate-300 dark:border-white/10 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4"
+          >
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-gray-400">
+                One mastered word
+              </p>
+              <p className="text-2xl font-black text-slate-950 dark:text-white tracking-tight">
+                = <span className="text-teal-600 dark:text-teal-400">50 XP</span> + permanent
+              </p>
+            </div>
+            <Trophy className="h-9 w-9 text-amber-500 shrink-0" />
+          </motion.div>
         </div>
       </section>
 
-      {/* ─── AI Practice Labs Grid ─── */}
-      <section className="w-full max-w-5xl mb-20">
-        <div className="text-center mb-8 space-y-2">
-          <div className="inline-flex items-center gap-1.5 rounded-md bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-[11px] font-black text-blue-700 dark:text-blue-300 uppercase tracking-wider">
-            Comprehensive Suite
+      {/* ─── AI PRACTICE LABS — non-symmetric bento ─── */}
+      <section className="w-full max-w-6xl mb-24">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+          <div className="space-y-2">
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-950 dark:text-white tracking-tight leading-[1.05] max-w-md">
+              The full lab, beyond the gauntlet.
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-gray-400 max-w-md">
+              Every tool you need to go from "I sort of know it" to fluent and
+              production-ready.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-slate-950 dark:text-white">
-            Everything You Need for Total Vocabulary Mastery
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 max-w-xl mx-auto">
-            From speaking and stories to phonetics and confusable disambiguation — built with cutting-edge language pedagogy.
-          </p>
+          <Link
+            to="/how-to"
+            onClick={() => play('click')}
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 text-sm font-bold text-teal-600 dark:text-teal-400 hover:gap-2.5 transition-all"
+          >
+            See how it works <ArrowUpRight className="h-4 w-4" />
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
           {HIGHLIGHT_MODULES.map((mod, idx) => {
-            const ModIcon = mod.icon;
+            const Icon = mod.icon;
+            const isHero = idx === 0;
             return (
               <motion.div
                 key={mod.title}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.06 }}
-                whileHover={{ y: -4 }}
+                {...fadeUp}
+                transition={{ duration: 0.5, delay: idx * 0.04, ease: 'easeOut' as const }}
+                className={isHero ? 'sm:col-span-2 lg:col-span-3' : 'lg:col-span-3'}
               >
                 <Link
                   to={mod.path}
                   onClick={() => play('click')}
                   className="block h-full"
                 >
-                  <Card className="p-6 h-full flex flex-col justify-between border-slate-200/90 dark:border-white/10 hover:border-teal-500/50 hover:shadow-xl transition-all group">
-                    <div className="space-y-3">
+                  <div
+                    className={`relative h-full rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-white/[0.02] p-6 hover:border-teal-500/50 hover:-translate-y-0.5 transition-all overflow-hidden group ${
+                      isHero ? 'min-h-[260px]' : 'min-h-[200px]'
+                    }`}
+                  >
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${mod.accent} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}
+                    />
+                    <div className="relative h-full flex flex-col justify-between gap-4">
                       <div className="flex items-center justify-between">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-500/10 text-teal-600 dark:text-teal-400 group-hover:scale-110 transition-transform">
-                          <ModIcon className="h-5 w-5" />
+                        <div
+                          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${mod.iconWrap}`}
+                        >
+                          <Icon className="h-5 w-5" />
                         </div>
-                        <span className={`rounded-md border px-2 py-0.5 text-[10px] font-black ${mod.tagColor}`}>
-                          {mod.tag}
-                        </span>
+                        <ArrowUpRight className="h-5 w-5 text-slate-400 group-hover:text-teal-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-all" />
                       </div>
 
-                      <h3 className="text-base font-black text-slate-950 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-300 transition-colors">
-                        {mod.title}
-                      </h3>
-
-                      <p className="text-xs text-slate-600 dark:text-gray-400 leading-relaxed">
-                        {mod.desc}
-                      </p>
+                      <div className="space-y-1.5">
+                        <h3
+                          className={`font-black text-slate-950 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-300 transition-colors ${
+                            isHero ? 'text-2xl' : 'text-lg'
+                          }`}
+                        >
+                          {mod.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-gray-400 leading-relaxed">
+                          {mod.desc}
+                        </p>
+                      </div>
                     </div>
-
-                    <div className="pt-4 mt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs font-bold text-teal-600 dark:text-teal-400">
-                      <span>Explore lab</span>
-                      <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </Card>
+                  </div>
                 </Link>
               </motion.div>
             );
           })}
+
+          {/* "More coming" filler cell — completes the 6-col grid without empty space */}
+          <motion.div
+            {...fadeUp}
+            transition={{ duration: 0.5, delay: 0.25, ease: 'easeOut' as const }}
+            className="md:col-span-2 lg:col-span-3"
+          >
+            <div className="h-full rounded-3xl border border-dashed border-slate-300 dark:border-white/10 p-6 flex items-center gap-5 min-h-[200px]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/20 to-amber-500/20 border border-white/10">
+                <Sparkles className="h-5 w-5 text-teal-500" />
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm font-black text-slate-900 dark:text-white">
+                  And more, every month
+                </p>
+                <p className="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">
+                  New labs ship regularly — voice tutoring, AI stories, and adaptive
+                  review are already on the roadmap.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-
-
-      {/* ─── Bottom High-Impact Call to Action ─── */}
+      {/* ─── BOTTOM CTA — full-bleed dark, with live "session" feel ─── */}
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="w-full max-w-5xl rounded-3xl border border-teal-500/30 bg-gradient-to-br from-teal-500/15 via-slate-900 to-blue-500/10 p-8 sm:p-12 text-center text-white shadow-2xl relative overflow-hidden"
+        {...fadeUp}
+        className="w-full max-w-6xl rounded-3xl border border-slate-200/80 dark:border-white/10 bg-slate-950 dark:bg-bg-tertiary p-8 sm:p-12 lg:p-16 relative overflow-hidden"
       >
-        <div className="max-w-2xl mx-auto space-y-4 relative z-10">
-          <div className="flex justify-center mb-2">
-            <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-teal-500 text-white shadow-lg shadow-teal-500/30">
-              <Zap className="h-7 w-7 fill-current" />
+        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-teal-500/20 blur-3xl pointer-events-none" />
+        <div className="absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-4 text-white">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-400">
+              Your next 5 minutes
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.05]">
+              Three words you keep forgetting.<br />
+              <span className="text-teal-400">One session.</span> Permanent.
+            </h2>
+            <p className="text-slate-300 text-sm sm:text-base max-w-lg leading-relaxed">
+              Bring three words right now. Feel the 6-round gauntlet work before
+              your coffee gets cold.
+            </p>
+
+            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+              <Button
+                id="cta-bottom"
+                type="button"
+                onClick={handleStart}
+                size="lg"
+                className="w-full sm:w-auto px-8 py-4 text-base font-bold gap-2 cursor-pointer"
+              >
+                <Zap className="h-4 w-4 fill-current" />
+                <span>Launch first session</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              <Link
+                to="/about"
+                onClick={() => play('click')}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 px-7 py-3.5 text-sm font-bold text-white hover:bg-white/5 transition-colors"
+              >
+                Why I built this
+              </Link>
             </div>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-            Your Next 5 Minutes Will Change How You Learn Words
-          </h2>
+          {/* Right column — a live XP / streak preview */}
+          <div className="lg:col-span-5">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur p-5 space-y-4">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-semibold uppercase tracking-wider">
+                  Session preview
+                </span>
+                <span className="flex items-center gap-1.5 text-teal-400 font-bold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
+                  Live
+                </span>
+              </div>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed font-normal">
-            Bring three words you keep forgetting right now. Experience 6-round active recall and feel the permanent retention before your session finishes.
-          </p>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <Stat label="XP" value="50" sub="per word" />
+                <Stat label="Streak" value="5" sub="days" />
+                <Stat label="Rounds" value="6" sub="per word" />
+              </div>
 
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button
-              id="cta-bottom"
-              type="button"
-              onClick={handleStart}
-              size="lg"
-              className="w-full sm:w-auto px-10 py-4 text-base font-bold shadow-xl gap-2 cursor-pointer"
-            >
-              <span>Launch First Session</span>
-              <ArrowRight className="h-5 w-5" />
-            </Button>
+              <div className="space-y-2">
+                <RoundStat n={1} label="Recognition" xp={5} done />
+                <RoundStat n={6} label="Spelling" xp={15} active />
+                <RoundStat n={4} label="Context Fill" xp={10} />
+              </div>
+            </div>
           </div>
         </div>
       </motion.section>
+    </div>
+  );
+}
+
+function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-2 py-3 sm:p-3 text-center">
+      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
+        {label}
+      </p>
+      <p className="text-xl sm:text-2xl font-black text-white mt-1">{value}</p>
+      <p className="text-[9px] sm:text-[10px] text-slate-500 mt-0.5 truncate">{sub}</p>
+    </div>
+  );
+}
+
+function RoundStat({
+  n,
+  label,
+  xp,
+  done,
+  active,
+}: {
+  n: number;
+  label: string;
+  xp: number;
+  done?: boolean;
+  active?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between text-xs px-3 py-2 rounded-lg border ${
+        active
+          ? 'border-teal-400/40 bg-teal-400/10'
+          : done
+            ? 'border-white/5 bg-white/[0.02]'
+            : 'border-white/5 bg-transparent'
+      }`}
+    >
+      <span className="flex items-center gap-2">
+        <span
+          className={`flex h-5 w-5 items-center justify-center rounded text-[10px] font-black ${
+            done
+              ? 'bg-emerald-500 text-white'
+              : active
+                ? 'bg-teal-400 text-slate-900'
+                : 'bg-white/10 text-slate-400'
+          }`}
+        >
+          {done ? '✓' : `R${n}`}
+        </span>
+        <span className={done ? 'text-slate-400 line-through' : 'text-white font-semibold'}>
+          {label}
+        </span>
+      </span>
+      <span className="text-slate-400 font-bold">+{xp}</span>
+    </div>
+  );
+}
+
+function HeroWordCard({ reduce }: { reduce: boolean }) {
+  return (
+    <div className="relative">
+      {/* Backdrop glow */}
+      <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-teal-500/20 via-blue-500/10 to-transparent blur-2xl pointer-events-none" />
+
+      <div className="relative rounded-3xl border border-slate-200/80 dark:border-white/10 bg-white dark:bg-slate-900/80 shadow-2xl shadow-slate-900/10 dark:shadow-black/40 overflow-hidden">
+        {/* Window chrome */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/80 dark:border-white/5 bg-slate-50/80 dark:bg-white/[0.02]">
+          <div className="flex items-center gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-rose-400/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Round 4 / 6
+          </span>
+          <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400">
+            +10 XP
+          </span>
+        </div>
+
+        {/* Body */}
+        <div className="p-5 sm:p-6 space-y-5">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Context fill
+            </p>
+            <p className="text-base sm:text-lg text-slate-900 dark:text-white leading-snug font-medium">
+              She finally made the{' '}
+              <span className="inline-block min-w-[5.5rem] border-b-2 border-teal-500 mx-1 text-center text-teal-600 dark:text-teal-400 font-black">
+                decision
+              </span>{' '}
+              to leave the city.
+            </p>
+          </div>
+
+          {/* 4-option grid */}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { w: 'decision', correct: true },
+              { w: 'division' },
+              { w: 'collision' },
+              { w: 'revision' },
+            ].map((o, i) => (
+              <motion.div
+                key={o.w}
+                initial={reduce ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.06, duration: 0.3 }}
+                className={`rounded-xl border px-3 py-2.5 text-sm font-bold ${
+                  o.correct
+                    ? 'border-teal-500/50 bg-teal-500/10 text-teal-700 dark:text-teal-300'
+                    : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-gray-300'
+                }`}
+              >
+                {o.w}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Hint strip */}
+          <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500 dark:text-gray-400">
+            <span className="flex items-center gap-1.5">
+              <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+              <span>make a ___</span>
+            </span>
+            <span className="font-bold text-teal-600 dark:text-teal-400">
+              3 of 10 correct
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

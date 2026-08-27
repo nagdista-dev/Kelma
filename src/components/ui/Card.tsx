@@ -7,10 +7,10 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Card({ children, glow, strong, className = '', ...props }: CardProps) {
-  const base = strong ? 'glass-strong' : 'glass';
-  const glowCls = glow ? 'glow-teal' : '';
+  const base = strong ? 'kelma-card-strong' : 'kelma-card';
+  const glowCls = glow ? 'kelma-glow-teal' : '';
   return (
-    <div className={`${base} rounded-2xl p-6 ${glowCls} ${className}`} {...props}>
+    <div className={`rounded-2xl p-6 ${base} ${glowCls} ${className}`} {...props}>
       {children}
     </div>
   );

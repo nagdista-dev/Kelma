@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Navbar } from './Navbar';
 import { DesktopSidebar } from './DesktopSidebar';
-import { MobileBottomNav } from './MobileBottomNav';
 import { ResumeQuizButton } from './ResumeQuizButton';
 import { InstallButton } from './InstallButton';
 
@@ -21,13 +20,10 @@ export function Layout({ children }: LayoutProps) {
       <div className="flex-1 flex min-w-0">
         <DesktopSidebar collapsed={sidebarCollapsed} />
 
-        <main className="flex-1 flex flex-col min-w-0 pb-24 md:pb-16 lg:pb-10 overflow-x-hidden">
+        <main className="flex-1 flex flex-col min-w-0 pb-16 lg:pb-10 overflow-x-hidden">
           {children}
         </main>
       </div>
-
-      {/* Mobile-only Bottom Navigation Bar */}
-      <MobileBottomNav />
 
       {/* Floating Resumption CTA */}
       <ResumeQuizButton />

@@ -1,4 +1,4 @@
-# 🏗️ Architecture — Play With Words
+# 🏗️ Architecture — Kelma
 
 > **Last Updated**: 2026-08-20  
 > **Status**: 🟢 Implementation Started
@@ -26,7 +26,7 @@
 ## File Structure
 
 ```
-play-with-words/
+kelma/
 ├── .dev-notes/                    ← Dev documentation (this folder)
 │
 ├── public/

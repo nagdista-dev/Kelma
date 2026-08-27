@@ -338,7 +338,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
                   play('click');
                   handleClose();
                 }}
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
