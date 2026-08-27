@@ -110,6 +110,12 @@ h1, h2 {
   border-radius: 6px;
 }
 
+/* ─── Session Workbench — quiet chrome, no focus outlines (scoped to /session) ─── */
+.kelma-session :focus,
+.kelma-session :focus-visible {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

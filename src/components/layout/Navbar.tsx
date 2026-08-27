@@ -34,11 +34,10 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-xl transition-colors dark:border-white/10 dark:bg-[#0e1420]/95 select-none">
+      <header className="sticky top-0 z-40 w-full select-none bg-white/90 backdrop-blur-xl transition-colors dark:bg-[#0e1420]/92">
         <div className="flex h-14 w-full items-center justify-between gap-2 px-3 sm:px-5 lg:px-6">
-          {/* Left: Hamburger Menu Trigger + Brand Typography Logo */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            {/* Menu Trigger: On mobile opens Drawer, on desktop triggers sidebar toggle */}
+          {/* Left: Menu Trigger + Brand Wordmark */}
+          <div className="flex min-w-0 items-center gap-1.5 sm:gap-2.5">
             <button
               type="button"
               onClick={() => {
@@ -51,7 +50,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
                   setMobileMenuOpen(true);
                 }
               }}
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-all hover:bg-slate-100 active:scale-95 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5 cursor-pointer"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 sm:h-9 sm:w-9 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
               aria-label="Toggle navigation menu"
               id="global-menu-btn"
             >
@@ -64,47 +63,67 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
                 play('click');
                 navigate('/');
               }}
-              className="flex shrink-0 items-center gap-1.5 sm:gap-2 text-slate-950 transition-transform active:scale-95 dark:text-white cursor-pointer"
+              className="flex shrink-0 cursor-pointer items-baseline gap-2 transition-transform active:scale-95"
               id="nav-logo"
             >
-              <span className="font-black text-lg sm:text-xl tracking-tight">
-                <span className="gradient-text">K</span>elma
+              <span className="text-lg font-black uppercase tracking-[0.06em] text-slate-950 sm:text-xl dark:text-white">
+                Kelma<span aria-hidden="true" className="ml-[3px] inline-block h-[7px] w-[7px] rounded-[2px] bg-amber-400 align-super" />
               </span>
-              <span className="hidden xs:inline-flex items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-400">
+              <span className="hidden rounded border border-teal-500/30 bg-teal-500/[0.08] px-1.5 py-px font-mono text-[9px] font-bold uppercase tracking-wider text-teal-600 xs:inline-flex dark:border-teal-400/25 dark:bg-teal-400/10 dark:text-teal-300">
                 {defaultLevel}
               </span>
             </button>
           </div>
 
           {/* Center (Desktop): Fast shortcuts */}
-          <div className="hidden md:flex items-center gap-2">
+          <nav aria-label="Quick navigation" className="hidden items-center gap-7 md:flex">
             <NavLink
               to="/session"
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                `relative flex h-14 items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
                   isActive
-                    ? 'bg-teal-600 text-white shadow-xs'
-                    : 'bg-teal-500/10 text-teal-700 hover:bg-teal-500/15 dark:text-teal-300'
+                    ? 'text-teal-700 dark:text-teal-300'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white'
                 }`
               }
             >
-              <Zap className="h-3.5 w-3.5 fill-current" />
-              <span>New Session</span>
+              {({ isActive }) => (
+                <>
+                  <Zap className={`h-3.5 w-3.5 ${isActive ? 'fill-current' : ''}`} />
+                  <span>Session</span>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 bottom-0 h-[2px] rounded-t-full bg-amber-400 transition-opacity ${
+                      isActive ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                </>
+              )}
             </NavLink>
 
             <NavLink
               to="/daily"
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                `relative flex h-14 items-center text-[11px] font-bold uppercase tracking-[0.16em] transition-colors ${
                   isActive
-                    ? 'bg-amber-500 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-950 hover:bg-slate-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/5'
+                    ? 'text-teal-700 dark:text-teal-300'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white'
                 }`
               }
             >
-              <span>Daily Word</span>
+              {({ isActive }) => (
+                <>
+                  <span>Daily Word</span>
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 bottom-0 h-[2px] rounded-t-full bg-amber-400 transition-opacity ${
+                      isActive ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                </>
+              )}
             </NavLink>
-          </div>
+          </nav>
 
           {/* Right Action Bar */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
@@ -112,7 +131,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
             {isQuizActive && (
               <NavLink
                 to="/quiz"
-                className="flex items-center gap-1.5 rounded-xl border border-teal-500/40 bg-teal-500/15 px-2.5 py-1 text-xs font-bold text-teal-700 dark:text-teal-300 animate-pulse"
+                className="flex animate-pulse items-center gap-1.5 rounded-lg border border-dashed border-teal-500/50 bg-teal-500/[0.08] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300"
               >
                 <Zap className="h-3 w-3 fill-current" />
                 <span className="hidden sm:inline">In Quiz</span>
@@ -121,19 +140,16 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
 
             {/* XP / Streak Pill — hidden on smallest screens to free up space */}
             {(streak > 0 || xp > 0) && (
-              <div className="hidden xs:flex items-center gap-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
-                <span className="flex items-center gap-1">
+              <div className="hidden items-center divide-x divide-amber-500/30 rounded-lg border border-amber-500/30 bg-amber-500/[0.07] xs:flex">
+                <span className="flex items-center gap-1 px-2 py-1 font-mono text-[10px] font-bold text-amber-700 dark:text-amber-300">
                   <Zap className="h-3 w-3 fill-current" />
                   {xp} XP
                 </span>
                 {streak > 0 && (
-                  <>
-                    <span className="h-3 w-px bg-amber-500/30" />
-                    <span className="flex items-center gap-0.5 text-orange-600 dark:text-orange-400">
-                      <Flame className="h-3.5 w-3.5 fill-current" />
-                      {streak}
-                    </span>
-                  </>
+                  <span className="flex items-center gap-0.5 px-2 py-1 font-mono text-[10px] font-bold text-orange-600 dark:text-orange-400">
+                    <Flame className="h-3.5 w-3.5 fill-current" />
+                    {streak}
+                  </span>
                 )}
               </div>
             )}
@@ -144,7 +160,7 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
               title={userName ? `${userName}'s Settings` : 'Settings'}
               aria-label="Settings"
               id="nav-settings-avatar"
-              className="flex h-10 w-10 sm:h-9 sm:w-9 items-center justify-center rounded-xl border border-slate-200 transition-all hover:border-teal-500 active:scale-95 dark:border-white/10 dark:hover:border-teal-500/60 overflow-hidden cursor-pointer"
+              className="relative flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg ring-1 ring-slate-200 transition-transform hover:scale-105 active:scale-95 sm:h-9 sm:w-9 dark:ring-white/15"
             >
               {initial ? (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-teal-600 to-emerald-400 text-white">
@@ -158,6 +174,9 @@ export function Navbar({ onToggleDesktopSidebar }: NavbarProps) {
             </NavLink>
           </div>
         </div>
+
+        {/* Signature gradient hairline */}
+        <div aria-hidden="true" className="h-px w-full bg-gradient-to-r from-transparent via-teal-500/50 to-transparent" />
       </header>
 
       {/* Slide-over Drawer for Mobile */}

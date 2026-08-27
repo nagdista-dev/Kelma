@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
@@ -8,7 +8,6 @@ import {
   History,
   RotateCcw,
   Search,
-  Sparkles,
   Trash2,
   X,
 } from 'lucide-react';
@@ -42,7 +41,7 @@ function ReadinessDial({ count, ready }: { count: number; ready: boolean }) {
 
   return (
     <div
-      className={`relative mx-auto h-44 w-44 [--track:#e6ebf2] dark:[--track:#26334a] ${
+      className={`relative mx-auto h-36 w-36 [--track:#e6ebf2] min-[420px]:h-44 min-[420px]:w-44 dark:[--track:#26334a] ${
         ready ? 'drop-shadow-[0_0_14px_rgba(245,158,11,0.35)]' : ''
       }`}
     >
@@ -68,20 +67,24 @@ function ReadinessDial({ count, ready }: { count: number; ready: boolean }) {
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="text-4xl font-extrabold tabular-nums leading-none tracking-tight text-slate-950 dark:text-white"
+          className="text-3xl font-extrabold tabular-nums leading-none tracking-tight text-slate-950 min-[420px]:text-4xl dark:text-white"
           aria-live="polite"
         >
           {count}
-          <span className="text-lg font-bold text-slate-400 dark:text-gray-500">/{MAX_WORDS}</span>
+          <span className="text-base font-bold text-slate-400 min-[420px]:text-lg dark:text-gray-500">/{MAX_WORDS}</span>
         </span>
         <span
-          className={`mt-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] ${
-            ready ? 'text-amber-500' : 'text-slate-400 dark:text-gray-500'
+          className={`mt-2 font-mono text-[9px] font-bold uppercase tracking-[0.22em] min-[420px]:text-[10px] ${
+            ready ? 'animate-pulse text-amber-500' : 'text-slate-400 dark:text-gray-500'
           }`}
         >
-          {ready ? 'Ready to launch' : `Add ${MIN_WORDS - count} more`}
+          {ready ? '● Ready to launch' : `Add ${MIN_WORDS - count} more`}
         </span>
-        {!ready && <span className="mt-1 text-[10px] text-slate-400 dark:text-gray-600">of {MAX_WORDS} slots</span>}
+        {!ready && (
+          <span className="mt-1 hidden text-[10px] text-slate-400 min-[420px]:block dark:text-gray-600">
+            of {MAX_WORDS} slots
+          </span>
+        )}
       </div>
     </div>
   );
@@ -225,38 +228,26 @@ export function SessionSetupPage() {
     : allHistoryWords;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-24 sm:px-6 sm:pt-8 sm:pb-16 lg:pb-12">
+    <div className="kelma-session mx-auto w-full max-w-6xl px-4 pt-5 pb-24 sm:px-6 sm:pt-8 sm:pb-16 lg:pb-12">
       <motion.div
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
       >
         {/* ─── Header ─── */}
-        <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-teal-600 dark:text-teal-400">
-              Active Recall Drill
-            </p>
-            <h1
-              className="mt-1 font-extrabold tracking-tight text-slate-950 dark:text-white"
-              style={{ fontSize: 'clamp(1.7rem, 1.3rem + 1.6vw, 2.5rem)' }}
-            >
-              Build your session
-            </h1>
-            <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-gray-400 sm:text-sm">
-              Load up to {MAX_WORDS} English words — each one runs six rounds until it sticks.
-            </p>
-          </div>
-
-          {/* AI Model Pill */}
-          <Link
-            to="/provider"
-            className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs hover:border-teal-500/50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-            title="AI Provider Settings"
+        <header className="mb-5 sm:mb-7">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.28em] text-teal-600 min-[420px]:text-[11px] dark:text-teal-400">
+            Active Recall Drill
+          </p>
+          <h1
+            className="mt-1 font-extrabold tracking-tight text-slate-950 dark:text-white"
+            style={{ fontSize: 'clamp(1.6rem, 1.25rem + 1.8vw, 2.5rem)' }}
           >
-            <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-500" />
-            <span className="max-w-[9rem] truncate sm:max-w-[12rem]">{model}</span>
-          </Link>
+            Build your session
+          </h1>
+          <p className="mt-1 max-w-xl text-xs leading-relaxed text-slate-500 sm:text-sm dark:text-gray-400">
+            Load up to {MAX_WORDS} English words — each one runs six rounds until it sticks.
+          </p>
         </header>
 
         {/* Review Mode Banner */}
@@ -364,40 +355,46 @@ export function SessionSetupPage() {
 
           {/* Right — Launch Console */}
           <aside className="overflow-hidden rounded-2xl border border-teal-600/25 bg-white shadow-xl shadow-slate-900/[0.06] dark:border-teal-400/15 dark:bg-[#101b2d] dark:shadow-none lg:sticky lg:top-6">
+            {/* Brand gradient edge */}
+            <div aria-hidden="true" className="h-1 w-full bg-gradient-to-r from-teal-600 via-teal-400 to-amber-400" />
+
             {/* Readiness Dial */}
-            <div className="border-b border-dashed border-slate-200 px-5 pb-6 pt-7 dark:border-white/10">
+            <div className="border-b border-dashed border-slate-200 px-4 pb-4 pt-5 sm:px-5 sm:pb-6 sm:pt-7 dark:border-white/10">
               <ReadinessDial count={words.length} ready={canStart} />
             </div>
 
             {/* The Six Rounds Ladder */}
-            <div className="px-5 py-5">
+            <div className="px-4 py-4 sm:px-5 sm:py-5">
               <h2 className="mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">
                 The six rounds
               </h2>
               <ol>
-                {Array.from({ length: TOTAL_ROUNDS }, (_, i) => i + 1).map(n => (
-                  <li
+                {Array.from({ length: TOTAL_ROUNDS }, (_, i) => i + 1).map((n, i) => (
+                  <motion.li
                     key={n}
-                    className="flex items-start gap-3 rounded-xl border border-transparent px-2 py-1.5 transition-colors hover:border-slate-200 hover:bg-slate-50 dark:hover:border-white/10 dark:hover:bg-white/5"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: 0.05 * i }}
+                    className="flex items-start gap-2.5 rounded-xl border border-transparent px-1.5 py-1 transition-colors hover:border-slate-200 hover:bg-slate-50 sm:gap-3 sm:px-2 sm:py-1.5 dark:hover:border-white/10 dark:hover:bg-white/5"
                   >
                     <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-teal-50 font-mono text-[11px] font-bold text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
                       {n}
                     </span>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold leading-tight text-slate-800 dark:text-gray-100">
+                      <p className="text-[13px] font-bold leading-tight text-slate-800 sm:text-sm dark:text-gray-100">
                         {ROUND_LABELS[n]}
                       </p>
-                      <p className="hidden text-[11px] leading-snug text-slate-400 dark:text-gray-500 sm:block">
+                      <p className="hidden text-[11px] leading-snug text-slate-400 sm:block dark:text-gray-500">
                         {ROUND_DESCRIPTIONS[n]}
                       </p>
                     </div>
-                  </li>
+                  </motion.li>
                 ))}
               </ol>
             </div>
 
             {/* Launch Zone */}
-            <div className="space-y-2 px-5 pb-6">
+            <div className="space-y-2 px-4 pb-5 sm:px-5 sm:pb-6">
               {error && (
                 <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs leading-relaxed text-red-600 dark:text-red-300">
                   <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -410,7 +407,7 @@ export function SessionSetupPage() {
                 onClick={() => void handleStart()}
                 disabled={!canStart}
                 size="lg"
-                className="w-full min-h-[52px] cursor-pointer gap-2 text-base font-extrabold"
+                className="min-h-[56px] w-full cursor-pointer gap-2 text-base font-extrabold md:min-h-[52px]"
               >
                 {canStart ? (
                   <>
@@ -422,7 +419,7 @@ export function SessionSetupPage() {
                 )}
               </Button>
               {canStart && !loading && (
-                <p className="text-center text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                <p className="hidden text-center text-[10px] font-bold text-slate-400 md:block dark:text-gray-500">
                   Press{' '}
                   <kbd className="rounded border px-1 py-0.5 font-mono">Enter ↵</kbd> anywhere to start
                 </p>

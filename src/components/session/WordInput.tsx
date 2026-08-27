@@ -159,12 +159,12 @@ export function WordInput({ words, onChange }: WordInputProps) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
               transition={{ type: 'spring', damping: 24, stiffness: 350 }}
-              className="flex items-center gap-3 border-b border-dashed border-slate-100 px-4 py-2.5 last:border-b-0 dark:border-white/5"
+              className="flex items-center gap-3 border-b border-dashed border-slate-100 px-3 py-2 last:border-b-0 sm:px-4 sm:py-2.5 dark:border-white/5"
             >
               <span className="w-6 shrink-0 font-mono text-[11px] font-bold tabular-nums text-teal-600/70 dark:text-teal-400/70">
                 {String(index + 1).padStart(2, '0')}
               </span>
-              <span className="min-w-0 flex-1 truncate text-sm font-bold lowercase tracking-tight text-slate-900 dark:text-white">
+              <span className="min-w-0 flex-1 truncate text-[13px] font-bold lowercase tracking-tight text-slate-900 sm:text-sm dark:text-white">
                 {w}
               </span>
               <button
