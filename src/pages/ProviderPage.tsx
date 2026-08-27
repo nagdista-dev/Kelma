@@ -87,6 +87,12 @@ const PROVIDERS: { id: AIProvider; label: string; Icon: LucideIcon }[] = [
   { id: 'nebius', label: 'Nebius', Icon: Orbit },
   { id: 'chutes', label: 'Chutes.ai', Icon: Send },
   { id: 'kluster', label: 'Kluster AI', Icon: Share2 },
+  { id: 'anyapi', label: 'AnyAPI', Icon: Boxes },
+  { id: 'puter', label: 'Puter', Icon: Cloud },
+  { id: 'surpollinations', label: 'Sur Pollinations', Icon: Flower2 },
+  { id: 'uncloseai', label: 'UncloseAI', Icon: Sparkles },
+  { id: 'heckai', label: 'Heck AI', Icon: Zap },
+  { id: 'g4f', label: 'GPT4Free', Icon: Bot },
 ];
 
 const KEY_PLACEHOLDERS: Record<AIProvider, string> = {
@@ -133,6 +139,12 @@ const KEY_PLACEHOLDERS: Record<AIProvider, string> = {
   typhoon: 'Typhoon API key',
   arli: 'Arli API key',
   poolside: 'Poolside API key',
+  anyapi: 'Not required — leave empty (20 req/min free)',
+  puter: 'Not required — uses Puter account',
+  surpollinations: 'Not required — leave empty',
+  uncloseai: 'Not required — leave empty (unlimited)',
+  heckai: 'Not required — leave empty (50/day)',
+  g4f: 'g4f API key (g4f.dev/api_key)',
 };
 
 export function ProviderPage() {

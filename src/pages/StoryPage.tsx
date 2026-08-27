@@ -175,7 +175,7 @@ export function StoryPage() {
       }
       return <span key={index}>{part}</span>;
     });
-  }, [story?.story, words, speak, stop]);
+  }, [story, words, speak, stop]);
 
   return (
     <div className="page-container pb-28 lg:pb-12 max-w-4xl mx-auto">

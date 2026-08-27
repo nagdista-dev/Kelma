@@ -43,7 +43,13 @@ export type AIProvider =
   | 'wandb'
   | 'typhoon'
   | 'arli'
-  | 'poolside';
+  | 'poolside'
+  | 'anyapi'
+  | 'puter'
+  | 'surpollinations'
+  | 'uncloseai'
+  | 'heckai'
+  | 'g4f';
 
 export type LanguageLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1';
 
@@ -438,6 +444,70 @@ export const PROVIDER_MODELS: Record<AIProvider, ModelOption[]> = {
     { id: 'poolside/laguna-m-1', label: 'Laguna M.1 225B (Code)' },
     { id: 'poolside/laguna-xs-2', label: 'Laguna XS.2 33B (Code, Fast)' },
   ],
+  anyapi: [
+    { id: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B' },
+    { id: 'qwen/qwen3-coder', label: 'Qwen 3 Coder' },
+    { id: 'qwen/qwq-32b', label: 'QwQ 32B (Reasoning)' },
+    { id: 'google/gemma-4-it', label: 'Gemma 4 IT' },
+    { id: 'nvidia/nemotron-3-super', label: 'Nemotron 3 Super' },
+    { id: 'mistralai/mistral-small-3.1', label: 'Mistral Small 3.1' },
+    { id: 'deepseek/deepseek-chat', label: 'DeepSeek Chat' },
+    { id: 'cohere/north-mini-code', label: 'North Mini Code' },
+    { id: 'liquid/lfm-2.5', label: 'LFM 2.5' },
+    { id: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B' },
+  ],
+  puter: [
+    { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { id: 'gpt-4o', label: 'GPT-4o' },
+    { id: 'gpt-5-nano', label: 'GPT-5 Nano' },
+    { id: 'claude-sonnet-4', label: 'Claude Sonnet 4' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'deepseek-chat', label: 'DeepSeek Chat' },
+    { id: 'meta-llama/llama-3.3-70b-instruct', label: 'Llama 3.3 70B' },
+    { id: 'mistral-large-latest', label: 'Mistral Large (Latest)' },
+    { id: 'o1-mini', label: 'o1 Mini (Reasoning)' },
+    { id: 'grok-3-mini', label: 'Grok 3 Mini' },
+  ],
+  surpollinations: [
+    { id: 'openai', label: 'OpenAI' },
+    { id: 'openai-large', label: 'OpenAI Large' },
+    { id: 'openai-fast', label: 'OpenAI Fast' },
+    { id: 'sur', label: 'Sur (Default)' },
+    { id: 'sur-mistral', label: 'Sur Mistral' },
+    { id: 'claude', label: 'Claude' },
+    { id: 'mistral', label: 'Mistral' },
+    { id: 'mistral-large', label: 'Mistral Large' },
+    { id: 'command-r', label: 'Command R' },
+    { id: 'unity', label: 'Unity' },
+    { id: 'rtist', label: 'Rtist' },
+    { id: 'searchgpt', label: 'SearchGPT' },
+  ],
+  uncloseai: [
+    { id: 'hermes-3-llama-3.1-70b', label: 'Hermes 3 70B (Unlimited)' },
+    { id: 'qwen-3-coder-free', label: 'Qwen 3 Coder (Free)' },
+    { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { id: 'llama-3.3-70b-instruct', label: 'Llama 3.3 70B' },
+    { id: 'deepseek-v3', label: 'DeepSeek V3' },
+    { id: 'mistral-large', label: 'Mistral Large' },
+  ],
+  heckai: [
+    { id: 'deepseek-v3', label: 'DeepSeek V3' },
+    { id: 'deepseek-r1-pro', label: 'DeepSeek R1 Pro (Reasoning)' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'chatgpt-4o-mini', label: 'GPT-4o Mini' },
+    { id: 'chatgpt-4.1-mini', label: 'GPT-4.1 Mini' },
+    { id: 'grok-3-mini', label: 'Grok 3 Mini' },
+    { id: 'llama-4-scout', label: 'Llama 4 Scout' },
+  ],
+  g4f: [
+    { id: 'gpt-4o-mini', label: 'GPT-4o Mini (via Groq)' },
+    { id: 'llama-3.3-70b', label: 'Llama 3.3 70B (via Ollama)' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'gpt-oss-120b', label: 'GPT-OSS 120B' },
+    { id: 'deepseek-r1', label: 'DeepSeek R1 (Reasoning)' },
+    { id: 'qwen-2.5-72b', label: 'Qwen 2.5 72B' },
+    { id: 'mistral-large', label: 'Mistral Large' },
+  ],
   opencode: [
     { id: 'code-supernova', label: 'Code Supernova' },
     { id: 'grok-code', label: 'Grok Code (Fast)' },
@@ -558,6 +628,12 @@ export const PROVIDER_LABELS: Record<AIProvider, string> = {
   typhoon: 'Typhoon',
   arli: 'Arli AI',
   poolside: 'Poolside',
+  anyapi: 'AnyAPI',
+  puter: 'Puter',
+  surpollinations: 'Sur Pollinations',
+  uncloseai: 'UncloseAI',
+  heckai: 'Heck AI',
+  g4f: 'GPT4Free',
 };
 
 export const LEVEL_DESCRIPTIONS: Record<LanguageLevel, string> = {

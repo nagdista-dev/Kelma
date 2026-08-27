@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   AlertCircle,
   ArrowRight,
+  Check,
   History,
   RotateCcw,
   Search,
@@ -75,7 +76,7 @@ function ReadinessDial({ count, ready }: { count: number; ready: boolean }) {
         </span>
         <span
           className={`mt-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] ${
-            ready ? 'text-gold dark:text-gold-light' : 'text-slate-400 dark:text-gray-500'
+            ready ? 'text-amber-500' : 'text-slate-400 dark:text-gray-500'
           }`}
         >
           {ready ? 'Ready to launch' : `Add ${MIN_WORDS - count} more`}
@@ -103,7 +104,17 @@ export function SessionSetupPage() {
   const [words, setWords, clearWords] = useLocalStorage<string[]>('pww-draft-words', []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [reviewMode, setReviewMode] = useState(false);
+  // Derived directly from storage so no effect needs to call setState for it
+  const [reviewMode, setReviewMode] = useState<boolean>(() => {
+    try {
+      const stored = sessionStorage.getItem(REVIEW_WORDS_KEY);
+      if (!stored) return false;
+      const parsed: unknown = JSON.parse(stored);
+      return Array.isArray(parsed) && parsed.length > 0 && parsed.every(w => typeof w === 'string');
+    } catch {
+      return false;
+    }
+  });
   const [lastSessionWords, setLastSessionWords] = useState<string[]>([]);
 
   // Surface previous completed session
@@ -116,7 +127,7 @@ export function SessionSetupPage() {
       .catch(() => {});
   }, [getAllSessions]);
 
-  // One-shot hydration of weak-words handoff
+  // One-shot hydration of weak-words handoff (consumes the storage key once)
   useEffect(() => {
     const stored = sessionStorage.getItem(REVIEW_WORDS_KEY);
     if (!stored) return;
@@ -125,7 +136,6 @@ export function SessionSetupPage() {
       const parsed: unknown = JSON.parse(stored);
       if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(w => typeof w === 'string')) {
         setWords(parsed as string[]);
-        setReviewMode(true);
         toast.success(`Loaded ${parsed.length} review words from your report!`);
       }
     } catch {
@@ -210,50 +220,44 @@ export function SessionSetupPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [handleStart, loading, words.length]);
 
-  const progressPct = Math.min(100, (words.length / MAX_WORDS) * 100);
-
   const filteredHistory = historyFilter.trim()
     ? allHistoryWords.filter(w => w.toLowerCase().includes(historyFilter.toLowerCase()))
     : allHistoryWords;
 
   return (
-    <div className="page-container pb-24 sm:pb-16 lg:pb-12">
+    <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-24 sm:px-6 sm:pt-8 sm:pb-16 lg:pb-12">
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
       >
-        {/* ─── Hero Header ─── */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start sm:items-center gap-3 min-w-0">
-            <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl border border-teal-500/30 bg-teal-500/15 shadow-sm">
-              <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-teal-500 dark:text-teal-300 fill-current" />
-            </div>
-            <div className="min-w-0">
-              <h1
-                className="font-extrabold text-slate-950 dark:text-white tracking-tight"
-                style={{ fontSize: 'clamp(1.5rem, 1.2rem + 1.2vw, 2rem)' }}
-              >
-                New Session Gauntlet
-              </h1>
-              <p className="text-xs text-slate-500 dark:text-gray-400 sm:text-sm leading-relaxed">
-                Master 1 to 10 words through 6 attacks of active recall until they stick
-              </p>
-            </div>
+        {/* ─── Header ─── */}
+        <header className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+          <div className="min-w-0">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-[0.28em] text-teal-600 dark:text-teal-400">
+              Active Recall Drill
+            </p>
+            <h1
+              className="mt-1 font-extrabold tracking-tight text-slate-950 dark:text-white"
+              style={{ fontSize: 'clamp(1.7rem, 1.3rem + 1.6vw, 2.5rem)' }}
+            >
+              Build your session
+            </h1>
+            <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-gray-400 sm:text-sm">
+              Load up to {MAX_WORDS} English words — each one runs six rounds until it sticks.
+            </p>
           </div>
 
           {/* AI Model Pill */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Link
-              to="/provider"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs hover:border-teal-500/50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-              title="AI Provider Settings"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-              <span className="truncate max-w-[10rem] sm:max-w-[12rem]">{model}</span>
-            </Link>
-          </div>
-        </div>
+          <Link
+            to="/provider"
+            className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-xs hover:border-teal-500/50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
+            title="AI Provider Settings"
+          >
+            <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+            <span className="max-w-[9rem] truncate sm:max-w-[12rem]">{model}</span>
+          </Link>
+        </header>
 
         {/* Review Mode Banner */}
         <AnimatePresence>
@@ -283,27 +287,25 @@ export function SessionSetupPage() {
           )}
         </AnimatePresence>
 
-        {/* ─── Main Content ─── */}
-        <div className="space-y-4">
-          <Card className="p-4 sm:p-6 shadow-xl border-slate-200/90 dark:border-white/10">
-            {/* Card Header with Counter & Clear */}
+        {/* ─── Workbench — word bench left, launch console right ─── */}
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Left — Word Bench */}
+          <section className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-lg shadow-slate-900/[0.04] dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none sm:p-6">
+            {/* Bench Header with Counter & Clear */}
             <div className="mb-4 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <ListChecks className="h-4 w-4 text-teal-500 dark:text-teal-400 shrink-0" />
-                <h2 className="text-sm font-extrabold text-slate-950 dark:text-white uppercase tracking-wider truncate">
-                  Your Word List
-                </h2>
-              </div>
+              <h2 className="truncate font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">
+                Word load
+              </h2>
 
               <div className="flex items-center gap-2 shrink-0">
                 <span
-                  className={`rounded-full border px-2.5 sm:px-3 py-0.5 text-xs font-black tabular-nums transition-colors ${
+                  className={`rounded-lg border px-2.5 py-0.5 font-mono text-xs font-black tabular-nums transition-colors ${
                     words.length >= MIN_WORDS
                       ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
                       : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                   }`}
                 >
-                  {words.length} / {MAX_WORDS}
+                  {words.length}/{MAX_WORDS}
                 </span>
 
                 {words.length > 0 && (
@@ -324,20 +326,6 @@ export function SessionSetupPage() {
                   </button>
                 )}
               </div>
-            </div>
-
-            {/* Capacity Progress Bar */}
-            <div className="mb-5 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-white/5">
-              <motion.div
-                className={`h-full rounded-full ${
-                  words.length >= MIN_WORDS
-                    ? 'bg-gradient-to-r from-teal-500 to-emerald-400'
-                    : 'bg-teal-500'
-                }`}
-                initial={false}
-                animate={{ width: `${progressPct}%` }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-              />
             </div>
 
             {/* Interactive Word Input */}
@@ -372,39 +360,75 @@ export function SessionSetupPage() {
                 </button>
               )}
             </div>
-          </Card>
+          </section>
 
-          {/* Launch Button */}
-          <Button
-            id="start-session-btn"
-            onClick={() => void handleStart()}
-            disabled={!canStart}
-            size="lg"
-            className="w-full min-h-[52px] gap-2 py-4 text-base font-bold cursor-pointer"
-          >
-            {canStart ? (
-              <>
-                <span>Launch Gauntlet ({words.length} words)</span>
-                <ArrowRight className="h-5 w-5" />
-              </>
-            ) : (
-              <span>Add at least {MIN_WORDS} word to start</span>
-            )}
-          </Button>
-          {canStart && (
-            <p className="mt-2 text-center text-[10px] font-bold text-slate-400 dark:text-gray-500">
-              Press{' '}
-              <kbd className="rounded border px-1 py-0.5 font-mono">Enter ↵</kbd> anywhere to start
-            </p>
-          )}
-
-          {/* Error Message Banner */}
-          {error && (
-            <div className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-600 dark:text-red-300">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{error}</span>
+          {/* Right — Launch Console */}
+          <aside className="overflow-hidden rounded-2xl border border-teal-600/25 bg-white shadow-xl shadow-slate-900/[0.06] dark:border-teal-400/15 dark:bg-[#101b2d] dark:shadow-none lg:sticky lg:top-6">
+            {/* Readiness Dial */}
+            <div className="border-b border-dashed border-slate-200 px-5 pb-6 pt-7 dark:border-white/10">
+              <ReadinessDial count={words.length} ready={canStart} />
             </div>
-          )}
+
+            {/* The Six Rounds Ladder */}
+            <div className="px-5 py-5">
+              <h2 className="mb-2 font-mono text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500 dark:text-gray-400">
+                The six rounds
+              </h2>
+              <ol>
+                {Array.from({ length: TOTAL_ROUNDS }, (_, i) => i + 1).map(n => (
+                  <li
+                    key={n}
+                    className="flex items-start gap-3 rounded-xl border border-transparent px-2 py-1.5 transition-colors hover:border-slate-200 hover:bg-slate-50 dark:hover:border-white/10 dark:hover:bg-white/5"
+                  >
+                    <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-teal-50 font-mono text-[11px] font-bold text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
+                      {n}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold leading-tight text-slate-800 dark:text-gray-100">
+                        {ROUND_LABELS[n]}
+                      </p>
+                      <p className="hidden text-[11px] leading-snug text-slate-400 dark:text-gray-500 sm:block">
+                        {ROUND_DESCRIPTIONS[n]}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            {/* Launch Zone */}
+            <div className="space-y-2 px-5 pb-6">
+              {error && (
+                <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs leading-relaxed text-red-600 dark:text-red-300">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <Button
+                id="start-session-btn"
+                onClick={() => void handleStart()}
+                disabled={!canStart}
+                size="lg"
+                className="w-full min-h-[52px] cursor-pointer gap-2 text-base font-extrabold"
+              >
+                {canStart ? (
+                  <>
+                    <span>Start drill ({words.length})</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                ) : (
+                  <span>Add a word to begin</span>
+                )}
+              </Button>
+              {canStart && !loading && (
+                <p className="text-center text-[10px] font-bold text-slate-400 dark:text-gray-500">
+                  Press{' '}
+                  <kbd className="rounded border px-1 py-0.5 font-mono">Enter ↵</kbd> anywhere to start
+                </p>
+              )}
+            </div>
+          </aside>
         </div>
       </motion.div>
 

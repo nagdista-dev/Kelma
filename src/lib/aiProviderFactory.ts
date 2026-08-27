@@ -261,6 +261,42 @@ export function getAIModel(provider: AIProvider, apiKey: string, model: string) 
         baseURL: 'https://inference.poolside.ai/v1',
         name: 'poolside',
       }).chat(model);
+    case 'anyapi':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://anyapi.openchatstudio.com/v1',
+        name: 'anyapi',
+      }).chat(model);
+    case 'puter':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://api.puter.com/ai/v1',
+        name: 'puter',
+      }).chat(model);
+    case 'surpollinations':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://sur.pollinations.ai/v1',
+        name: 'surpollinations',
+      }).chat(model);
+    case 'uncloseai':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://api.uncloseai.com/v1',
+        name: 'uncloseai',
+      }).chat(model);
+    case 'heckai':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://api.heck.ai/v1',
+        name: 'heckai',
+      }).chat(model);
+    case 'g4f':
+      return createOpenAI({
+        apiKey: key,
+        baseURL: 'https://api.g4f.dev/v1',
+        name: 'g4f',
+      }).chat(model);
     case 'google':
       return createGoogle({ apiKey })(model);
     case 'anthropic':

@@ -134,30 +134,39 @@ export function WordInput({ words, onChange }: WordInputProps) {
   };
 
   return (
-    <div className="space-y-3">
-      {/* Word Box Container */}
+    <div className="space-y-4">
+      {/* Word Ledger Container — loaded cards stacked above the typing tray */}
       <div
-        className={`group relative flex flex-wrap items-center gap-2 min-h-[96px] bg-slate-50/80 border rounded-2xl p-3.5 cursor-text transition-all duration-200 shadow-inner dark:bg-slate-900/40 ${
+        className={`relative flex flex-col overflow-hidden rounded-2xl border-2 bg-white cursor-text transition-all duration-200 dark:bg-white/[0.02] ${
           arabicWarn
             ? 'border-amber-400 ring-4 ring-amber-400/20 dark:border-amber-500/60 dark:ring-amber-500/20'
-            : 'border-slate-200/90 focus-within:border-teal-500 focus-within:ring-4 focus-within:ring-teal-500/15 focus-within:bg-white dark:border-white/10 dark:focus-within:border-teal-400/60 dark:focus-within:bg-slate-900/80'
+            : 'border-slate-200 focus-within:border-teal-500 focus-within:ring-4 focus-within:ring-teal-500/15 dark:border-white/10 dark:focus-within:border-teal-400/60'
         }`}
         onClick={() => inputRef.current?.focus()}
       >
-        <AnimatePresence>
+        {/* Empty-state hint */}
+        {words.length === 0 && (
+          <p className="px-5 pt-5 pb-1 text-center font-mono text-[11px] uppercase tracking-[0.25em] text-slate-300 dark:text-gray-600">
+            Loaded cards appear here
+          </p>
+        )}
+        <AnimatePresence initial={false}>
           {words.map((w, index) => (
-            <motion.span
+            <motion.div
               key={w}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 350 }}
-              className="inline-flex items-center gap-1.5 bg-gradient-to-r from-teal-500/15 to-emerald-500/15 border border-teal-500/30 text-teal-800 dark:text-teal-200 pl-3 pr-1.5 py-1.5 rounded-xl text-sm font-bold shadow-xs hover:border-teal-500/60 transition-colors"
+              layout
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 10 }}
+              transition={{ type: 'spring', damping: 24, stiffness: 350 }}
+              className="flex items-center gap-3 border-b border-dashed border-slate-100 px-4 py-2.5 last:border-b-0 dark:border-white/5"
             >
-              <span className="text-[10px] font-mono text-teal-600/70 dark:text-teal-400/60">
-                #{index + 1}
+              <span className="w-6 shrink-0 font-mono text-[11px] font-bold tabular-nums text-teal-600/70 dark:text-teal-400/70">
+                {String(index + 1).padStart(2, '0')}
               </span>
-              <span>{w}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-bold lowercase tracking-tight text-slate-900 dark:text-white">
+                {w}
+              </span>
               <button
                 type="button"
                 onClick={e => {
@@ -165,16 +174,21 @@ export function WordInput({ words, onChange }: WordInputProps) {
                   removeWord(w);
                 }}
                 aria-label={`Remove ${w}`}
-                className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg text-teal-600/70 transition-all hover:bg-red-500/20 hover:text-red-500 active:scale-90 dark:text-teal-300 dark:hover:text-red-400"
+                className="inline-flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-transparent text-slate-300 transition-all hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-500 active:scale-90 dark:text-gray-600 dark:hover:text-red-400"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="h-3.5 w-3.5" />
               </button>
-            </motion.span>
+            </motion.div>
           ))}
         </AnimatePresence>
 
         {words.length < MAX_WORDS && (
-          <div className="flex-1 flex items-center min-w-[160px]">
+          <div
+            className={`mt-auto flex items-center gap-2 px-4 py-3 ${
+              words.length > 0 ? 'border-t-2 border-dashed border-slate-100 dark:border-white/5' : ''
+            }`}
+          >
+            <Plus className="h-4 w-4 shrink-0 text-teal-500 dark:text-teal-400" aria-hidden="true" />
             <input
               ref={inputRef}
               type="text"
@@ -193,7 +207,7 @@ export function WordInput({ words, onChange }: WordInputProps) {
                   ? 'Type an English word and press Enter (or comma)…'
                   : 'Add next word…'
               }
-              className="w-full bg-transparent outline-none text-slate-950 placeholder-slate-400 text-sm font-semibold py-1.5 dark:text-white dark:placeholder-gray-500"
+              className="min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 placeholder-slate-400 outline-none dark:text-white dark:placeholder-gray-500"
               id="word-input"
             />
             {input.trim().length > 0 && (
